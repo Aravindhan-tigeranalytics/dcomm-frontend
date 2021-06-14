@@ -1,21 +1,44 @@
 
 
-<mat-tab-group>
-    <mat-tab label="Scenario Planner"> 
+<mat-tab-group dynamicHeight  [selectedIndex]="selectedIndex">
+    <mat-tab label="Input Section">
         <div class="row pad-button">
             <div class="col-md-1"></div>
             <div class="col-md-2">
                 <button class="button-wt" mat-raised-button color="primary" (click)="fileInput.click()">Upload SKU Activation Plans</button>
                 <input hidden (change)="onFileSelected()" #fileInput type="file" id="skufile">
             </div>
+        </div>
 
+        <div class="row pad-button">
+            <div class="col-md-1"></div>
             <div class="col-md-2">
                 <button class="button-wt" mat-raised-button color="primary" (click)="fileInput.click()">Upload Rate Card Information</button>
                 <input hidden (change)="onRateFileSelected()" #fileInput2 type="file" id="ratefile">
             </div>
-            <div class="col-md-4"></div>
+        </div>
+        <div class="row pad-button">
+            <div class="col-md-1"></div>
             <div class="col-md-2">
-                <button class="button-wt" mat-raised-button color="primary">Run Scenario Planner</button>
+                <button class="button-wt" mat-raised-button color="primary" (click)="executeScenarioPlanner()">Run Scenario Planner</button>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Scenario Planner"> 
+        <div class="row pad-button">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <strong>Total Product Selected : </strong>10
+            </div>
+            <div class="col-md-2">
+                <strong>Total Activities Selected : </strong>10
+            </div>
+            <div class="col-md-2">
+                <strong>Total Estimated Budget : </strong>10
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-2">
+                <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('ScenarioPlan')">Download Scenario Plan</button>
             </div>
         </div>
 
@@ -53,22 +76,7 @@
             </div>
         </div>
 
-        <div class="row pad-button">
-            <div class="col-md-1"></div>
-            <div class="col-md-2">
-                <strong>Total Product Selected : </strong>10
-            </div>
-            <div class="col-md-2">
-                <strong>Total Activities Selected : </strong>10
-            </div>
-            <div class="col-md-2">
-                <strong>Total Estimated Budget : </strong>10
-            </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-2">
-                <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('ScenarioPlan')">Download Scenario Plan</button>
-            </div>
-        </div>
+
     </mat-tab>
     <mat-tab label="Optimiser"> 
         <div class="row pad-button">

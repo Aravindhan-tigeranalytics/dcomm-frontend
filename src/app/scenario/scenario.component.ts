@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 
 export interface PeriodicElement {
@@ -27,6 +27,8 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrls: ['./scenario.component.scss']
 })
 export class ScenarioComponent implements OnInit {
+  selectedIndex:number = 0
+
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
   srcResult:any = ''
@@ -79,6 +81,10 @@ export class ScenarioComponent implements OnInit {
     };
   
     new Angular5Csv(ELEMENT_DATA, filename, options);
+  }
+
+  executeScenarioPlanner(){
+    this.selectedIndex = 1
   }
 
 }
