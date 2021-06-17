@@ -1,12 +1,17 @@
-table {
-  width: 80%;
-  margin: auto;
+  table {
+    width: 80%;
+    margin: auto;
   }
 
   .pad-button {
     padding: 30px 0px;
   }
 
+  .additional-selection {
+    opacity: 0.75;
+    font-size: 0.75em;
+  }
+  
   .button-wt {
     width: 220px;
     text-align: center;

@@ -25,22 +25,90 @@
       </div>
   </mat-tab>
   <mat-tab label="Scenario Planner"> 
-      <div class="row pad-button">
-          <div class="col-md-1"></div>
-          <div class="col-md-2">
-              <strong>Total Product Selected : </strong>10
-          </div>
-          <div class="col-md-2">
-              <strong>Total Activities Selected : </strong>10
-          </div>
-          <div class="col-md-2">
-              <strong>Total Estimated Budget : </strong>10
-          </div>
-          <div class="col-md-2"></div>
-          <div class="col-md-2">
-              <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('ScenarioPlan')">Download Scenario Plan</button>
-          </div>
+
+      <div class="row" style="margin-top: 25px;">
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+          <mat-form-field appearance="fill">
+            <mat-label>SKU Select</mat-label>
+            <mat-select [formControl]="skus" [(ngModel)]="skuSelected" (selectionChange)="doFilter($event)" multiple>
+              <mat-select-trigger>
+                {{skus.value ? skus.value[0] : ''}}
+                <span *ngIf="skus.value?.length > 1" class="additional-selection">
+                  (+{{skus.value.length - 1}} {{skus.value?.length === 2 ? 'other' : 'others'}})
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let item of skuList" [value]="item.sku">{{item.sku}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-2">
+          <mat-form-field appearance="fill">
+            <mat-label>Activity Type</mat-label>
+            <mat-select [formControl]="types" [(ngModel)]="typeSelected" (selectionChange)="doFilter($event)" multiple>
+              <mat-select-trigger>
+                {{types.value ? types.value[0] : ''}}
+                <span *ngIf="types.value?.length > 1" class="additional-selection">
+                  (+{{types.value.length - 1}} {{types.value?.length === 2 ? 'other' : 'others'}})
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let item of activityType" [value]="item.activation_type">{{item.activation_type}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-2">
+          <mat-form-field appearance="fill">
+            <mat-label>Activity Lift</mat-label>
+            <mat-select [formControl]="lifts" [(ngModel)]="liftSelected" (selectionChange)="doFilter($event)" multiple>
+              <mat-select-trigger>
+                {{lifts.value ? lifts.value[0] : ''}}
+                <span *ngIf="lifts.value?.length > 1" class="additional-selection">
+                  (+{{lifts.value.length - 1}} {{lifts.value?.length === 2 ? 'other' : 'others'}})
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let item of activityLift" [value]="item.expect_lift">{{item.expect_lift}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-2">
+          <mat-form-field appearance="fill">
+            <mat-label>Activity ROI</mat-label>
+            <mat-select [formControl]="rois" [(ngModel)]="roiSelected" (selectionChange)="doFilter($event)" multiple>
+              <mat-select-trigger>
+                {{rois.value ? rois.value[0] : ''}}
+                <span *ngIf="rois.value?.length > 1" class="additional-selection">
+                  (+{{rois.value.length - 1}} {{rois.value?.length === 2 ? 'other' : 'others'}})
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let item of activityROI" [value]="item.expected_roi">{{item.expected_roi}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- <div class="col-md-2">
+          <button class="button-wt" mat-raised-button color="primary" (click)="filterTableData()">Filter</button>
+        </div> -->
       </div>
+
+      <div class="row pad-button">
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+            <strong>Total Product Selected : </strong>10
+        </div>
+        <div class="col-md-2">
+            <strong>Total Activities Selected : </strong>10
+        </div>
+        <div class="col-md-2">
+            <strong>Total Estimated Budget : </strong>10
+        </div>
+        <div class="col-md-2"></div>
+        <div class="col-md-2">
+            <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('ScenarioPlan')">Download Scenario Plan</button>
+        </div>
+    </div>
 
       <div class="row">
           <div class="col-md-12">
