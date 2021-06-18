@@ -3,6 +3,7 @@ import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FormControl} from '@angular/forms';
+import { Options } from "@angular-slider/ngx-slider";
 
 
 export interface PeriodicElement {
@@ -45,24 +46,35 @@ export class ScenarioComponent implements OnInit {
   types = new FormControl();
   activityType: PeriodicElement[] = [];
 
-  lifts = new FormControl();
-  activityLift: PeriodicElement[] = [];
+  // lifts = new FormControl();
+  // activityLift: PeriodicElement[] = [];
 
-  rois = new FormControl();
-  activityROI: PeriodicElement[] = [];
+  // rois = new FormControl();
+  // activityROI: PeriodicElement[] = [];
 
   skuSelected:any = [1235,1243,1246]
   typeSelected:any = ['FSI','FAI','TPR','Search']
-  liftSelected:any = [13,32,20,9,10,12,14,15,18]
-  roiSelected:any = [12,22,32,14,16]
+  // liftSelected:any = [13,32,20,9,10,12,14,15,18]
+  // roiSelected:any = [12,22,32,14,16]
+
+  liftMinValue: number = 0;
+  liftMaxValue: number = 60;
+  roiMinValue: number = 0;
+  roiMaxValue: number = 60;
+  options: Options = {
+    floor: 0,
+    ceil: 100
+  };
+  liftSliderValue:any = [0,60]
+  roiSliderValue:any = [0,40]
 
   constructor() { }
 
   ngOnInit(): void {
     this.skuList = [...new Map(ELEMENT_DATA.map(item => [item["sku"], item])).values()];
     this.activityType = [...new Map(ELEMENT_DATA.map(item => [item["activation_type"], item])).values()];
-    this.activityLift = [...new Map(ELEMENT_DATA.map(item => [item["expect_lift"], item])).values()];
-    this.activityROI = [...new Map(ELEMENT_DATA.map(item => [item["expected_roi"], item])).values()];
+    // this.activityLift = [...new Map(ELEMENT_DATA.map(item => [item["expect_lift"], item])).values()];
+    // this.activityROI = [...new Map(ELEMENT_DATA.map(item => [item["expected_roi"], item])).values()];
   }
 
   isAllSelected() {
@@ -143,8 +155,14 @@ export class ScenarioComponent implements OnInit {
     console.log(event.value)
     let filterData:any = ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["sku"]));
     filterData = filterData.filter((data:any) => this.typeSelected.includes(data["activation_type"]));
-    filterData = filterData.filter((data:any) => this.liftSelected.includes(data["expect_lift"]));
-    filterData = filterData.filter((data:any) => this.roiSelected.includes(data["expected_roi"]));
+    // filterData = filterData.filter((data:any) => this.liftSelected.includes(data["expect_lift"]));
+    // filterData = filterData.filter((data:any) => this.roiSelected.includes(data["expected_roi"]));
+    filterData = filterData.filter((o:any)=> {
+      return o['expect_lift'] <= this.liftSliderValue[1] && o['expect_lift'] >= this.liftSliderValue[0];
+    });
+    filterData = filterData.filter((o:any)=> {
+      return o['expected_roi'] <= this.roiSliderValue[1] && o['expected_roi'] >= this.roiSliderValue[0];
+    });
     this.dataSource = new MatTableDataSource<PeriodicElement>(filterData);
   }
 
