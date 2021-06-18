@@ -11,6 +11,7 @@ import { ScenarioComponent } from './scenario/scenario.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 // import { MatToolbarModule } from '@angular/material/toolbar';
 // import { MatIconModule } from '@angular/material/icon'; 
@@ -28,7 +29,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     ReactiveFormsModule,
     HttpClientModule,
     MaterialModule,
-    NgxSliderModule
+    NgxSliderModule,
+    NgbModule
   ],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }}],
   bootstrap: [AppComponent]

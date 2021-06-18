@@ -31,7 +31,7 @@
         <div class="col-md-2">
           <mat-form-field appearance="fill">
             <mat-label>SKU Select</mat-label>
-            <mat-select [formControl]="skus" [(ngModel)]="skuSelected" (selectionChange)="doFilter($event)" multiple>
+            <mat-select [formControl]="skus" [(ngModel)]="skuSelected" (selectionChange)="doFilter()" multiple>
               <mat-select-trigger>
                 {{skus.value ? skus.value[0] : ''}}
                 <span *ngIf="skus.value?.length > 1" class="additional-selection">
@@ -46,7 +46,7 @@
         <div class="col-md-2">
           <mat-form-field appearance="fill">
             <mat-label>Activity Type</mat-label>
-            <mat-select [formControl]="types" [(ngModel)]="typeSelected" (selectionChange)="doFilter($event)" multiple>
+            <mat-select [formControl]="types" [(ngModel)]="typeSelected" (selectionChange)="doFilter()" multiple>
               <mat-select-trigger>
                 {{types.value ? types.value[0] : ''}}
                 <span *ngIf="types.value?.length > 1" class="additional-selection">
@@ -59,37 +59,51 @@
         </div>
 
         <div class="col-md-2">
-          <!-- <mat-form-field appearance="fill">
+          <mat-form-field class="example-full-width">
             <mat-label>Activity Lift</mat-label>
-            <mat-select [formControl]="lifts" [(ngModel)]="liftSelected" (selectionChange)="doFilter($event)" multiple>
-              <mat-select-trigger>
-                {{lifts.value ? lifts.value[0] : ''}}
-                <span *ngIf="lifts.value?.length > 1" class="additional-selection">
-                  (+{{lifts.value.length - 1}} {{lifts.value?.length === 2 ? 'other' : 'others'}})
-                </span>
-              </mat-select-trigger>
-              <mat-option *ngFor="let item of activityLift" [value]="item.expect_lift">{{item.expect_lift}}</mat-option>
-            </mat-select>
-          </mat-form-field> -->
-          <mat-label class="range-lable">Activity Lift</mat-label>
-          <ngx-slider [(ngModel)]="liftSliderValue" [(value)]="liftMinValue" (mouseup)="doFilter($event)" [(highValue)]="liftMaxValue" [options]="options"></ngx-slider>
+            <input matInput [(ngModel)]="activityLift" (click)="triggerModal(modalData1)">
+          </mat-form-field>
+          <!-- <button class="btn btn-danger" (click)="triggerModal(modalData1)">Activity Lift</button> -->
+          <ng-template #modalData1 let-modal>
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">Activity Lift Range</h4>
+              <button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <mat-label class="range-lable">Activity Lift</mat-label>
+              <ngx-slider [(ngModel)]="liftSliderValue" [(value)]="liftMinValue" [(highValue)]="liftMaxValue" [options]="options"></ngx-slider>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+            </div>
+          </ng-template>
         </div>
 
         <div class="col-md-2">
-          <!-- <mat-form-field appearance="fill">
+          <mat-form-field class="example-full-width">
             <mat-label>Activity ROI</mat-label>
-            <mat-select [formControl]="rois" [(ngModel)]="roiSelected" (selectionChange)="doFilter($event)" multiple>
-              <mat-select-trigger>
-                {{rois.value ? rois.value[0] : ''}}
-                <span *ngIf="rois.value?.length > 1" class="additional-selection">
-                  (+{{rois.value.length - 1}} {{rois.value?.length === 2 ? 'other' : 'others'}})
-                </span>
-              </mat-select-trigger>
-              <mat-option *ngFor="let item of activityROI" [value]="item.expected_roi">{{item.expected_roi}}</mat-option>
-            </mat-select>
-          </mat-form-field> -->
-          <mat-label class="range-lable">Activity ROI</mat-label>
-          <ngx-slider [(ngModel)]="roiSliderValue" [(value)]="roiMinValue" (mouseup)="doFilter($event)" [(highValue)]="roiMaxValue" [options]="options"></ngx-slider>
+            <input matInput [(ngModel)]="activityROI" (click)="triggerModal(modalData)">
+          </mat-form-field>
+          <!-- <button class="btn btn-danger" (click)="triggerModal(modalData)">Activity ROI</button> -->
+            <ng-template #modalData let-modal>
+              <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title">Activity ROI Range</h4>
+                <button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <mat-label class="range-lable">Activity ROI</mat-label>
+                <ngx-slider [(ngModel)]="roiSliderValue" [(value)]="roiMinValue" [(highValue)]="roiMaxValue" [options]="options"></ngx-slider>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+              </div>
+            </ng-template>
         </div>
 
         <!-- <div class="col-md-2">
@@ -137,7 +151,7 @@
               <!-- Position Column -->
               <ng-container matColumnDef="position">
                 <th mat-header-cell *matHeaderCellDef> S.No </th>
-                <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                <td mat-cell *matCellDef="let element; let i = index;"> {{i+1}} </td>
               </ng-container>
             
               <!-- SKU Column -->
@@ -218,7 +232,7 @@
                   <!-- Position Column -->
                   <ng-container matColumnDef="position">
                     <th mat-header-cell *matHeaderCellDef> S.No </th>
-                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                    <td mat-cell *matCellDef="let element; let i = index;"> {{i+1}} </td>
                   </ng-container>
                 
                   <!-- SKU Column -->
@@ -250,8 +264,7 @@
                       (click)="selection.toggle(row)">
                   </tr>
                 </table>
-                
-                
+
           </div>
       </div>
 

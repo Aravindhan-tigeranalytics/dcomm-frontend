@@ -4,6 +4,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FormControl} from '@angular/forms';
 import { Options } from "@angular-slider/ngx-slider";
+import {ModalDismissReasons, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 
 export interface PeriodicElement {
@@ -46,16 +47,11 @@ export class ScenarioComponent implements OnInit {
   types = new FormControl();
   activityType: PeriodicElement[] = [];
 
-  // lifts = new FormControl();
-  // activityLift: PeriodicElement[] = [];
-
-  // rois = new FormControl();
-  // activityROI: PeriodicElement[] = [];
+  activityLift:any = ''
+  activityROI:any = ''
 
   skuSelected:any = [1235,1243,1246]
   typeSelected:any = ['FSI','FAI','TPR','Search']
-  // liftSelected:any = [13,32,20,9,10,12,14,15,18]
-  // roiSelected:any = [12,22,32,14,16]
 
   liftMinValue: number = 0;
   liftMaxValue: number = 60;
@@ -65,16 +61,35 @@ export class ScenarioComponent implements OnInit {
     floor: 0,
     ceil: 100
   };
-  liftSliderValue:any = [0,60]
-  roiSliderValue:any = [0,40]
+  liftSliderValue:any = [5,60]
+  roiSliderValue:any = [5,40]
 
-  constructor() { }
+  closeModal: any;
+  constructor(private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.skuList = [...new Map(ELEMENT_DATA.map(item => [item["sku"], item])).values()];
     this.activityType = [...new Map(ELEMENT_DATA.map(item => [item["activation_type"], item])).values()];
-    // this.activityLift = [...new Map(ELEMENT_DATA.map(item => [item["expect_lift"], item])).values()];
-    // this.activityROI = [...new Map(ELEMENT_DATA.map(item => [item["expected_roi"], item])).values()];
+    this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
+    this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
+  }
+
+  triggerModal(content :any) {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((res) => {
+      this.closeModal = `Closed with: ${res}`;
+    }, (res) => {
+      this.closeModal = `Dismissed ${this.getDismissReason(res)}`;
+    });
+  }
+  
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return  `with: ${reason}`;
+    }
   }
 
   isAllSelected() {
@@ -151,12 +166,11 @@ export class ScenarioComponent implements OnInit {
     this.selectedIndex = 1
   }
 
-  doFilter(event:any){
-    console.log(event.value)
+  doFilter(){
+    this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
+    this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
     let filterData:any = ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["sku"]));
     filterData = filterData.filter((data:any) => this.typeSelected.includes(data["activation_type"]));
-    // filterData = filterData.filter((data:any) => this.liftSelected.includes(data["expect_lift"]));
-    // filterData = filterData.filter((data:any) => this.roiSelected.includes(data["expected_roi"]));
     filterData = filterData.filter((o:any)=> {
       return o['expect_lift'] <= this.liftSliderValue[1] && o['expect_lift'] >= this.liftSliderValue[0];
     });
