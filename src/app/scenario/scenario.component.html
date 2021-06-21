@@ -6,15 +6,15 @@
           <div class="col-md-1"></div>
           <div class="col-md-2">
               <button class="button-wt" mat-raised-button color="primary" (click)="fileInput.click()">Upload SKU Activation Plans</button>
-              <input hidden (change)="onFileSelected()" #fileInput type="file" id="skufile">
+              <input hidden accept=".xlsx,.xls,.csv" (change)="onFileSelected()" #fileInput type="file" id="skufile">
           </div>
       </div>
 
       <div class="row pad-button">
           <div class="col-md-1"></div>
           <div class="col-md-2">
-              <button class="button-wt" mat-raised-button color="primary" (click)="fileInput.click()">Upload Rate Card Information</button>
-              <input hidden (change)="onRateFileSelected()" #fileInput2 type="file" id="ratefile">
+              <button class="button-wt" mat-raised-button color="primary" (click)="fileInput2.click()">Upload Rate Card Information</button>
+              <input hidden accept=".xlsx,.xls" (change)="onRateFileSelected()" #fileInput2 type="file" id="ratefile">
           </div>
       </div>
       <div class="row pad-button">
@@ -24,7 +24,7 @@
           </div>
       </div>
   </mat-tab>
-  <mat-tab label="Scenario Planner"> 
+  <mat-tab [disabled]='!showScenarioPlanner' label="Scenario Planner"> 
 
       <div class="row" style="margin-top: 25px;">
         <div class="col-md-1"></div>

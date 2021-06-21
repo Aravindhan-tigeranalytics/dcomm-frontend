@@ -5,6 +5,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {FormControl} from '@angular/forms';
 import { Options } from "@angular-slider/ngx-slider";
 import {ModalDismissReasons, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 
 export interface PeriodicElement {
@@ -39,7 +40,11 @@ export class ScenarioComponent implements OnInit {
   displayedColumns: string[] = ['select', 'position','sku', 'activation_type', 'expect_lift', 'expected_roi'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
   selection = new SelectionModel<PeriodicElement>(true, []);
-  srcResult:any = ''
+
+  skuActivationPlanData:any = ''
+  rateCardInfoData:any =''
+
+  showScenarioPlanner:any = false
 
   skus = new FormControl();
   skuList: PeriodicElement[] = [];
@@ -65,7 +70,7 @@ export class ScenarioComponent implements OnInit {
   roiSliderValue:any = [5,40]
 
   closeModal: any;
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal,private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.skuList = [...new Map(ELEMENT_DATA.map(item => [item["sku"], item])).values()];
@@ -116,30 +121,59 @@ export class ScenarioComponent implements OnInit {
 
   onFileSelected() {
     const inputNode: any = document.querySelector('#skufile');
-  
-    if (typeof (FileReader) !== 'undefined') {
-      const reader = new FileReader();
-  
-      reader.onload = (e: any) => {
-        this.srcResult = e.target.result;
-      };
-  
-      reader.readAsArrayBuffer(inputNode.files[0]);
+    console.log(inputNode.files[0])
+    this.skuActivationPlanData = inputNode.files[0]
+    let filename = inputNode.files[0].name
+    var extension:any = filename.substr(filename.lastIndexOf('.'));
+    if((extension.toLowerCase() == ".xlsx") || (extension.toLowerCase() == ".xls") || (extension.toLowerCase() == ".csv")){
+      console.log("good to go")
+      this.toastr.success('File Uploaded Successfully!');
     }
+    else{
+      this.toastr.warning('Invalid File Format');
+    }
+
+    const formdata = new FormData();
+    formdata.append('file',inputNode.files[0])
+
+  
+    // if (typeof (FileReader) !== 'undefined') {
+    //   const reader = new FileReader();
+  
+    //   reader.onload = (e: any) => {
+    //     this.srcResult = e.target.result;
+    //     console.log(this.srcResult)
+    //   };
+  
+    //   reader.readAsArrayBuffer(inputNode.files[0]);
+    // }
   }
 
   onRateFileSelected() {
     const inputNode: any = document.querySelector('#ratefile');
-  
-    if (typeof (FileReader) !== 'undefined') {
-      const reader = new FileReader();
-  
-      reader.onload = (e: any) => {
-        this.srcResult = e.target.result;
-      };
-  
-      reader.readAsArrayBuffer(inputNode.files[0]);
+    console.log(inputNode.files[0])
+    this.rateCardInfoData = inputNode.files[0]
+    let filename = inputNode.files[0].name
+    var extension:any = filename.substr(filename.lastIndexOf('.'));
+    if((extension.toLowerCase() == ".xlsx") || (extension.toLowerCase() == ".xls") || (extension.toLowerCase() == ".csv")){
+      console.log("good to go")
+      this.toastr.success('File Uploaded Successfully!');
     }
+    else{
+      this.toastr.warning('Invalid File Format');
+    }
+
+    const formdata = new FormData();
+    formdata.append('file',inputNode.files[0])
+    // if (typeof (FileReader) !== 'undefined') {
+    //   const reader = new FileReader();
+  
+    //   reader.onload = (e: any) => {
+    //     this.srcResult = e.target.result;
+    //   };
+  
+    //   reader.readAsArrayBuffer(inputNode.files[0]);
+    // }
   }
 
   DownloadCSV(filename:string){
@@ -160,9 +194,21 @@ export class ScenarioComponent implements OnInit {
     
       new Angular5Csv(this.selection.selected, filename, options);
     }
+    else {
+      this.toastr.warning('Please select atleast one product');
+    }
   }
 
   executeScenarioPlanner(){
+    if(this.skuActivationPlanData == ''){
+      this.toastr.warning('Please upload the sku actication plans');
+      return
+    }
+    if(this.rateCardInfoData == ''){
+      this.toastr.warning('Please upload the rate card data');
+      return
+    }
+    this.showScenarioPlanner =true
     this.selectedIndex = 1
   }
 
