@@ -230,4 +230,9 @@ export class ScenarioComponent implements OnInit {
     console.log("filter data")
   }
 
+  onTabChanged(event:any){
+    this.dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
+    this.ngOnInit()
+  }
+
 }

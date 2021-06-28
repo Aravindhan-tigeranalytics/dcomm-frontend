@@ -1,7 +1,7 @@
 
 
-<mat-tab-group dynamicHeight  [selectedIndex]="selectedIndex">
-  <mat-tab label="Input Section">
+<mat-tab-group dynamicHeight  [selectedIndex]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
+  <mat-tab label="Scenario Input">
       <div class="row pad-button">
           <div class="col-md-1"></div>
           <div class="col-md-2">
@@ -209,7 +209,76 @@
           </div>
       </div>
 
-      <div class="row">
+      <div class="row" style="margin-top: 25px;">
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+          <mat-form-field appearance="fill">
+            <mat-label>SKU Select</mat-label>
+            <mat-select [formControl]="skus" [(ngModel)]="skuSelected" (selectionChange)="doFilter()" multiple>
+              <mat-select-trigger>
+                {{skus.value ? skus.value[0] : ''}}
+                <span *ngIf="skus.value?.length > 1" class="additional-selection">
+                  (+{{skus.value.length - 1}} {{skus.value?.length === 2 ? 'other' : 'others'}})
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let item of skuList" [value]="item.sku">{{item.sku}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-2">
+          <mat-form-field class="example-full-width">
+            <mat-label>Activity Lift</mat-label>
+            <input matInput [(ngModel)]="activityLift" (click)="triggerModal(modalData1)">
+          </mat-form-field>
+          <!-- <button class="btn btn-danger" (click)="triggerModal(modalData1)">Activity Lift</button> -->
+          <ng-template #modalData1 let-modal>
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">Activity Lift Range</h4>
+              <button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <mat-label class="range-lable">Activity Lift</mat-label>
+              <ngx-slider [(ngModel)]="liftSliderValue" [(value)]="liftMinValue" [(highValue)]="liftMaxValue" [options]="options"></ngx-slider>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="col-md-2">
+          <mat-form-field class="example-full-width">
+            <mat-label>Activity ROI</mat-label>
+            <input matInput [(ngModel)]="activityROI" (click)="triggerModal(modalData)">
+          </mat-form-field>
+            <ng-template #modalData let-modal>
+              <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title">Activity ROI Range</h4>
+                <button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <mat-label class="range-lable">Activity ROI</mat-label>
+                <ngx-slider [(ngModel)]="roiSliderValue" [(value)]="roiMinValue" [(highValue)]="roiMaxValue" [options]="options"></ngx-slider>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+              </div>
+            </ng-template>
+        </div>
+        <div class="col-md-2"></div>
+        <div class="col-md-2">
+          <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('OptimiserResult')">Download Optimizer Result</button>
+        </div>
+      </div>
+
+      <div class="row pad-button">
           <div class="col-md-12">
               <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
@@ -268,12 +337,12 @@
           </div>
       </div>
 
-      <div class="row pad-button">
+      <!-- <div class="row pad-button">
           <div class="col-md-9"></div>
           <div class="col-md-2">
               <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('OptimiserResult')">Download Optimizer Result</button>
           </div>
-      </div>
+      </div> -->
    </mat-tab>
 </mat-tab-group>
 
