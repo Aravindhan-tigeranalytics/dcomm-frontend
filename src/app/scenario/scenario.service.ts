@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { of } from 'rxjs';
 
 
@@ -6,7 +7,7 @@ import { of } from 'rxjs';
   providedIn: 'root'
 })
 export class ScenarioService {
-  
+
   // replace this with the service/method from your WebApi in C#
   getData() {
 

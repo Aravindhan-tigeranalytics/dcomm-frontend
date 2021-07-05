@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -6,7 +6,9 @@ import {FormControl} from '@angular/forms';
 import { Options } from "@angular-slider/ngx-slider";
 import {ModalDismissReasons, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-
+import { PageEvent } from '@angular/material/paginator';
+import {MatPaginator} from '@angular/material/paginator';
+import * as Notiflix from 'notiflix';
 
 export interface PeriodicElement {
   position: number;
@@ -28,15 +30,25 @@ const ELEMENT_DATA: PeriodicElement[] = [
   {position: 9,sku : 1246, activation_type: 'FSI', expect_lift: 18, expected_roi: 16},
   {position: 10,sku : 1246, activation_type: 'FAI', expect_lift: 20, expected_roi:  12},
 ];
+Notiflix.Notify.init({
+  width:'300px',
+  timeout: 5000,
+  position:'right-top',
+  cssAnimationStyle: 'from-bottom',
+  distance:'20px',
+  opacity: 1,
+});
 
 @Component({
   selector: 'app-scenario',
   templateUrl: './scenario.component.html',
   styleUrls: ['./scenario.component.scss']
 })
-export class ScenarioComponent implements OnInit {
-  selectedIndex:number = 0
 
+export class ScenarioComponent implements OnInit {
+
+  selectedIndex:number = 0
+  @ViewChild(MatPaginator) paginator:any;
   displayedColumns: string[] = ['select', 'position','sku', 'activation_type', 'expect_lift', 'expected_roi'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
   selection = new SelectionModel<PeriodicElement>(true, []);
@@ -78,7 +90,9 @@ export class ScenarioComponent implements OnInit {
     this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
     this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
   }
-
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
   triggerModal(content :any) {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((res) => {
       this.closeModal = `Closed with: ${res}`;
@@ -86,7 +100,7 @@ export class ScenarioComponent implements OnInit {
       this.closeModal = `Dismissed ${this.getDismissReason(res)}`;
     });
   }
-  
+
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
@@ -127,24 +141,25 @@ export class ScenarioComponent implements OnInit {
     var extension:any = filename.substr(filename.lastIndexOf('.'));
     if((extension.toLowerCase() == ".xlsx") || (extension.toLowerCase() == ".xls") || (extension.toLowerCase() == ".csv")){
       console.log("good to go")
-      this.toastr.success('File Uploaded Successfully!');
+      Notiflix.Notify.success('File Uploaded Successfully!');
+
     }
     else{
-      this.toastr.warning('Invalid File Format');
+      Notiflix.Notify.warning('Invalid File Format');
     }
 
     const formdata = new FormData();
     formdata.append('file',inputNode.files[0])
 
-  
+
     // if (typeof (FileReader) !== 'undefined') {
     //   const reader = new FileReader();
-  
+
     //   reader.onload = (e: any) => {
     //     this.srcResult = e.target.result;
     //     console.log(this.srcResult)
     //   };
-  
+
     //   reader.readAsArrayBuffer(inputNode.files[0]);
     // }
   }
@@ -157,21 +172,21 @@ export class ScenarioComponent implements OnInit {
     var extension:any = filename.substr(filename.lastIndexOf('.'));
     if((extension.toLowerCase() == ".xlsx") || (extension.toLowerCase() == ".xls") || (extension.toLowerCase() == ".csv")){
       console.log("good to go")
-      this.toastr.success('File Uploaded Successfully!');
+      Notiflix.Notify.success('File Uploaded Successfully!');
     }
     else{
-      this.toastr.warning('Invalid File Format');
+      Notiflix.Notify.warning('Invalid File Format');
     }
 
     const formdata = new FormData();
     formdata.append('file',inputNode.files[0])
     // if (typeof (FileReader) !== 'undefined') {
     //   const reader = new FileReader();
-  
+
     //   reader.onload = (e: any) => {
     //     this.srcResult = e.target.result;
     //   };
-  
+
     //   reader.readAsArrayBuffer(inputNode.files[0]);
     // }
   }
@@ -179,11 +194,11 @@ export class ScenarioComponent implements OnInit {
   DownloadCSV(filename:string){
     console.log(this.selection.selected)
     if(this.selection.selected.length > 0){
-      var options = { 
+      var options = {
         fieldSeparator: ',',
         quoteStrings: '"',
         decimalseparator: '.',
-        showLabels: true, 
+        showLabels: true,
         showTitle: true,
         title: filename,
         useBom: true,
@@ -191,7 +206,7 @@ export class ScenarioComponent implements OnInit {
         headers: ['S.No','SKU', 'Activation Type', 'Expect Lift', 'Expected ROI'],
         nullToEmptyString: true,
       };
-    
+
       new Angular5Csv(this.selection.selected, filename, options);
     }
     else {
@@ -201,11 +216,13 @@ export class ScenarioComponent implements OnInit {
 
   executeScenarioPlanner(){
     if(this.skuActivationPlanData == ''){
-      this.toastr.warning('Please upload the sku actication plans');
+      Notiflix.Notify.warning('Please Upload The SKU Activation Plan');
+      //this.toastr.warning('');
+
       return
     }
     if(this.rateCardInfoData == ''){
-      this.toastr.warning('Please upload the rate card data');
+      Notiflix.Notify.warning('Please Upload The Rate Card Data');
       return
     }
     this.showScenarioPlanner =true
@@ -224,6 +241,7 @@ export class ScenarioComponent implements OnInit {
       return o['expected_roi'] <= this.roiSliderValue[1] && o['expected_roi'] >= this.roiSliderValue[0];
     });
     this.dataSource = new MatTableDataSource<PeriodicElement>(filterData);
+    this.ngAfterViewInit();
   }
 
   filterTableData(){
@@ -232,7 +250,8 @@ export class ScenarioComponent implements OnInit {
 
   onTabChanged(event:any){
     this.dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-    this.ngOnInit()
+    this.ngOnInit();
+    this.ngAfterViewInit();
   }
 
 }

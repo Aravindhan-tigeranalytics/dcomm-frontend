@@ -1,5 +1,5 @@
   table {
-    width: 80%;
+    width: 100%;
     margin: auto;
   }
 
@@ -16,10 +16,22 @@
     opacity: 0.75;
     font-size: 0.75em;
   }
-  
+
   .button-wt {
     width: 220px;
     text-align: center;
     padding: 5px;
     border-radius: 10px;
   }
+
+
+  .d-flex-j-c{
+    display: flex;
+    justify-content: center;
+  }
+.close-cs{
+  border: 1px solid #ffffff;
+    border-radius: 12px;
+    color: #ffffff;
+    background-color: #aaabad;
+}
