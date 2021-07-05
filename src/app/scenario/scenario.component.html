@@ -24,7 +24,7 @@
           </div>
       </div>
   </mat-tab>
-  <mat-tab [disabled]='!showScenarioPlanner' label="Scenario Planner"> 
+  <mat-tab [disabled]='!showScenarioPlanner' label="Scenario Planner">
 
       <div class="row" style="margin-top: 25px;">
         <div class="col-md-1"></div>
@@ -77,7 +77,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>
             </div>
           </ng-template>
         </div>
@@ -101,7 +101,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>
               </div>
             </ng-template>
         </div>
@@ -126,6 +126,7 @@
         <div class="col-md-2">
             <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('ScenarioPlan')">Download Scenario Plan</button>
         </div>
+
     </div>
 
       <div class="row">
@@ -153,31 +154,31 @@
                 <th mat-header-cell *matHeaderCellDef> S.No </th>
                 <td mat-cell *matCellDef="let element; let i = index;"> {{i+1}} </td>
               </ng-container>
-            
+
               <!-- SKU Column -->
               <ng-container matColumnDef="sku">
                 <th mat-header-cell *matHeaderCellDef> SKU </th>
                 <td mat-cell *matCellDef="let element"> {{element.sku}} </td>
               </ng-container>
-            
+
               <!-- Activation Type Column -->
               <ng-container matColumnDef="activation_type">
                 <th mat-header-cell *matHeaderCellDef> Activation Type </th>
                 <td mat-cell *matCellDef="let element"> {{element.activation_type}} </td>
               </ng-container>
-            
+
               <!-- Expect Lift Column -->
               <ng-container matColumnDef="expect_lift">
                 <th mat-header-cell *matHeaderCellDef> Expect Lift </th>
                 <td mat-cell *matCellDef="let element"> {{element.expect_lift}} </td>
               </ng-container>
-            
+
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="expected_roi">
                 <th mat-header-cell *matHeaderCellDef> Expected ROI </th>
                 <td mat-cell *matCellDef="let element"> {{element.expected_roi}} </td>
               </ng-container>
-            
+
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                   (click)="selection.toggle(row)">
@@ -189,7 +190,7 @@
       <br/>
 
   </mat-tab>
-  <mat-tab label="Optimiser"> 
+  <mat-tab label="Optimiser">
       <div class="row pad-button">
           <div class="col-md-1"></div>
           <div class="col-md-2">
@@ -245,7 +246,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>
             </div>
           </ng-template>
         </div>
@@ -268,7 +269,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>  
+                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>
               </div>
             </ng-template>
         </div>
@@ -297,37 +298,37 @@
                       </mat-checkbox>
                     </td>
                   </ng-container>
-                
+
                   <!-- Position Column -->
                   <ng-container matColumnDef="position">
                     <th mat-header-cell *matHeaderCellDef> S.No </th>
                     <td mat-cell *matCellDef="let element; let i = index;"> {{i+1}} </td>
                   </ng-container>
-                
+
                   <!-- SKU Column -->
                   <ng-container matColumnDef="sku">
                     <th mat-header-cell *matHeaderCellDef> SKU </th>
                     <td mat-cell *matCellDef="let element"> {{element.sku}} </td>
                   </ng-container>
-                
+
                   <!-- Activation Type Column -->
                   <ng-container matColumnDef="activation_type">
                     <th mat-header-cell *matHeaderCellDef> Activation Type </th>
                     <td mat-cell *matCellDef="let element"> {{element.activation_type}} </td>
                   </ng-container>
-                
+
                   <!-- Expect Lift Column -->
                   <ng-container matColumnDef="expect_lift">
                     <th mat-header-cell *matHeaderCellDef> Expect Lift </th>
                     <td mat-cell *matCellDef="let element"> {{element.expect_lift}} </td>
                   </ng-container>
-                
+
                   <!-- Expected ROI Column -->
                   <ng-container matColumnDef="expected_roi">
                     <th mat-header-cell *matHeaderCellDef> Expected ROI </th>
                     <td mat-cell *matCellDef="let element"> {{element.expected_roi}} </td>
                   </ng-container>
-                
+
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                       (click)="selection.toggle(row)">
