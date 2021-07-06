@@ -13,7 +13,7 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrModule } from 'ngx-toastr';
+import {MatSortModule} from '@angular/material/sort';
 
 // import { MatToolbarModule } from '@angular/material/toolbar';
 // import { MatIconModule } from '@angular/material/icon';
@@ -33,7 +33,7 @@ import { ToastrModule } from 'ngx-toastr';
     MaterialModule,
     NgxSliderModule,
     NgbModule,
-    ToastrModule.forRoot(),
+    MatSortModule,
   ],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }}],
   bootstrap: [AppComponent]

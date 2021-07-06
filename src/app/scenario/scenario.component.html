@@ -1,20 +1,22 @@
 
 
-<mat-tab-group dynamicHeight  [selectedIndex]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
+<mat-tab-group dynamicHeight  [selectedIndex]="selectedIndex"  (selectedTabChange)="onTabChanged($event);">
   <mat-tab label="Scenario Input">
       <div class="row pad-button">
           <div class="col-md-1"></div>
-          <div class="col-md-2">
-              <button class="button-wt" mat-raised-button color="primary" (click)="fileInput.click()">Upload SKU Activation Plans</button>
-              <input hidden accept=".xlsx,.xls,.csv" (change)="onFileSelected()" #fileInput type="file" id="skufile">
+          <div class="col-md-4">
+              <button class="button-wt" mat-raised-button color="primary" (click)="skuPlan.click()">Upload SKU Activation Plans({{SKUPlanCount}})</button>
+              <input hidden accept=".xlsx,.xls,.csv" (change)="onFileSelected()" #skuPlan type="file" id="skufile">
+              <button  class="small_button" (click)="remove_skuplan()">Remove</button>
           </div>
       </div>
 
       <div class="row pad-button">
           <div class="col-md-1"></div>
-          <div class="col-md-2">
-              <button class="button-wt" mat-raised-button color="primary" (click)="fileInput2.click()">Upload Rate Card Information</button>
-              <input hidden accept=".xlsx,.xls" (change)="onRateFileSelected()" #fileInput2 type="file" id="ratefile">
+          <div class="col-md-4">
+              <button class="button-wt" mat-raised-button color="primary" (click)="rateCard.click()">Upload Rate Card Information({{RateCardCount}})</button>
+              <input hidden accept=".xlsx,.xls,.csv" (change)="onRateFileSelected()" #rateCard type="file" id="ratefile">
+               <button class="small_button"  (click)="remove_ratecard()">Remove</button>
           </div>
       </div>
       <div class="row pad-button">
@@ -105,6 +107,9 @@
               </div>
             </ng-template>
         </div>
+        <div class="col-md-2">
+            <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('ScenarioPlan')">Download Scenario Plan</button>
+        </div>
 
         <!-- <div class="col-md-2">
           <button class="button-wt" mat-raised-button color="primary" (click)="filterTableData()">Filter</button>
@@ -123,9 +128,6 @@
             <strong>Total Estimated Budget : </strong>10
         </div>
         <div class="col-md-2"></div>
-        <div class="col-md-2">
-            <button class="button-wt" mat-raised-button color="primary" (click)="DownloadCSV('ScenarioPlan')">Download Scenario Plan</button>
-        </div>
 
     </div>
 
@@ -133,7 +135,7 @@
           <div class="d-flex-j-c">
           <div class="col-md-10">
 
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 ">
+            <table  matSort (matSortChange)="sortData($event)" mat-table [dataSource]="dataSource" class="mat-elevation-z8 ">
 
               <!-- Checkbox Column -->
               <ng-container matColumnDef="select">
@@ -153,31 +155,31 @@
 
               <!-- Position Column -->
               <ng-container matColumnDef="position">
-                <th mat-header-cell *matHeaderCellDef> S.No </th>
-                <td mat-cell *matCellDef="let element; let i = index;"> {{i+1}} </td>
+                <th mat-sort-header="position" mat-header-cell *matHeaderCellDef> S.No </th>
+                <td mat-cell *matCellDef="let element"> {{element.position}} </td>
               </ng-container>
 
               <!-- SKU Column -->
               <ng-container matColumnDef="sku">
-                <th mat-header-cell *matHeaderCellDef> SKU </th>
+                <th  mat-sort-header="sku" mat-header-cell *matHeaderCellDef> SKU </th>
                 <td mat-cell *matCellDef="let element"> {{element.sku}} </td>
               </ng-container>
 
               <!-- Activation Type Column -->
               <ng-container matColumnDef="activation_type">
-                <th mat-header-cell *matHeaderCellDef> Activation Type </th>
+                <th mat-sort-header="activation_type" mat-header-cell *matHeaderCellDef> Activation Type </th>
                 <td mat-cell *matCellDef="let element"> {{element.activation_type}} </td>
               </ng-container>
 
               <!-- Expect Lift Column -->
               <ng-container matColumnDef="expect_lift">
-                <th mat-header-cell *matHeaderCellDef> Expect Lift </th>
+                <th mat-sort-header="expect_lift" mat-header-cell *matHeaderCellDef> Expect Lift </th>
                 <td mat-cell *matCellDef="let element"> {{element.expect_lift}} </td>
               </ng-container>
 
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="expected_roi">
-                <th mat-header-cell *matHeaderCellDef> Expected ROI </th>
+                <th mat-sort-header="expected_roi" mat-header-cell *matHeaderCellDef> Expected ROI </th>
                 <td mat-cell *matCellDef="let element"> {{element.expected_roi}} </td>
               </ng-container>
 
@@ -186,6 +188,8 @@
                   (click)="selection.toggle(row)">
               </tr>
             </table>
+            <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons >
+                </mat-paginator>
  </div>
           </div>
       </div>
@@ -197,11 +201,11 @@
       <div class="row pad-button pbz">
           <div class="col-md-1"></div>
           <div class="col-md-2">
-              <button class="button-wt" mat-raised-button color="primary" (click)="fileInput.click()">Upload Planned Scenario</button>
+              <button class="button-wt cs-button-wt" mat-raised-button color="primary" (click)="fileInput.click()">Upload Planned Scenario</button>
               <input hidden (change)="onFileSelected()" #fileInput type="file" id="skufile">
           </div>
 
-          <div class="col-md-2" style="padding-left: 30px;">
+          <div class="col-md-2" >
               <mat-form-field class="example-full-width">
                   <mat-label>Total Available Budget</mat-label>
                   <input matInput placeholder="Ex. 120" value="100">
@@ -218,14 +222,14 @@
         <div class="col-md-2">
           <mat-form-field appearance="fill">
             <mat-label>SKU Select</mat-label>
-            <mat-select [formControl]="skus" [(ngModel)]="skuSelected" (selectionChange)="doFilter()" multiple>
+            <mat-select [formControl]="skus" [(ngModel)]="skuSelected" (selectionChange)="doFilterOptimiser()" multiple>
               <mat-select-trigger>
                 {{skus.value ? skus.value[0] : ''}}
                 <span *ngIf="skus.value?.length > 1" class="additional-selection">
                   (+{{skus.value.length - 1}} {{skus.value?.length === 2 ? 'other' : 'others'}})
                 </span>
               </mat-select-trigger>
-              <mat-option *ngFor="let item of skuList" [value]="item.sku">{{item.sku}}</mat-option>
+              <mat-option *ngFor="let item of skuListOptimiser" [value]="item.sku">{{item.sku}}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -233,7 +237,7 @@
         <div class="col-md-2">
           <mat-form-field class="example-full-width">
             <mat-label>Activity Lift</mat-label>
-            <input matInput [(ngModel)]="activityLift" (click)="triggerModal(modalData1)">
+            <input matInput [(ngModel)]="activityLiftOptimiser" (click)="triggerModal(modalData1)">
           </mat-form-field>
           <!-- <button class="btn btn-danger" (click)="triggerModal(modalData1)">Activity Lift</button> -->
           <ng-template #modalData1 let-modal>
@@ -249,7 +253,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>
+              <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilterOptimiser()">Ok</button>
             </div>
           </ng-template>
         </div>
@@ -257,7 +261,7 @@
         <div class="col-md-2">
           <mat-form-field class="example-full-width">
             <mat-label>Activity ROI</mat-label>
-            <input matInput [(ngModel)]="activityROI" (click)="triggerModal(modalData)">
+            <input matInput [(ngModel)]="activityROIOptimiser" (click)="triggerModal(modalData)">
           </mat-form-field>
             <ng-template #modalData let-modal>
               <div class="modal-header">
@@ -272,7 +276,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilter()">Ok</button>
+                <button type="button" class="btn btn-danger" (click)="modal.close('Ok click');doFilterOptimiser()">Ok</button>
               </div>
             </ng-template>
         </div>
@@ -285,7 +289,7 @@
       <div class="row pad-button">
           <div class="col-md-12 d-flex-j-c">
           <div class="mat-elevation-z3 col-md-10 ">
-              <table mat-table [dataSource]="dataSource" >
+              <table  matSort (matSortChange)="sortOptimiserData($event)" mat-table [dataSource]="dataSourceOptimiser" >
 
                   <!-- Checkbox Column -->
                   <ng-container matColumnDef="select">
@@ -307,31 +311,31 @@
 
                   <!-- Position Column -->
                   <ng-container matColumnDef="position">
-                    <th mat-header-cell *matHeaderCellDef> S.No </th>
-                    <td mat-cell *matCellDef="let element; let i = index;"> {{i+1}} </td>
+                    <th mat-sort-header="position" mat-header-cell *matHeaderCellDef> S.No </th>
+                    <td mat-cell  *matCellDef="let element;"> {{element.position}} </td>
                   </ng-container>
 
                   <!-- SKU Column -->
                   <ng-container matColumnDef="sku">
-                    <th mat-header-cell *matHeaderCellDef> SKU </th>
+                    <th mat-sort-header="sku"  mat-header-cell *matHeaderCellDef> SKU </th>
                     <td mat-cell *matCellDef="let element"> {{element.sku}} </td>
                   </ng-container>
 
                   <!-- Activation Type Column -->
                   <ng-container matColumnDef="activation_type">
-                    <th mat-header-cell *matHeaderCellDef> Activation Type </th>
+                    <th mat-sort-header="activation_type"  mat-header-cell *matHeaderCellDef> Activation Type </th>
                     <td mat-cell *matCellDef="let element"> {{element.activation_type}} </td>
                   </ng-container>
 
                   <!-- Expect Lift Column -->
                   <ng-container matColumnDef="expect_lift">
-                    <th mat-header-cell *matHeaderCellDef> Expect Lift </th>
+                    <th mat-sort-header="expect_lift" mat-header-cell *matHeaderCellDef> Expect Lift </th>
                     <td mat-cell *matCellDef="let element"> {{element.expect_lift}} </td>
                   </ng-container>
 
                   <!-- Expected ROI Column -->
                   <ng-container matColumnDef="expected_roi">
-                    <th mat-header-cell *matHeaderCellDef> Expected ROI </th>
+                    <th mat-sort-header="expected_roi" mat-header-cell *matHeaderCellDef> Expected ROI </th>
                     <td mat-cell *matCellDef="let element"> {{element.expected_roi}} </td>
                   </ng-container>
 

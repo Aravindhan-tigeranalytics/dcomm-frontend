@@ -24,7 +24,9 @@
     border-radius: 10px;
   }
 
-
+  .mat-sort-header-container {
+    align-items: center;
+  }
   .d-flex-j-c{
     display: flex;
     justify-content: center;
@@ -34,4 +36,26 @@
     border-radius: 12px;
     color: #ffffff;
     background-color: #aaabad;
+}
+
+.cs-button-wt {
+  width: 200px !important;
+}
+
+.small_button{
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background-color: white;
+  font-size: 10px;
+  height: 25px;
+  margin-left: 10px;
+
+}
+.small_button-fail{
+    animation: shake 0.3s;
+    animation-iteration-count: 2;
+}
+.small_button:hover {
+  background: #b53f552b;
+  border-bottom: 1px solid red;
 }

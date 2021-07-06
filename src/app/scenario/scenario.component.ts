@@ -1,35 +1,24 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FormControl} from '@angular/forms';
 import { Options } from "@angular-slider/ngx-slider";
 import {ModalDismissReasons, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 import {MatPaginator} from '@angular/material/paginator';
 import * as Notiflix from 'notiflix';
+import {Sort} from '@angular/material/sort';
+import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
 
-export interface PeriodicElement {
+export interface ScenarioPlanner {
   position: number;
   activation_type: string;
   sku: number;
   expect_lift: number;
   expected_roi: number;
 }
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1,sku : 1235, activation_type: 'FSI', expect_lift: 13, expected_roi: 12},
-  {position: 2,sku : 1235, activation_type: 'FAI', expect_lift: 32, expected_roi:  22},
-  {position: 3,sku : 1235, activation_type: 'TPR', expect_lift: 20, expected_roi:  12},
-  {position: 4,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
-  {position: 5,sku : 1243, activation_type: 'FSI', expect_lift: 10 ,expected_roi: 12},
-  {position: 6,sku : 1243, activation_type: 'FAI', expect_lift: 12, expected_roi: 12},
-  {position: 7,sku : 1243, activation_type: 'TPR', expect_lift: 14, expected_roi: 14},
-  {position: 8,sku : 1243, activation_type: 'Search', expect_lift: 15, expected_roi: 22},
-  {position: 9,sku : 1246, activation_type: 'FSI', expect_lift: 18, expected_roi: 16},
-  {position: 10,sku : 1246, activation_type: 'FAI', expect_lift: 20, expected_roi:  12},
-];
 Notiflix.Notify.init({
   width:'300px',
   timeout: 5000,
@@ -47,29 +36,49 @@ Notiflix.Notify.init({
 
 export class ScenarioComponent implements OnInit {
 
-  selectedIndex:number = 0
-  @ViewChild(MatPaginator) paginator:any;
+  selectedIndex:number = 0 //Tab Index
+  @ViewChild(MatPaginator) paginator:any; // Table Paginator
+
+  // Datatbale source setup  for the Scenerio planner
+   ELEMENT_DATA: ScenarioPlanner[] = [
+    {position: 1,sku : 1235, activation_type: 'FSI', expect_lift: 13, expected_roi: 12},
+    {position: 2,sku : 1235, activation_type: 'FAI', expect_lift: 32, expected_roi:  22},
+    {position: 3,sku : 1235, activation_type: 'TPR', expect_lift: 20, expected_roi:  12},
+    {position: 4,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
+    {position: 5,sku : 1243, activation_type: 'FSI', expect_lift: 10 ,expected_roi: 12},
+    {position: 6,sku : 1243, activation_type: 'FAI', expect_lift: 12, expected_roi: 12},
+    {position: 7,sku : 1243, activation_type: 'TPR', expect_lift: 14, expected_roi: 14},
+    {position: 8,sku : 1243, activation_type: 'Search', expect_lift: 15, expected_roi: 22},
+    {position: 9,sku : 1246, activation_type: 'FSI', expect_lift: 18, expected_roi: 16},
+    {position: 10,sku : 1246, activation_type: 'FAI', expect_lift: 20, expected_roi:  12},
+  ];
   displayedColumns: string[] = ['select', 'position','sku', 'activation_type', 'expect_lift', 'expected_roi'];
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-  selection = new SelectionModel<PeriodicElement>(true, []);
-
-  skuActivationPlanData:any = ''
-  rateCardInfoData:any =''
-
-  showScenarioPlanner:any = false
-
-  skus = new FormControl();
-  skuList: PeriodicElement[] = [];
-
-  types = new FormControl();
-  activityType: PeriodicElement[] = [];
-
-  activityLift:any = ''
-  activityROI:any = ''
-
+  dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+  selection = new SelectionModel<ScenarioPlanner>(true, []);
+  sortedData: ScenarioPlanner[]=[];
+  skuList: ScenarioPlanner[] = [];
+  activityType: ScenarioPlanner[] = [];
+  activityLift:any = '';
+  activityROI:any = '';
+  // Datatbale source setup  for the Scenerio Optimiser
+  OPTIMISER_DATA: ScenarioPlanner[] = [
+    {position: 1,sku : 1235, activation_type: 'FSI', expect_lift: 13, expected_roi: 12},
+    {position: 2,sku : 1235, activation_type: 'FAI', expect_lift: 32, expected_roi:  22},
+    {position: 3,sku : 1235, activation_type: 'TPR', expect_lift: 20, expected_roi:  12},
+    {position: 4,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
+    {position: 5,sku : 1243, activation_type: 'FSI', expect_lift: 10 ,expected_roi: 12},
+  ];
+  displayedColumnsOptimiser: string[] = ['select', 'position','sku', 'activation_type', 'expect_lift', 'expected_roi'];
+  dataSourceOptimiser = new MatTableDataSource<ScenarioPlanner>(this.OPTIMISER_DATA);
+  sortedDataOptimiser: ScenarioPlanner[]=[];
+  selectionOptimiser = new SelectionModel<ScenarioPlanner>(true, []);
+  skuListOptimiser: ScenarioPlanner[] = [];
+  activityTypeOptimiser: ScenarioPlanner[] = [];
+  activityLiftOptimiser:any = '';
+  activityROIOptimiser:any = '';
+  // Configuration for the filters
   skuSelected:any = [1235,1243,1246]
   typeSelected:any = ['FSI','FAI','TPR','Search']
-
   liftMinValue: number = 0;
   liftMaxValue: number = 60;
   roiMinValue: number = 0;
@@ -80,15 +89,36 @@ export class ScenarioComponent implements OnInit {
   };
   liftSliderValue:any = [5,60]
   roiSliderValue:any = [5,40]
+  //END
 
+  //Necessary initilizations
+  skuActivationPlanData:any = '';
+  rateCardInfoData:any ='';
+  showScenarioPlanner:any = false;
+  RateCardCount:number=0;
+  SKUPlanCount:number=0;
+  skus = new FormControl();
+  types = new FormControl();
+  alertRemove1:boolean=false;
   closeModal: any;
-  constructor(private modalService: NgbModal,private toastr: ToastrService) { }
+  //END
+  constructor(private modalService: NgbModal,
+              private apiServices:ScenarioPlannerService) {
+    this.sortedData = this.ELEMENT_DATA.slice();
+    this.sortedDataOptimiser = this.OPTIMISER_DATA.slice();
+  }
 
   ngOnInit(): void {
-    this.skuList = [...new Map(ELEMENT_DATA.map(item => [item["sku"], item])).values()];
-    this.activityType = [...new Map(ELEMENT_DATA.map(item => [item["activation_type"], item])).values()];
+    this.skuList = [...new Map(this.ELEMENT_DATA.map(item => [item["sku"], item])).values()];
+    this.activityType = [...new Map(this.ELEMENT_DATA.map(item => [item["activation_type"], item])).values()];
     this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
     this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
+    //Optimiser
+    this.skuListOptimiser = [...new Map(this.OPTIMISER_DATA.map(item => [item["sku"], item])).values()];
+    this.activityTypeOptimiser = [...new Map(this.OPTIMISER_DATA.map(item => [item["activation_type"], item])).values()];
+    this.activityLiftOptimiser = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
+    this.activityROIOptimiser = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
+
   }
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -126,7 +156,7 @@ export class ScenarioComponent implements OnInit {
     this.selection.select(...this.dataSource.data);
   }
 
-  checkboxLabel(row?: PeriodicElement): string {
+  checkboxLabel(row?: ScenarioPlanner): string {
     if (!row) {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
@@ -140,7 +170,8 @@ export class ScenarioComponent implements OnInit {
     let filename = inputNode.files[0].name
     var extension:any = filename.substr(filename.lastIndexOf('.'));
     if((extension.toLowerCase() == ".xlsx") || (extension.toLowerCase() == ".xls") || (extension.toLowerCase() == ".csv")){
-      console.log("good to go")
+      console.log("good to go");
+      this.SKUPlanCount=1;
       Notiflix.Notify.success('File Uploaded Successfully!');
 
     }
@@ -150,18 +181,6 @@ export class ScenarioComponent implements OnInit {
 
     const formdata = new FormData();
     formdata.append('file',inputNode.files[0])
-
-
-    // if (typeof (FileReader) !== 'undefined') {
-    //   const reader = new FileReader();
-
-    //   reader.onload = (e: any) => {
-    //     this.srcResult = e.target.result;
-    //     console.log(this.srcResult)
-    //   };
-
-    //   reader.readAsArrayBuffer(inputNode.files[0]);
-    // }
   }
 
   onRateFileSelected() {
@@ -172,6 +191,7 @@ export class ScenarioComponent implements OnInit {
     var extension:any = filename.substr(filename.lastIndexOf('.'));
     if((extension.toLowerCase() == ".xlsx") || (extension.toLowerCase() == ".xls") || (extension.toLowerCase() == ".csv")){
       console.log("good to go")
+      this.RateCardCount=1;
       Notiflix.Notify.success('File Uploaded Successfully!');
     }
     else{
@@ -180,19 +200,10 @@ export class ScenarioComponent implements OnInit {
 
     const formdata = new FormData();
     formdata.append('file',inputNode.files[0])
-    // if (typeof (FileReader) !== 'undefined') {
-    //   const reader = new FileReader();
-
-    //   reader.onload = (e: any) => {
-    //     this.srcResult = e.target.result;
-    //   };
-
-    //   reader.readAsArrayBuffer(inputNode.files[0]);
-    // }
   }
 
   DownloadCSV(filename:string){
-    console.log(this.selection.selected)
+    console.log(this.selection.selected);
     if(this.selection.selected.length > 0){
       var options = {
         fieldSeparator: ',',
@@ -210,29 +221,66 @@ export class ScenarioComponent implements OnInit {
       new Angular5Csv(this.selection.selected, filename, options);
     }
     else {
-      this.toastr.warning('Please select atleast one product');
+      Notiflix.Notify.warning('Please select atleast one product');
     }
   }
 
   executeScenarioPlanner(){
+    let mandatoryCheck=false;
     if(this.skuActivationPlanData == ''){
       Notiflix.Notify.warning('Please Upload The SKU Activation Plan');
-      //this.toastr.warning('');
-
-      return
-    }
+      mandatoryCheck=true;
+      }else{
+        mandatoryCheck=false;
+      }
     if(this.rateCardInfoData == ''){
       Notiflix.Notify.warning('Please Upload The Rate Card Data');
-      return
-    }
-    this.showScenarioPlanner =true
-    this.selectedIndex = 1
-  }
+      mandatoryCheck=true;
+      }else{
+        mandatoryCheck=false;
+      }
+      if(!mandatoryCheck){
+        this.showScenarioPlanner =true;
+        this.runScenarioPlanner();
 
+      }
+
+  }
+  remove_skuplan(){
+    let inputNode: any = document.querySelector('#skufile');
+    if(this.SKUPlanCount>0){
+      inputNode.files=undefined;
+      this.skuActivationPlanData = '';
+      this.SKUPlanCount=0;
+    }
+
+  }
+  remove_ratecard(){
+    let inputNode: any = document.querySelector('#ratefile');
+    console.log(inputNode,"INPUT")
+    if(this.RateCardCount>0){
+      console.log("log")
+    inputNode.files=undefined;
+    this.rateCardInfoData = '';
+    this.RateCardCount=0;
+    }
+
+  }
+  runScenarioPlanner(){
+    Notiflix.Loading.dots('Processing...');
+    this.selectedIndex = 0;
+    setTimeout(()=>{
+      Notiflix.Loading.remove();
+      this.selectedIndex = 1;
+    },1000);
+    this.apiServices.getFoods().subscribe((response)=>{
+      console.log(response)
+    });
+  }
   doFilter(){
     this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
     this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
-    let filterData:any = ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["sku"]));
+    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["sku"]));
     filterData = filterData.filter((data:any) => this.typeSelected.includes(data["activation_type"]));
     filterData = filterData.filter((o:any)=> {
       return o['expect_lift'] <= this.liftSliderValue[1] && o['expect_lift'] >= this.liftSliderValue[0];
@@ -240,18 +288,82 @@ export class ScenarioComponent implements OnInit {
     filterData = filterData.filter((o:any)=> {
       return o['expected_roi'] <= this.roiSliderValue[1] && o['expected_roi'] >= this.roiSliderValue[0];
     });
-    this.dataSource = new MatTableDataSource<PeriodicElement>(filterData);
+    this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
     this.ngAfterViewInit();
   }
 
+
+
+  sortData(sort: Sort) {
+    const data = this.ELEMENT_DATA.slice();
+    if (!sort.active || sort.direction === '') {
+      this.sortedData = data;
+      return;
+    }
+
+    this.sortedData = data.sort((a:any, b:any) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'position': return compare(a.position, b.position, isAsc);
+        case 'sku': return compare(a.sku, b.sku, isAsc);
+        case 'activation_type': return compare(a.activation_type, b.activation_type, isAsc);
+        case 'expect_lift': return compare(a.expect_lift, b.expect_lift, isAsc);
+        case 'expected_roi': return compare(a.expected_roi, b.expected_roi, isAsc);
+        default: return 0;
+      }
+    });
+    this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.sortedData);
+  }
+
+
+  doFilterOptimiser(){
+    this.activityLiftOptimiser = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
+    this.activityROIOptimiser = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
+    let filterData:any = this.OPTIMISER_DATA.filter((data:any) => this.skuSelected.includes(data["sku"]));
+    filterData = filterData.filter((data:any) => this.typeSelected.includes(data["activation_type"]));
+    filterData = filterData.filter((o:any)=> {
+      return o['expect_lift'] <= this.liftSliderValue[1] && o['expect_lift'] >= this.liftSliderValue[0];
+    });
+    filterData = filterData.filter((o:any)=> {
+      return o['expected_roi'] <= this.roiSliderValue[1] && o['expected_roi'] >= this.roiSliderValue[0];
+    });
+    this.dataSourceOptimiser = new MatTableDataSource<ScenarioPlanner>(filterData);
+    this.ngAfterViewInit();
+  }
+  sortOptimiserData(sort: Sort) {
+    const data = this.OPTIMISER_DATA.slice();
+    if (!sort.active || sort.direction === '') {
+      this.sortedDataOptimiser = data;
+      return;
+    }
+
+    this.sortedDataOptimiser = data.sort((a:any, b:any) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'position': return compare(a.position, b.position, isAsc);
+        case 'sku': return compare(a.sku, b.sku, isAsc);
+        case 'activation_type': return compare(a.activation_type, b.activation_type, isAsc);
+        case 'expect_lift': return compare(a.expect_lift, b.expect_lift, isAsc);
+        case 'expected_roi': return compare(a.expected_roi, b.expected_roi, isAsc);
+        default: return 0;
+      }
+    });
+    this.dataSourceOptimiser = new MatTableDataSource<ScenarioPlanner>(this.sortedDataOptimiser);
+  }
   filterTableData(){
     console.log("filter data")
   }
 
   onTabChanged(event:any){
-    this.dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
+    this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.ngOnInit();
     this.ngAfterViewInit();
   }
+
+}
+
+// Used For Datatable sorting
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 
 }
