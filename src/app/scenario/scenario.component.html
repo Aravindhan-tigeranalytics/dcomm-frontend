@@ -5,7 +5,9 @@
       <div class="row pad-button">
           <div class="col-md-1"></div>
           <div class="col-md-4">
-              <button class="button-wt" mat-raised-button color="primary" (click)="skuPlan.click()">Upload SKU Activation Plans({{SKUPlanCount}})</button>
+              <button class="button-wt" mat-raised-button color="primary" (click)="skuPlan.click()">
+              Upload SKU Activation Plans({{SKUPlanCount}})
+              </button>
               <input hidden accept=".xlsx,.xls,.csv" (change)="onFileSelected()" #skuPlan type="file" id="skufile">
               <button  class="small_button" (click)="remove_skuplan()">Remove</button>
           </div>
@@ -119,10 +121,10 @@
       <div class="row pad-button">
         <div class="col-md-1"></div>
         <div class="col-md-2">
-            <strong>Total Product Selected : </strong>10
+            <strong>Total Product Selected : </strong>{{totalProducts}}
         </div>
         <div class="col-md-2">
-            <strong>Total Activities Selected : </strong>10
+            <strong>Total Activities Selected : </strong> {{totalActivities}}
         </div>
         <div class="col-md-2">
             <strong>Total Estimated Budget : </strong>10
@@ -135,7 +137,11 @@
           <div class="d-flex-j-c">
           <div class="col-md-10">
 
-            <table  matSort (matSortChange)="sortData($event)" mat-table [dataSource]="dataSource" class="mat-elevation-z8 ">
+            <table  matSort (matSortChange)="sortData($event)"
+             mat-table [dataSource]="dataSource"
+             matSortActive="expect_lift" matSortDirection="asc"
+             matSortDisableClear
+             class="mat-elevation-z8 ">
 
               <!-- Checkbox Column -->
               <ng-container matColumnDef="select">
@@ -146,7 +152,7 @@
                   </mat-checkbox>
                 </th>
                 <td mat-cell *matCellDef="let row">
-                  <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                  <mat-checkbox color="primary" (click)="recountCheckbox($event)"
                                 (change)="$event ? selection.toggle(row) : null"
                                 [checked]="selection.isSelected(row)">
                   </mat-checkbox>
@@ -185,11 +191,11 @@
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                  (click)="selection.toggle(row)">
+                  (click)="checkbox_row(row)">
               </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons >
-                </mat-paginator>
+         <!--   <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons >
+                </mat-paginator> -->
  </div>
           </div>
       </div>

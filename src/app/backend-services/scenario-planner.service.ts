@@ -11,8 +11,8 @@ export class ScenarioPlannerService {
     this.serviceURL=environment.serviceURL;
   }
 
-  getFoods() {
-    return this.http.get(this.serviceURL+'/api/food');
+  getPlannerData() {
+    return this.http.get(this.serviceURL+'/scenario_planner/');
 }
 
 

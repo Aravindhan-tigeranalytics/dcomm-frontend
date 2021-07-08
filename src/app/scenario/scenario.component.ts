@@ -40,18 +40,7 @@ export class ScenarioComponent implements OnInit {
   @ViewChild(MatPaginator) paginator:any; // Table Paginator
 
   // Datatbale source setup  for the Scenerio planner
-   ELEMENT_DATA: ScenarioPlanner[] = [
-    {position: 1,sku : 1235, activation_type: 'FSI', expect_lift: 13, expected_roi: 12},
-    {position: 2,sku : 1235, activation_type: 'FAI', expect_lift: 32, expected_roi:  22},
-    {position: 3,sku : 1235, activation_type: 'TPR', expect_lift: 20, expected_roi:  12},
-    {position: 4,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
-    {position: 5,sku : 1243, activation_type: 'FSI', expect_lift: 10 ,expected_roi: 12},
-    {position: 6,sku : 1243, activation_type: 'FAI', expect_lift: 12, expected_roi: 12},
-    {position: 7,sku : 1243, activation_type: 'TPR', expect_lift: 14, expected_roi: 14},
-    {position: 8,sku : 1243, activation_type: 'Search', expect_lift: 15, expected_roi: 22},
-    {position: 9,sku : 1246, activation_type: 'FSI', expect_lift: 18, expected_roi: 16},
-    {position: 10,sku : 1246, activation_type: 'FAI', expect_lift: 20, expected_roi:  12},
-  ];
+   ELEMENT_DATA: ScenarioPlanner[] = [];
   displayedColumns: string[] = ['select', 'position','sku', 'activation_type', 'expect_lift', 'expected_roi'];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
@@ -101,9 +90,11 @@ export class ScenarioComponent implements OnInit {
   types = new FormControl();
   alertRemove1:boolean=false;
   closeModal: any;
+  totalActivities:number=0;
+  totalProducts:number=0;
   //END
   constructor(private modalService: NgbModal,
-              private apiServices:ScenarioPlannerService) {
+    private apiServices:ScenarioPlannerService) {
     this.sortedData = this.ELEMENT_DATA.slice();
     this.sortedDataOptimiser = this.OPTIMISER_DATA.slice();
   }
@@ -150,40 +141,55 @@ export class ScenarioComponent implements OnInit {
   masterToggle() {
     if (this.isAllSelected()) {
       this.selection.clear();
-      return;
-    }
-
+      return;}
     this.selection.select(...this.dataSource.data);
+    this.setActivationCounter();
   }
-
+  checkbox_row(row:any){
+    this.selection.toggle(row);
+    this.setActivationCounter();
+  }
   checkboxLabel(row?: ScenarioPlanner): string {
     if (!row) {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.sku + 1}`;
   }
-
-  onFileSelected() {
+  updateProductCounter(){
+      //totalProducts
+  }
+  recountCheckbox(event:any){
+    event.stopPropagation();
+    this.setActivationCounter();
+  }
+  setActivationCounter(){
+    setTimeout(()=>{
+      this.totalActivities=this.selection.selected.length;
+      //console.log(this.selection.selected,"this.totalActivities");
+      console.log(groupByJson(this.selection.selected,'sku'),"SKU group")
+      this.totalProducts=Object.keys(groupByJson(this.selection.selected,'sku')).length;;
+    },200);
+  }
+  async onFileSelected() {
     const inputNode: any = document.querySelector('#skufile');
-    console.log(inputNode.files[0])
-    this.skuActivationPlanData = inputNode.files[0]
-    let filename = inputNode.files[0].name
+    console.log(inputNode.files[0],"FILE");
+    this.skuActivationPlanData = inputNode.files[0];
+    let filename = inputNode.files[0].name;
     var extension:any = filename.substr(filename.lastIndexOf('.'));
     if((extension.toLowerCase() == ".xlsx") || (extension.toLowerCase() == ".xls") || (extension.toLowerCase() == ".csv")){
-      console.log("good to go");
       this.SKUPlanCount=1;
       Notiflix.Notify.success('File Uploaded Successfully!');
-
+      this.skuActivationPlanData['data']= await this.get_filebase64('skufile');
     }
     else{
       Notiflix.Notify.warning('Invalid File Format');
     }
-
+    console.log(this.skuActivationPlanData,"FileDataset")
     const formdata = new FormData();
     formdata.append('file',inputNode.files[0])
   }
 
-  onRateFileSelected() {
+  async onRateFileSelected() {
     const inputNode: any = document.querySelector('#ratefile');
     console.log(inputNode.files[0])
     this.rateCardInfoData = inputNode.files[0]
@@ -193,6 +199,7 @@ export class ScenarioComponent implements OnInit {
       console.log("good to go")
       this.RateCardCount=1;
       Notiflix.Notify.success('File Uploaded Successfully!');
+      this.rateCardInfoData['data']= await this.get_filebase64('ratefile');
     }
     else{
       Notiflix.Notify.warning('Invalid File Format');
@@ -253,7 +260,19 @@ export class ScenarioComponent implements OnInit {
       this.skuActivationPlanData = '';
       this.SKUPlanCount=0;
     }
+  }
+  get_filebase64(fileId:any){
 
+      let inputNode: any = document.querySelector('#'+fileId);
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = res => {
+          resolve(res.target?.result);
+        };
+        reader.onerror = err => reject(err);
+
+        reader.readAsDataURL(inputNode.files[0]);
+      });
   }
   remove_ratecard(){
     let inputNode: any = document.querySelector('#ratefile');
@@ -272,10 +291,29 @@ export class ScenarioComponent implements OnInit {
     setTimeout(()=>{
       Notiflix.Loading.remove();
       this.selectedIndex = 1;
+
+      this.ELEMENT_DATA=[
+        {position: 1,sku : 1235, activation_type: 'FSI', expect_lift: 13, expected_roi: 12},
+        {position: 2,sku : 1235, activation_type: 'FAI', expect_lift: 32, expected_roi:  22},
+        {position: 3,sku : 1235, activation_type: 'TPR', expect_lift: 20, expected_roi:  12},
+        {position: 4,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
+        {position: 5,sku : 1243, activation_type: 'FSI', expect_lift: 10 ,expected_roi: 12},
+        {position: 6,sku : 1243, activation_type: 'FAI', expect_lift: 12, expected_roi: 12},
+        {position: 7,sku : 1243, activation_type: 'TPR', expect_lift: 14, expected_roi: 14},
+        {position: 8,sku : 1243, activation_type: 'Search', expect_lift: 15, expected_roi: 22},
+        {position: 9,sku : 1246, activation_type: 'FSI', expect_lift: 18, expected_roi: 16},
+        {position: 10,sku : 1246, activation_type: 'FAI', expect_lift: 20, expected_roi:  12},
+        {position: 11,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
+        {position: 12,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
+        {position: 13,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
+        {position: 14,sku : 1235, activation_type: 'Search', expect_lift: 9, expected_roi: 32},
+      ];
+
     },1000);
-    this.apiServices.getFoods().subscribe((response)=>{
-      console.log(response)
-    });
+    // this.apiServices.getPlannerData().subscribe((response)=>{
+    //   console.log(response)
+
+    // });
   }
   doFilter(){
     this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
@@ -291,9 +329,6 @@ export class ScenarioComponent implements OnInit {
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
     this.ngAfterViewInit();
   }
-
-
-
   sortData(sort: Sort) {
     const data = this.ELEMENT_DATA.slice();
     if (!sort.active || sort.direction === '') {
@@ -367,3 +402,15 @@ function compare(a: number | string, b: number | string, isAsc: boolean) {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 
 }
+// Accepts the array and key
+const groupByJson = (array:any[], key:string) => {
+  // Return the end result
+  return array.reduce((result, currentValue) => {
+    // If an array already present for key, push it to the array. Else create an array and push the object
+    (result[currentValue[key]] = result[currentValue[key]] || []).push(
+      currentValue
+    );
+    // Return the current iteration `result` value, this will be taken as next iteration `result` value and accumulate
+    return result;
+  }, {}); // empty object is the initial value for result object
+};

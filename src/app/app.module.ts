@@ -14,6 +14,9 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatSortModule} from '@angular/material/sort';
+import { ScenarioPlanningComponent } from './scenario-planning/scenario-planning.component';
+import { ScenarioOutputComponent } from './scenario-output/scenario-output.component';
+import { ScenarioBarchartComponent } from './components/charts/scenario-barchart/scenario-barchart.component';
 
 // import { MatToolbarModule } from '@angular/material/toolbar';
 // import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +24,10 @@ import {MatSortModule} from '@angular/material/sort';
   declarations: [
     AppComponent,
     HomeComponent,
-    ScenarioComponent
+    ScenarioComponent,
+    ScenarioPlanningComponent,
+    ScenarioOutputComponent,
+    ScenarioBarchartComponent
   ],
   imports: [
     BrowserModule,

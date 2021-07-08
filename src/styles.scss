@@ -21,3 +21,32 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   90% { transform: translate(1px, 2px) rotate(0deg); }
   100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+.notiflix-loading-icon.nx-with-message > svg{
+fill:#3f51b5;
+}
+.mat-button-wrapper{ // I have tried all of the following options, but it does not work.
+  white-space: pre-wrap !important;
+}
+.planner_table thead{
+  position: sticky;
+  top: 0px;
+  z-index: 5;
+  background-color: whitesmoke;
+}
+.small-textbox{
+  background: #a3aace2e;
+    outline: none;
+    border: 1px solid #ccc;
+}
+
+.small_select{
+  border: 1px solid #ccc;
+    padding: 7px;
+    border-radius: 5px;
+    background-color: #eef0f6;
+    outline: none;
+}
+.dflex-jc{
+  display: flex;
+    justify-content: center;
+}
