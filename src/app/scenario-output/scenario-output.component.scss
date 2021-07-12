@@ -1,3 +1,5 @@
+$theme-color:#3f51b5;
+$theme-h-label:grey;
 .dflex-sb{
   display: flex;
     justify-content: space-between;
@@ -26,7 +28,7 @@
 }
 .label-wrapper{
   text-align: center;
-  background-color: #3f51b5;
+  background-color:$theme-color;
   margin-top: 5px;
   color: white;
   font-weight: 400;
@@ -76,6 +78,7 @@
 .header-fixed{
   max-height: 250px;
   overflow: auto;
+  margin-top: 0px !important;
 }
 .width-text{
   width: 60px;
@@ -140,7 +143,47 @@ input[type=number]::-webkit-outer-spin-button {
 .heading-2{
   display: flex;
     justify-content: center;
-    background-color: #3f51b5;
+    background-color:$theme-color;
     color: white;
     padding: 8px;
 }
+
+.bg_theme_color{
+  background-color:$theme-color;
+}
+.table_bar_cs{
+  padding: 10px;
+  color:white;
+}
+.br_1{
+  border-right: 1px solid #fff;
+}
+.br_1_black{
+  border-right: 1px solid black;
+}
+.table_bar_row{
+  padding: 10px;
+}
+.bg_white{
+  background-color: white;
+}
+
+.center_items{
+  align-items: center;
+  text-align: center;
+}
+.h1_title{
+font-weight: 500;
+color:$theme-h-label;
+text-transform: uppercase;
+}
+.ml-5{
+  margin-left: 5px;
+}
+
+.cs_font_size{
+  font-size: 12px;
+  padding: 0px;
+
+}
+

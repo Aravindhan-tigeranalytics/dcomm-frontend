@@ -15,7 +15,6 @@ export interface ScenarioPlanner {
   rec_activity: number;
 }
 
-
 @Component({
   selector: 'app-scenario-output',
   templateUrl: './scenario-output.component.html',
@@ -38,9 +37,12 @@ export class ScenarioOutputComponent implements OnInit {
   binaryOption=[
   {id: 'Yes', name: "Yes"},
   {id: 'No', name: "No"},
-]
-displayedColumns: string[] = [ 'activation_type', 'sku' ,'product_name','rec_activity','expect_lift'];
-
+];
+  dataSetLabel:any=['Apple', 'Banana', 'Kiwifruit', 'Blueberry', 'Orange', 'Grapes'];
+  dataSet:any={ data: [45, 37, 60, 70, 46, 33], label: 'Incremental Revenue by Placement' };
+  dataSetLabel1:any=['Apple', 'Banana',  'Grapes'];
+  dataSet1:any={ data: [45, 37, 33], label: 'Expected Lift by Pack type  ' };
+  displayedColumns: string[] = [ 'activation_type', 'sku' ,'product_name','rec_activity','expect_lift'];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];

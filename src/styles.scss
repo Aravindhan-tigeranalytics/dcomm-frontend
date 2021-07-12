@@ -1,13 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
+*{
+  font-family: 'Open Sans', sans-serif;
+}
+$color-pink: #eb2f64;
+$color-pink-light: #ff3366;
+$color-pink-dark: #ba265d;
 
+$color-grey-light-1: #faf9f9;
+$color-grey-light-2: #f4f2f2;
+$color-grey-light-3: #f0eeee;
+$color-grey-light-4: #ccc;
+
+$color-grey-dark-1: #333;
+$color-grey-dark-2: #777;
+$color-grey-dark-3: #999;
+
+$color-amber-1: #ffbf00;
+$color-amber-2: #ff7e00;
+$color-blue-1: #0000a0;
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; }
 .pbz{
 
   padding-bottom: 0px !important;
 
 }
-
 @keyframes shake {
   0% { transform: translate(1px, 1px) rotate(0deg); }
   10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -33,6 +50,12 @@ fill:#3f51b5;
   z-index: 5;
   background-color: whitesmoke;
 }
+.planner_table_bg thead {
+  position: sticky;
+  top: 0px;
+  z-index: 5;
+  background-color: #3f51b5;
+}
 .small-textbox{
   background: #a3aace2e;
     outline: none;
@@ -49,4 +72,38 @@ fill:#3f51b5;
 .dflex-jc{
   display: flex;
     justify-content: center;
+}
+
+.planner_table_bg .mat-sort-header-arrow{
+  color :white
+}
+
+.mat-cell, .mat-footer-cell {
+  color: grey;
+}
+
+
+.seperator{
+  border-right: 3px solid #c1c1c1;
+  margin-right: 10px;
+}
+
+tbody tr:hover {
+  cursor: pointer;
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #3f51b5;
+}
+.custom_search .mat-form-field-underline{
+  display: none;
+}
+
+.custom_search  .mat-form-field-wrapper {
+  padding-bottom:0px !important;
+}
+
+.example-form-field .mat-form-field-flex{
+  border-radius: 6px !important;
+}
+.planner_table_bg .mat-checkbox-frame{
+  border: 1px solid #ccc;
 }

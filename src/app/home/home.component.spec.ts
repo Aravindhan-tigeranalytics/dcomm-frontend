@@ -27,6 +27,6 @@ describe('HomeComponent', () => {
     const fixture = TestBed.createComponent(HomeComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.home_icon').textContent).toBe('Dcomm project');
+    expect(compiled.querySelector('.home_icon').textContent).toBe('Dcomm');
   });
 });

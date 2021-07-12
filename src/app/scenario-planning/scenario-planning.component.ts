@@ -6,7 +6,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-
+import * as XLSX from 'xlsx';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
@@ -44,7 +44,16 @@ export class ScenarioPlanningComponent implements OnInit {
      promotion: 'Yes',discount:5, edlp: 'No',edlp_conversion: 6},
      {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
      promotion: 'No',discount:0, edlp: 'Yes',edlp_conversion: 6},
-
+     {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
+     promotion: 'No',discount:0, edlp: 'Yes',edlp_conversion: 6},
+     {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
+     promotion: 'No',discount:0, edlp: 'Yes',edlp_conversion: 6},
+     {pack_type: 'Pack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,  promotion: 'Yes',discount:5, edlp: 'Yes',edlp_conversion: 6},
+     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk', list_price: 1.2,
+     promotion: 'No',discount:15, edlp: 'Yes',edlp_conversion: 6},
+     {pack_type: 'MultiPack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,  promotion: 'Yes',discount:5, edlp: 'Yes',edlp_conversion: 6},
+     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk', list_price: 1.2,
+     promotion: 'No',discount:15, edlp: 'Yes',edlp_conversion: 6},
   ];
   ELEMENT_DATA_CONSTRAINTS=[{
     pack_type:'AYR Boxed',fsi:true,fai:true,search:true,sot:false,bpp:false,},
@@ -69,17 +78,20 @@ export class ScenarioPlanningComponent implements OnInit {
   activityLift:any = '';
   activityROI:any = '';
   closeModal: any;
+  search_tag:string='';
   liftSliderValue:any = [5,60];
   roiSliderValue:any = [5,40];
     // Configuration for the filters
   skuSelected:any = [1235,1243,1246];
-  typeSelected:any = ['FSI','FAI','TPR','Search'];
-  toppings = new FormControl();
-  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
+  types = new FormControl();
+  typeSelected:any = [];
+  name = 'This is XLSX TO JSON CONVERTER';
+  willDownload = false;
   ngOnInit(): void {
-
-
-   }
+    this.activityType = [...new Map(this.ELEMENT_DATA.map(item => [item["pack_type"], item])).values()];
+    this.typeSelected =this.activityType.map(item => item["pack_type"]);
+    console.log(this.typeSelected)
+}
 
 simulateScenario(){
 this.routes.navigate(['/scenarioresult']);
@@ -96,18 +108,22 @@ incrementRange(value:any){
   value.discount=value.discount+5;
 }
 doFilter(){
-    this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
-    this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
-    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["sku"]));
-    filterData = filterData.filter((data:any) => this.typeSelected.includes(data["activation_type"]));
-    filterData = filterData.filter((o:any)=> {
-      return o['expect_lift'] <= this.liftSliderValue[1] && o['expect_lift'] >= this.liftSliderValue[0];
-    });
-    filterData = filterData.filter((o:any)=> {
-      return o['expected_roi'] <= this.roiSliderValue[1] && o['expected_roi'] >= this.roiSliderValue[0];
-    });
+    let filterData= this.ELEMENT_DATA.filter((data:any) => this.typeSelected.includes(data["pack_type"]));
+    if(this.search_tag.trim()!=''){
+      let gblFilter=this.search_tag.toLowerCase();
+      filterData = filterData.filter((data:any) => gblFilter.match(data["product_name"].toLowerCase())
+      );
+    }
+
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
-    //this.ngAfterViewInit();
+  }
+  clear_search(){
+    this.search_tag='';
+    this.doFilter();
+  }
+  resetFilter(){
+    this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+    this.typeSelected =this.activityType.map(item => item["pack_type"]);
   }
   sortData(sort: Sort) {
     const data = this.ELEMENT_DATA.slice();
@@ -115,7 +131,6 @@ doFilter(){
       this.sortedData = data;
       return;
     }
-
     this.sortedData = data.sort((a:any, b:any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
@@ -174,6 +189,24 @@ doFilter(){
   updateProductCounter(){
       //totalProducts
   }
+  onFileChange(ev:any) {
+    let workBook:any = null;
+    let jsonData = null;
+    const reader = new FileReader();
+    const file = ev.target.files[0];
+    reader.onload = (event) => {
+      const data = reader.result;
+      workBook = XLSX.read(data, { type: 'binary' });
+      jsonData = workBook.SheetNames.reduce((initial:any, name:any) => {
+        const sheet = workBook.Sheets[name];
+        initial[name] = XLSX.utils.sheet_to_json(sheet);
+        return initial;
+      }, {});
+      const dataString = JSON.stringify(jsonData);
+      console.log(dataString,"dataString");
+    }
+    reader.readAsBinaryString(file);
+  }
   recountCheckbox(event:any){
     event.stopPropagation();
     this.setActivationCounter();
@@ -191,4 +224,12 @@ doFilter(){
 function compare(a: number | string, b: number | string, isAsc: boolean) {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 
+}
+function contains_my(str:string,st:string){
+  if(str.indexOf(st) > -1){
+    return true
+  }
+  else{
+    return false
+  }
 }
