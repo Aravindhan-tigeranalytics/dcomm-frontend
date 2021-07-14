@@ -26,6 +26,7 @@ $color-blue-1: #0000a0;
 }
 .break-line{
   line-height: normal;
+  padding: 5px;
 }
 .center_all{
   justify-content: center;
@@ -115,8 +116,10 @@ button{
 }
 .footer-logo{
   display: flex;
-  margin-top: 50px;
-    justify-content: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 60px;
+  left:60px;
 }
 .header-fixed{
   max-height: 75vh;

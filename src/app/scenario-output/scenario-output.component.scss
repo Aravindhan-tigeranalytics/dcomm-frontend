@@ -42,6 +42,13 @@ $theme-h-label:grey;
   padding: 5px;
     font-size: 12px;
 }
+.button_actions_end{
+  display: flex;
+    justify-content: flex-end;
+}
+.mat-table{
+  width: 100%;
+}
 .m-5px{
   margin: 5px;
 }
@@ -166,6 +173,12 @@ input[type=number]::-webkit-outer-spin-button {
 }
 .bg_white{
   background-color: white;
+}
+button{
+  white-space: pre-wrap !important;
+  font-size: 12px;
+  line-height: 2;
+  padding: 5px;
 }
 
 .center_items{

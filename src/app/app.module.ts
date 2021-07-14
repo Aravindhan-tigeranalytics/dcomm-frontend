@@ -18,6 +18,8 @@ import { ScenarioPlanningComponent } from './scenario-planning/scenario-planning
 import { ScenarioOutputComponent } from './scenario-output/scenario-output.component';
 import { ScenarioBarchartComponent } from './scenario-output/scenario-barchart/scenario-barchart.component';
 import { ChartsModule } from 'ng2-charts';
+import {MatMenuModule} from '@angular/material/menu';
+import { ScenarioSimActivationComponent } from './scenario-sim-activation/scenario-sim-activation.component';
 // import { MatToolbarModule } from '@angular/material/toolbar';
 // import { MatIconModule } from '@angular/material/icon';
 @NgModule({
@@ -27,7 +29,8 @@ import { ChartsModule } from 'ng2-charts';
     ScenarioComponent,
     ScenarioPlanningComponent,
     ScenarioOutputComponent,
-    ScenarioBarchartComponent
+    ScenarioBarchartComponent,
+    ScenarioSimActivationComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +44,8 @@ import { ChartsModule } from 'ng2-charts';
     NgbModule,
     MatSortModule,
     ChartsModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule,
   ],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }}],
   bootstrap: [AppComponent]

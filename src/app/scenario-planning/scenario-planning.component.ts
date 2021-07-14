@@ -7,15 +7,19 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
+import * as Notiflix from 'notiflix';
+import { HtmlTagDefinition } from '@angular/compiler';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
   product_name: string;
   list_price: number;
+  promotion_type: string;
+  promotion_list: any[];
   promotion: string;
   discount: number;
   edlp: string;
-  edlp_conversion: number;
+  selling_price: number;
 }
 export interface ScenarioPlannerConstraint {
   pack_type:string
@@ -25,6 +29,40 @@ export interface ScenarioPlannerConstraint {
   sot: boolean;
   bpp: boolean;
 }
+
+ export class ConstraintObject implements ScenarioPlannerConstraint {
+  pack_type:string
+  fsi: boolean;
+  fai: boolean;
+  search: boolean;
+  sot: boolean;
+  bpp: boolean;
+
+  constructor(pack_type: string) {
+    this.pack_type=pack_type;
+    this.fsi=false;
+    this.fai=false;
+    this.search=false;
+    this.sot=false;
+    this.bpp=false;
+         }
+    getConstraint(){
+      return {"pack_type":this.pack_type,
+              "fsi":this.fsi,
+              "fai":this.fai,
+              "search":this.search,
+              "sot":this.sot,
+              "bpp":this.bpp}
+    }
+}
+Notiflix.Notify.init({
+  width:'300px',
+  timeout: 5000,
+  position:'right-top',
+  cssAnimationStyle: 'from-bottom',
+  distance:'20px',
+  opacity: 1,
+});
 @Component({
   selector: 'app-scenario-planning',
   templateUrl: './scenario-planning.component.html',
@@ -36,38 +74,41 @@ export class ScenarioPlanningComponent implements OnInit {
   constructor(private modalService: NgbModal,private routes:Router) { }
   ELEMENT_DATA: ScenarioPlanner[] = [
     {pack_type: 'MultiPack',product_tpn : '78775737', product_name: 'Mars 4pk', list_price: 15.2,
-     promotion: 'Yes',discount:10, edlp: 'Yes',edlp_conversion: 6},
-     {pack_type: 'MultiPack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,  promotion: 'Yes',discount:5, edlp: 'Yes',edlp_conversion: 6},
-     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk', list_price: 1.2,
-     promotion: 'No',discount:15, edlp: 'Yes',edlp_conversion: 6},
+    promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+     {pack_type: 'MultiPack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP',list_price: 7.05 ,
+       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
      {pack_type: 'Baked',product_tpn : '48561354', product_name: 'Twix 9pk', list_price: 1.65,
-     promotion: 'Yes',discount:5, edlp: 'No',edlp_conversion: 6},
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
      {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion: 'No',discount:0, edlp: 'Yes',edlp_conversion: 6},
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
      {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion: 'No',discount:0, edlp: 'Yes',edlp_conversion: 6},
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
      {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion: 'No',discount:0, edlp: 'Yes',edlp_conversion: 6},
-     {pack_type: 'Pack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,  promotion: 'Yes',discount:5, edlp: 'Yes',edlp_conversion: 6},
-     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk', list_price: 1.2,
-     promotion: 'No',discount:15, edlp: 'Yes',edlp_conversion: 6},
-     {pack_type: 'MultiPack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,  promotion: 'Yes',discount:5, edlp: 'Yes',edlp_conversion: 6},
-     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk', list_price: 1.2,
-     promotion: 'No',discount:15, edlp: 'Yes',edlp_conversion: 6},
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+     {pack_type: 'Pack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
+       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+     {pack_type: 'MultiPack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
+       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
   ];
-  ELEMENT_DATA_CONSTRAINTS=[{
-    pack_type:'AYR Boxed',fsi:true,fai:true,search:true,sot:false,bpp:false,},
-    {pack_type:'Baked',fsi:false,fai:true,search:false,sot:true,bpp:true,},
-    {pack_type:'Choc Block',fsi:true,fai:false,search:true,sot:false,bpp:false,},
-    {pack_type:'Multipack',fsi:false,fai:true,search:false,sot:true,bpp:true,},
-    {pack_type:'Funsize', fsi:true,fai:true,search:true,sot:true,bpp:false,},]
+  ELEMENT_DATA_CONSTRAINTS:any=[];
   //'fsi', 'fai','search', 'sot', 'bpp'
+
+  PROMOCODE_LIST:any={};
+
   binaryOption=[
   {id: 'Yes', name: "Yes"},
   {id: 'No', name: "No"},
 ]
+  promoCodeList:any=[ {id: 'SELECT', name: "--SELECT--"},];
+  promoCodeDesc:any=[ {id: 'SELECT', name: "--SELECT--"},];
   displayedColumns: string[] = ['select', 'pack_type','product_tpn', 'product_name', 'list_price',
-  'promotion','discount','edlp','edlp_conversion'];
+  'promotion_type','promotion','discount','edlp','selling_price'];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
@@ -90,11 +131,17 @@ export class ScenarioPlanningComponent implements OnInit {
   ngOnInit(): void {
     this.activityType = [...new Map(this.ELEMENT_DATA.map(item => [item["pack_type"], item])).values()];
     this.typeSelected =this.activityType.map(item => item["pack_type"]);
-    console.log(this.typeSelected)
+    console.log(this.typeSelected);
+    this.setDefaultSellingPrice();
 }
 
 simulateScenario(){
-this.routes.navigate(['/scenarioresult']);
+  if(this.selection.selected.length>=1){
+    this.routes.navigate(['/plan-activation'],{ state: this.ELEMENT_DATA_CONSTRAINTS });
+  }else{
+    Notiflix.Notify.warning('Please select the records');
+  }
+
 }
 testData(){
   console.log(this.ELEMENT_DATA,"ELEMENT_DATA");
@@ -102,10 +149,12 @@ testData(){
 decrementRange(value:any){
   console.log("decrementRange");
     value.discount=value.discount-5;
+    this.setSellingPrice(value);
 }
 incrementRange(value:any){
   console.log("incrementRange");
   value.discount=value.discount+5;
+  this.setSellingPrice(value);
 }
 doFilter(){
     let filterData= this.ELEMENT_DATA.filter((data:any) => this.typeSelected.includes(data["pack_type"]));
@@ -125,6 +174,8 @@ doFilter(){
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.typeSelected =this.activityType.map(item => item["pack_type"]);
   }
+
+  // Datatable Sort  Unused
   sortData(sort: Sort) {
     const data = this.ELEMENT_DATA.slice();
     if (!sort.active || sort.direction === '') {
@@ -144,6 +195,7 @@ doFilter(){
     });
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.sortedData);
   }
+// Datatable Sort
 
   triggerModal(content :any) {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((res) => {
@@ -162,7 +214,7 @@ doFilter(){
       return  `with: ${reason}`;
     }
   }
-
+// Checkbox actions
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
@@ -186,14 +238,99 @@ doFilter(){
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.product_tpn + 1}`;
   }
+  // Checkbox actions
   updateProductCounter(){
       //totalProducts
   }
-  onFileChange(ev:any) {
+  // Input Handler for the promocode upload
+  async PromoReader(event:any){
+    let promoList:any=await this.onFileChange(event);
+    try{
+      let groupedPCode=groupByJson(promoList['Sheet1'],'Promotion Code');
+      this.PROMOCODE_LIST=groupedPCode;
+      Object.keys(groupedPCode).forEach(element => {
+        this.promoCodeList.push({'id':element,'name':element});
+      });
+    }catch(exception){
+      Notiflix.Notify.warning('Invalid File Format');
+    }
+
+  }
+  // Updation the promo desc dropdown for the based on the selected promocode
+    setPromoDesc(selected:any,element:any){
+      if(selected!='SELECT'){
+        this.promoCodeDesc=this.PROMOCODE_LIST[selected];
+        element.promotion_list=this.PROMOCODE_LIST[selected];
+        element.edlp='No';
+      }else{
+        element.promotion_list=[];
+        element.promotion='';
+        element.edlp='Yes';
+      }
+    //  this.setSellingPrice(element);
+  }
+  // Update change on the cases 1 and 2 and 3
+  //Case 1: promotion NO and EDLP NO =Selling=Listprice
+  //Case 2: promotion YES and EDLP NO = Calculate the discount and subtract the listprice and show
+  //Case 3: promotion NO and EDLP YES =Selling=Listprice
+  // SELECT == NO
+  EDLPChange(selected:any,element:any){
+    console.log(selected.value,"select")
+   if(selected.value=='No'){
+    //element.promotion='Yes';
+
+   }else{
+    element.promotion_type='SELECT';
+    let dummyselect='SELECT'
+    this.promoCodeDesc=this.PROMOCODE_LIST[dummyselect];
+    element.promotion_list=this.PROMOCODE_LIST[dummyselect];
+   }
+   this.setSellingPrice(element);
+  }
+  setDefaultSellingPrice(){
+    this.ELEMENT_DATA.forEach((element)=>{
+      element.selling_price=element.list_price;
+    });
+  }
+  setSellingPrice(element:any){
+    console.log("selling price");
+    if(element.promotion_type=='SELECT' && element.edlp=='No'){
+        element.selling_price=element.list_price;
+    }
+    if(element.promotion_type=='SELECT' && element.edlp=='Yes'){
+      element.selling_price=element.list_price;
+  }
+  if(element.promotion_type!='SELECT' && element.edlp=='No'){
+    console.log("trigger price",element.discount);
+      let calculated_price=element.list_price-((element.discount/100)*(element.list_price))
+      element.selling_price=calculated_price.toFixed(2);
+      console.log(calculated_price,"calculated_price");
+  }
+  }
+  // Update the Promotion Code Discount based on the Desc Selected
+  updateDiscount(event:any,row:any){
+    console.log(event,"Value");
+    let discounted=((event.value/row.list_price)*100).toFixed(2);
+    if(discounted){
+      row.discount=discounted;
+    }
+    this.setSellingPrice(row);
+  }
+  updateDiscount_price(event:any,row:any){
+    console.log(event,"Value",row);
+    if(row.promotion!='No'){
+      let discounted=((row.promotion/event.target.value)*100).toFixed(2);
+      row.discount=discounted;
+    }
+    this.setSellingPrice(row);
+  }
+  // File Reader ( EXCEL OR CSV) to JSON Format
+  async onFileChange(ev:any) {
     let workBook:any = null;
     let jsonData = null;
     const reader = new FileReader();
     const file = ev.target.files[0];
+    return new Promise((resolve, reject) => {
     reader.onload = (event) => {
       const data = reader.result;
       workBook = XLSX.read(data, { type: 'binary' });
@@ -202,18 +339,38 @@ doFilter(){
         initial[name] = XLSX.utils.sheet_to_json(sheet);
         return initial;
       }, {});
-      const dataString = JSON.stringify(jsonData);
-      console.log(dataString,"dataString");
+       const dataString = JSON.stringify(jsonData);
+       console.log(dataString,"dataString");
+       resolve(jsonData);
+       return jsonData
     }
-    reader.readAsBinaryString(file);
+     reader.readAsBinaryString(file);
+    });
+      }
+  changeConstraint(row:any){
+    let jsonObject=groupByJson(this.ELEMENT_DATA_CONSTRAINTS,'pack_type');
+    let availList:any=Object.keys(jsonObject);
+    if(!availList.includes(row.pack_type)){
+      let MuliPlex = new ConstraintObject(row.pack_type);
+      this.ELEMENT_DATA_CONSTRAINTS.push(MuliPlex.getConstraint());
+      this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+     }
+     else{
+     //  console.log(row.pack_type,"TYPE",jsonObject);
+      if(jsonObject[row.pack_type].length==3){
+        this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any,index:number)=>{
+          if(element.pack_type==row.pack_type){
+            this.ELEMENT_DATA_CONSTRAINTS.splice(index,1);
+            this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+          }
+        });
+      }
+      }
   }
-  recountCheckbox(event:any){
-    event.stopPropagation();
-    this.setActivationCounter();
-  }
+
   setActivationCounter(){
     setTimeout(()=>{
-      // this.totalActivities=this.selection.selected.length;
+
       // //console.log(this.selection.selected,"this.totalActivities");
       // console.log(groupByJson(this.selection.selected,'sku'),"SKU group")
       // this.totalProducts=Object.keys(groupByJson(this.selection.selected,'sku')).length;
@@ -225,11 +382,15 @@ function compare(a: number | string, b: number | string, isAsc: boolean) {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 
 }
-function contains_my(str:string,st:string){
-  if(str.indexOf(st) > -1){
-    return true
-  }
-  else{
-    return false
-  }
-}
+// Accepts the array and key
+export const groupByJson = (array:any[], key:string) => {
+  // Return the end result
+  return array.reduce((result, currentValue) => {
+    // If an array already present for key, push it to the array. Else create an array and push the object
+    (result[currentValue[key]] = result[currentValue[key]] || []).push(
+      currentValue
+    );
+    // Return the current iteration `result` value, this will be taken as next iteration `result` value and accumulate
+    return result;
+  }, {}); // empty object is the initial value for result object
+};

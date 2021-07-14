@@ -210,7 +210,6 @@ export class ScenarioComponent implements OnInit {
   }
 
   DownloadCSV(filename:string){
-    console.log(this.selection.selected);
     if(this.selection.selected.length > 0){
       var options = {
         fieldSeparator: ',',

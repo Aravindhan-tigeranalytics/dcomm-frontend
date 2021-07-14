@@ -1,20 +1,30 @@
 import { Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import * as XLSX from 'xlsx';
+import { MatPaginator } from '@angular/material/paginator';
+import { ConstraintObject, groupByJson } from '../scenario-planning/scenario-planning.component';
 
 export interface ScenarioPlanner {
-  activation_type: string;
-  sku: number;
-  product_name:string,
-  expect_lift: number;
-  rec_activity: number;
+  tpn: number;
+  tpn_category:string;
+  activations:string;
+  lift: number;
+  total_cost: number;
 }
-
+export interface ScenarioPlannerConstraint {
+  pack_type:string
+  fsi: boolean;
+  fai: boolean;
+  search: boolean;
+  sot: boolean;
+  bpp: boolean;
+}
 @Component({
   selector: 'app-scenario-output',
   templateUrl: './scenario-output.component.html',
@@ -25,24 +35,29 @@ export interface ScenarioPlanner {
 
 export class ScenarioOutputComponent implements OnInit {
 
-  constructor(private modalService: NgbModal,private route:Router) { }
+  constructor(private modalService: NgbModal,private route:Router) {
+   // console.log(this.route.getCurrentNavigation()?.extras.state);
+   let input=this.route.getCurrentNavigation()?.extras.state;
+   if(input){
+   if(typeof(input)!=undefined){
+    this.ELEMENT_DATA_CONSTRAINTS=this.route.getCurrentNavigation()?.extras.state;
+     this.dataSourceConstraints=new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+    }
+   }
+   }
   ELEMENT_DATA: ScenarioPlanner[] = [
-    {sku : 2423232,product_name:'Mars 4pk', activation_type: 'FSI', expect_lift: 13, rec_activity: 12},
-    {sku : 1233235,product_name:'Snickers 4pk', activation_type: 'FAI', expect_lift: 32, rec_activity:  22},
-    {sku : 1223535,product_name:'Galaxy 4pk', activation_type: 'TPR', expect_lift: 20, rec_activity:  12},
-    {sku : 5451235,product_name:'Twix 9pk', activation_type: 'Search', expect_lift: 9, rec_activity: 32},
-    {sku : 7851243,product_name:'Twix White 9pk', activation_type: 'FSI', expect_lift: 10 ,rec_activity: 12},
-
   ];
   binaryOption=[
   {id: 'Yes', name: "Yes"},
-  {id: 'No', name: "No"},
-];
+  {id: 'No', name: "No"},];
+  ELEMENT_DATA_CONSTRAINTS:any=[];
+  displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
+  dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   dataSetLabel:any=['Apple', 'Banana', 'Kiwifruit', 'Blueberry', 'Orange', 'Grapes'];
   dataSet:any={ data: [45, 37, 60, 70, 46, 33], label: 'Incremental Revenue by Placement' };
   dataSetLabel1:any=['Apple', 'Banana',  'Grapes'];
   dataSet1:any={ data: [45, 37, 33], label: 'Expected Lift by Pack type  ' };
-  displayedColumns: string[] = [ 'activation_type', 'sku' ,'product_name','rec_activity','expect_lift'];
+  displayedColumns: string[] = [ 'tpn', 'tpn_category' ,'activations','lift','total_cost'];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -53,36 +68,82 @@ export class ScenarioOutputComponent implements OnInit {
   closeModal: any;
   liftSliderValue:any = [5,60];
   roiSliderValue:any = [5,40];
+  groupedOnPackType=[];
     // Configuration for the filters
   skuSelected:any = [1235,1243,1246];
   placementTypes = new FormControl();
   typeSelected:any = ['FSI','FAI','TPR','Search'];
   toppings = new FormControl();
   toppingList: string[] = ['Extra cheese', 'Mushroom',];
+  constraint_list=['Baked','Multipack']
   ngOnInit(): void {
-
-
+    this.dataSource.paginator = this.paginator;
+    for(let i=0;i<this.constraint_list.length;i++){
+      let MuliPlex = new ConstraintObject(this.constraint_list[i]);
+      this.ELEMENT_DATA_CONSTRAINTS.push(MuliPlex.getConstraint());
+      this.dataSourceConstraints=new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+    }
    }
-
-testData(){
-  console.log(this.ELEMENT_DATA,"ELEMENT_DATA");
-}
+   @ViewChild(MatPaginator) paginator: any;
+   ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+// File Reader ( EXCEL OR CSV) to JSON Format
+async onFileChange(ev:any) {
+  let workBook:any = null;
+  let jsonData = null;
+  const reader = new FileReader();
+  const file = ev.target.files[0];
+  return new Promise((resolve, reject) => {
+  reader.onload = (event) => {
+    const data = reader.result;
+    workBook = XLSX.read(data, { type: 'binary' });
+    jsonData = workBook.SheetNames.reduce((initial:any, name:any) => {
+      const sheet = workBook.Sheets[name];
+      initial[name] = XLSX.utils.sheet_to_json(sheet);
+      return initial;
+    }, {});
+    console.log(jsonData,"jsonData");
+    this.groupedOnPackType=groupByJson(jsonData['sheet1'],'tpn_category');
+   // console.log(this.groupedOnPackType,"Grouped Type");
+     resolve(jsonData);
+     return jsonData
+  }
+   reader.readAsBinaryString(file);
+  });
+    }
+    // Input Handler for the promocode upload
+  async testData(event:any){
+    let promoList:any=await this.onFileChange(event);
+    let FilteredSet=promoList['sheet1'];
+    console.log(FilteredSet,"FilteredSet");
+    this.dataSource= new MatTableDataSource<ScenarioPlanner>(FilteredSet);
+    this.ngAfterViewInit();
+  }
+  test_filter(){
+    let to_search="TBP BBP FSI FAI SOT".split(' ');
+    let filterData:any=this.dataSource.data;
+    for(let i=0;i<to_search.length;i++){
+      let to_find:string=to_search[i];
+      filterData=filterData.filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activations"]));
+    }
+    this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
+    this.ngAfterViewInit();
+  }
 decrementRange(value:any){
-  console.log("decrementRange");
     value.discount=value.discount-5;
 }
 incrementRange(value:any){
-  console.log("incrementRange");
   value.discount=value.discount+5;
 }
 goBack(){
-this.route.navigate(['/']);
+this.route.navigate(['/plan-activation']);
 }
 doFilter(){
     this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
     this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
-    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["sku"]));
-    filterData = filterData.filter((data:any) => this.typeSelected.includes(data["activation_type"]));
+    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["TPN"]));
+    filterData = filterData.filter((data:any) => this.typeSelected.includes(data["TPN"]));
     filterData = filterData.filter((o:any)=> {
       return o['expect_lift'] <= this.liftSliderValue[1] && o['expect_lift'] >= this.liftSliderValue[0];
     });
@@ -152,7 +213,7 @@ doFilter(){
     if (!row) {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.sku + 1}`;
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.tpn + 1}`;
   }
   updateProductCounter(){
       //totalProducts
