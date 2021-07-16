@@ -1,4 +1,5 @@
-import { Input } from '@angular/core';
+import { EventEmitter, Input } from '@angular/core';
+import { Output } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
@@ -12,6 +13,7 @@ export class ScenarioBarchartComponent implements OnInit {
   constructor() { }
   @Input() dataSetLabel: any=[];
   @Input() dataSet: any=[];
+
   barChartOptions: ChartOptions = {
     responsive: true,
   };
@@ -26,6 +28,7 @@ export class ScenarioBarchartComponent implements OnInit {
   ngOnInit(): void {
     this.barChartLabels = this.dataSetLabel;
     this.barChartData = [this.dataSet];
+    console.log("INIT");
   }
 
 }

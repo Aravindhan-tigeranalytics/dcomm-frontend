@@ -1,20 +1,16 @@
-import { Sort } from '@angular/material/sort';
+import { ConstraintObject } from './../scenario-planning/scenario-planning.component';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import * as XLSX from 'xlsx';
-import * as Notiflix from 'notiflix';
-import { HtmlTagDefinition } from '@angular/compiler';
+import { groupByJson } from '../scenario-planning/scenario-planning.component';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
   product_name: string;
   list_price: number;
   promotion_type: string;
+  promotion_type_list:any[];
   promotion_list: any[];
   promotion: string;
   discount: number;
@@ -41,35 +37,74 @@ export class ScenarioSimActivationComponent implements OnInit {
   activityType: ScenarioPlanner[] = [];
   types = new FormControl();
   ELEMENT_DATA_CONSTRAINTS:any=[];
+  selectedData:any=[];
+  PROMOCODE_LIST:any={};
   Placements=['FSI','FAI','SEARCH','SOT','BBP'];
-  PackTypes=['Mulipack','Baked','Pack'];
+  //PackTypes=['Mulipack','Baked','Pack'];
+  totalActivations=0;
+  totalProducts=0;
+  sumProducts:string='0';
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   constructor(private routes:Router) {
-    let input=this.routes.getCurrentNavigation()?.extras.state;
-    if(input){
-    if(typeof(input)!=undefined){
-     this.ELEMENT_DATA_CONSTRAINTS=this.routes.getCurrentNavigation()?.extras.state;
-      this.dataSourceConstraints=new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
-      localStorage.setItem("defaultActivations", JSON.stringify(this.ELEMENT_DATA_CONSTRAINTS));
+    let datastream:any=this.routes.getCurrentNavigation()?.extras.state;
+    if(datastream){
+    if(datastream.source=='from_planning'){
+      this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
+      this.selectedData=datastream.data[1] || [];
+      this.PROMOCODE_LIST=datastream.data[2] || [];
+      console.log(this.selectedData,"selectedData");
+      let jsonObject=groupByJson(this.selectedData,'pack_type');
+    this.ELEMENT_DATA_CONSTRAINTS=[];
+    for (const [key, value] of Object.entries(jsonObject)) {
+      let MuliPlex = new ConstraintObject(key);
+      this.ELEMENT_DATA_CONSTRAINTS.push(MuliPlex.getConstraint());
+      this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+      localStorage.setItem("defaultActivations", JSON.stringify(this.selectedData));
     }
-    }else{
-      this.ELEMENT_DATA_CONSTRAINTS=JSON.parse(localStorage.getItem('defaultActivations')|| '');
-      this.dataSourceConstraints=new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
-      //this.routes.navigate(['/']);
+
+  }else if(datastream.source=="from_output"){
+    this.ELEMENT_DATA_CONSTRAINTS=[];
+
+    this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
+    console.log(this.ELEMENT_DATA_CONSTRAINTS,"OUTPUT");
+    this.selectedData=datastream.data[1] || [];
+      this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+
+  }
+
+   }else{
+    this.selectedData=JSON.parse(localStorage.getItem('defaultActivations')|| '');
+    let jsonObject=groupByJson(this.selectedData,'pack_type');
+    for (const [key, value] of Object.entries(jsonObject)) {
+      let MuliPlex = new ConstraintObject(key);
+      this.ELEMENT_DATA_CONSTRAINTS.push(MuliPlex.getConstraint());
+      this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
     }
-   }
+
+  }
+  this.setActivation();
+}
 
   ngOnInit(): void {
 
   }
+  setActivation(){
+    this.totalActivations=this.ELEMENT_DATA_CONSTRAINTS.length;
+    this.totalProducts=this.selectedData.length;
+    let sumLocal=0;
+    this.selectedData.map((element:any) => {
+      console.log(element,typeof(element));
+      sumLocal+=element.selling_price;
+    });
+    this.sumProducts=sumLocal.toFixed(2);
 
+  }
   simulateScenario(){
-
-    this.routes.navigate(['/scenarioresult'],{ state: this.ELEMENT_DATA_CONSTRAINTS });
+    this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData]} });
     }
   go_back(){
-    this.routes.navigate(['/'],{ state: this.ELEMENT_DATA_CONSTRAINTS });
+    this.routes.navigate(['/'],{ state: {'source':'from_activation','data':[this.selectedData,this.PROMOCODE_LIST]} });
     }
     selectAll(){
     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{

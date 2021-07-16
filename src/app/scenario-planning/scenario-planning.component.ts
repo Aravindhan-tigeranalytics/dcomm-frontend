@@ -15,6 +15,7 @@ export interface ScenarioPlanner {
   product_name: string;
   list_price: number;
   promotion_type: string;
+  promotion_type_list: any[];
   promotion_list: any[];
   promotion: string;
   discount: number;
@@ -71,30 +72,63 @@ Notiflix.Notify.init({
 
 export class ScenarioPlanningComponent implements OnInit {
 
-  constructor(private modalService: NgbModal,private routes:Router) { }
+  constructor(private modalService: NgbModal,private routes:Router) {
+    let input=this.routes.getCurrentNavigation()?.extras.state;
+    if(input){
+    if(typeof(input)!=undefined){
+     let datastream:any=this.routes.getCurrentNavigation()?.extras.state ;
+     if(datastream.source=='from_activation'){
+     // this.selection = new SelectionModel<ScenarioPlanner>(true, [...datastream.data]);
+     let selectedItems=datastream.data[0] || [];
+     let Promolist=datastream.data[1] || [];
+      let grouped=groupByJson(selectedItems,'product_tpn');
+      let grouped_keys=Object.keys(grouped);
+      this.dataSource.data.forEach(row => {
+        if (grouped_keys.includes(row.product_tpn))
+        {
+          row.list_price=grouped[row.product_tpn][0].list_price;
+          row.promotion_type=grouped[row.product_tpn][0].promotion_type;
+          row.promotion_list=grouped[row.product_tpn][0].promotion_list;
+          row.promotion=grouped[row.product_tpn][0].promotion;
+          row.discount=grouped[row.product_tpn][0].discount;
+          row.edlp=grouped[row.product_tpn][0].edlp;
+          row.selling_price= grouped[row.product_tpn][0].selling_price;
+          row.promotion_type_list= grouped[row.product_tpn][0].promotion_type_list;
+          this.selection.select(row);
+        }else{
+           row.promotion_type_list= grouped[grouped_keys[0]][0].promotion_type_list;
+           this.PROMOCODE_LIST=grouped[grouped_keys[0]][0].promotion_type_list;
+        }
+        this.PROMOCODE_LIST=Promolist;
+      });
+
+     }
+    }
+  }
+  }
   ELEMENT_DATA: ScenarioPlanner[] = [
-    {pack_type: 'MultiPack',product_tpn : '78775737', product_name: 'Mars 4pk', list_price: 15.2,
-    promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'MultiPack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP',list_price: 7.05 ,
-       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+    {pack_type: 'Multipack',product_tpn : '78775737', product_name: 'Mars 4pk', list_price: 15.2,
+    promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+    {pack_type: 'Choco',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+     {pack_type: 'Choco',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
+       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
      {pack_type: 'Baked',product_tpn : '48561354', product_name: 'Twix 9pk', list_price: 1.65,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'Baked',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'Pack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
-       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'MultiPack',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
-       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
-     {pack_type: 'MultiPack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[]},
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+     {pack_type: 'Baked',product_tpn : '1253613558', product_name: 'Twix White 9pk', list_price: 8,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+     {pack_type: 'Baked',product_tpn : '1256413558', product_name: 'Twix White 9pk', list_price: 8,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+     {pack_type: 'Multipack',product_tpn : '135462358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+     {pack_type: 'Multipack',product_tpn : '454632146', product_name: 'Mars 100 kcal MP',list_price: 7.05 ,
+       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+     {pack_type: 'Multipack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+      {pack_type: 'Multipack',product_tpn : '454621246', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
+       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
+     {pack_type: 'Multipack',product_tpn : '135463258', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
+     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
   ];
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //'fsi', 'fai','search', 'sot', 'bpp'
@@ -137,23 +171,31 @@ export class ScenarioPlanningComponent implements OnInit {
 
 simulateScenario(){
   if(this.selection.selected.length>=1){
-    this.routes.navigate(['/plan-activation'],{ state: this.ELEMENT_DATA_CONSTRAINTS });
+    this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST]}});
   }else{
     Notiflix.Notify.warning('Please select the records');
   }
 
 }
 testData(){
-  console.log(this.ELEMENT_DATA,"ELEMENT_DATA");
+  //console.log(this.ELEMENT_DATA,"ELEMENT_DATA");
 }
 decrementRange(value:any){
-  console.log("decrementRange");
+  if(value.discount<=5){
+    value.discount=0;
+  }else{
     value.discount=value.discount-5;
-    this.setSellingPrice(value);
+
+  }
+  this.setSellingPrice(value);
 }
 incrementRange(value:any){
-  console.log("incrementRange");
-  value.discount=value.discount+5;
+  if(value.discount>=95){
+    value.discount=100;
+  }else{
+    value.discount=value.discount+5;
+
+  }
   this.setSellingPrice(value);
 }
 doFilter(){
@@ -163,7 +205,6 @@ doFilter(){
       filterData = filterData.filter((data:any) => gblFilter.match(data["product_name"].toLowerCase())
       );
     }
-
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
   }
   clear_search(){
@@ -248,8 +289,12 @@ doFilter(){
     try{
       let groupedPCode=groupByJson(promoList['Sheet1'],'Promotion Code');
       this.PROMOCODE_LIST=groupedPCode;
+      console.log(this.PROMOCODE_LIST,"Promolist");
       Object.keys(groupedPCode).forEach(element => {
         this.promoCodeList.push({'id':element,'name':element});
+      });
+      this.ELEMENT_DATA.forEach((element)=>{
+        element.promotion_type_list=this.promoCodeList;
       });
     }catch(exception){
       Notiflix.Notify.warning('Invalid File Format');
@@ -275,7 +320,6 @@ doFilter(){
   //Case 3: promotion NO and EDLP YES =Selling=Listprice
   // SELECT == NO
   EDLPChange(selected:any,element:any){
-    console.log(selected.value,"select")
    if(selected.value=='No'){
     //element.promotion='Yes';
 
@@ -293,7 +337,6 @@ doFilter(){
     });
   }
   setSellingPrice(element:any){
-    console.log("selling price");
     if(element.promotion_type=='SELECT' && element.edlp=='No'){
         element.selling_price=element.list_price;
     }
@@ -301,15 +344,12 @@ doFilter(){
       element.selling_price=element.list_price;
   }
   if(element.promotion_type!='SELECT' && element.edlp=='No'){
-    console.log("trigger price",element.discount);
       let calculated_price=element.list_price-((element.discount/100)*(element.list_price))
-      element.selling_price=calculated_price.toFixed(2);
-      console.log(calculated_price,"calculated_price");
+      element.selling_price=parseFloat(calculated_price.toFixed(2));
   }
   }
   // Update the Promotion Code Discount based on the Desc Selected
   updateDiscount(event:any,row:any){
-    console.log(event,"Value");
     let discounted=((event.value/row.list_price)*100).toFixed(2);
     if(discounted){
       row.discount=discounted;
@@ -317,7 +357,6 @@ doFilter(){
     this.setSellingPrice(row);
   }
   updateDiscount_price(event:any,row:any){
-    console.log(event,"Value",row);
     if(row.promotion!='No'){
       let discounted=((row.promotion/event.target.value)*100).toFixed(2);
       row.discount=discounted;
@@ -356,7 +395,6 @@ doFilter(){
       this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
      }
      else{
-     //  console.log(row.pack_type,"TYPE",jsonObject);
       if(jsonObject[row.pack_type].length==3){
         this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any,index:number)=>{
           if(element.pack_type==row.pack_type){

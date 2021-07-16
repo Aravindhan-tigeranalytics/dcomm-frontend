@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -9,6 +9,7 @@ import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import { MatPaginator } from '@angular/material/paginator';
 import { ConstraintObject, groupByJson } from '../scenario-planning/scenario-planning.component';
+import { Input } from '@angular/core';
 
 export interface ScenarioPlanner {
   tpn: number;
@@ -35,32 +36,72 @@ export interface ScenarioPlannerConstraint {
 
 export class ScenarioOutputComponent implements OnInit {
 
-  constructor(private modalService: NgbModal,private route:Router) {
+  constructor(private modalService: NgbModal,private routes:Router) {
    // console.log(this.route.getCurrentNavigation()?.extras.state);
-   let input=this.route.getCurrentNavigation()?.extras.state;
-   if(input){
-   if(typeof(input)!=undefined){
-    this.ELEMENT_DATA_CONSTRAINTS=this.route.getCurrentNavigation()?.extras.state;
-     this.dataSourceConstraints=new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
-    }
+   let datastream:any=this.routes.getCurrentNavigation()?.extras.state;
+   if(datastream){
+   if(datastream.source=='from_activation'){
+
+    this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
+    this.selectedData=datastream.data[1] || [];
+     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
+       let itemlist=[];
+      for( const [key,value] of Object.entries(element)){
+        if((value) && (this.activationLIB[key]!=undefined)){
+          itemlist.push(this.activationLIB[key]);
+        }
+      }
+       this.activationLIBSelected[element.pack_type]=itemlist;
+     });
+
    }
-   }
-  ELEMENT_DATA: ScenarioPlanner[] = [
-  ];
+   console.log(this.activationLIBSelected,"activationLIBSelected");
+  }else{
+    this.routes.navigate(['/']);
+  }
+
+};
+
+  ELEMENT_DATA: ScenarioPlanner[] = [];
+  activationLIB:any={
+    fsi: "FSI",
+    fai: "FAI",
+    search: "SEARCH",
+    sot: "SOT",
+    bpp: "BPP",
+  };
+   TATS={
+    fai:0,
+    fsi:0,
+    sot:0,
+    bbp:0,
+    search:0
+}
+ Chartpoints_pla_rev={fai:0,
+  fsi:0,
+  sot:0,
+  bbp:0,
+  search:0};
+  activationLIBSelected:any={};
   binaryOption=[
   {id: 'Yes', name: "Yes"},
   {id: 'No', name: "No"},];
+  reload:boolean=true;
   ELEMENT_DATA_CONSTRAINTS:any=[];
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
-  dataSetLabel:any=['Apple', 'Banana', 'Kiwifruit', 'Blueberry', 'Orange', 'Grapes'];
-  dataSet:any={ data: [45, 37, 60, 70, 46, 33], label: 'Incremental Revenue by Placement' };
-  dataSetLabel1:any=['Apple', 'Banana',  'Grapes'];
+  PlacementLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
+  @Input() dataSetLabel:any=[ 'FAI', 'FSI', 'SOT', 'BBP','Search'];
+  @Input() dataSet:any={ data: [0, 0, 0, 0, 0], label: 'Incremental Revenue by Placement' };
+  dataSetLabel1:any=['Baked', 'Multipack',  'Block'];
+  selectedplacementTypes='';
   dataSet1:any={ data: [45, 37, 33], label: 'Expected Lift by Pack type  ' };
   displayedColumns: string[] = [ 'tpn', 'tpn_category' ,'activations','lift','total_cost'];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
+  selectedData:any=[];
+
   skuList: ScenarioPlanner[] = [];
   activityType: ScenarioPlanner[] = [];
   activityLift:any = '';
@@ -72,17 +113,13 @@ export class ScenarioOutputComponent implements OnInit {
     // Configuration for the filters
   skuSelected:any = [1235,1243,1246];
   placementTypes = new FormControl();
-  typeSelected:any = ['FSI','FAI','TPR','Search'];
-  toppings = new FormControl();
-  toppingList: string[] = ['Extra cheese', 'Mushroom',];
-  constraint_list=['Baked','Multipack']
+  //segment
+  Segment = new FormControl();
+  segmentList: string[] = [];
+  selectedSegmentList: any = [];
+  constraint_list=[]
   ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
-    for(let i=0;i<this.constraint_list.length;i++){
-      let MuliPlex = new ConstraintObject(this.constraint_list[i]);
-      this.ELEMENT_DATA_CONSTRAINTS.push(MuliPlex.getConstraint());
-      this.dataSourceConstraints=new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
-    }
    }
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
@@ -105,7 +142,8 @@ async onFileChange(ev:any) {
     }, {});
     console.log(jsonData,"jsonData");
     this.groupedOnPackType=groupByJson(jsonData['sheet1'],'tpn_category');
-   // console.log(this.groupedOnPackType,"Grouped Type");
+    this.segmentList=Object.keys(this.groupedOnPackType);
+    this.selectedSegmentList = this.segmentList;
      resolve(jsonData);
      return jsonData
   }
@@ -116,18 +154,30 @@ async onFileChange(ev:any) {
   async testData(event:any){
     let promoList:any=await this.onFileChange(event);
     let FilteredSet=promoList['sheet1'];
-    console.log(FilteredSet,"FilteredSet");
-    this.dataSource= new MatTableDataSource<ScenarioPlanner>(FilteredSet);
+    this.ELEMENT_DATA=FilteredSet;
+    this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.ngAfterViewInit();
   }
   test_filter(){
-    let to_search="TBP BBP FSI FAI SOT".split(' ');
-    let filterData:any=this.dataSource.data;
-    for(let i=0;i<to_search.length;i++){
-      let to_find:string=to_search[i];
-      filterData=filterData.filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activations"]));
+    let SearchObject=this.activationLIBSelected;
+    let allFilter=[];
+    let filterData:any=groupByJson(this.dataSource.data,'tpn_category');
+    for(const [key,value] of Object.entries(SearchObject)){
+      let temp=[];
+      let search_key:any=value;
+      if(search_key.length>0){
+        for(let i=0;i<search_key.length;i++){
+          let to_find:string=search_key[i];
+          temp.push(filterData[key].filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activations"])));
+         }
+      }
+      allFilter.push(...temp)
     }
-    this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
+
+    var merged = [].concat.apply([], allFilter);
+    this.ELEMENT_DATA=merged;
+
+    this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.ngAfterViewInit();
   }
 decrementRange(value:any){
@@ -137,21 +187,54 @@ incrementRange(value:any){
   value.discount=value.discount+5;
 }
 goBack(){
-this.route.navigate(['/plan-activation']);
+this.routes.navigate(['/plan-activation'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData]}});
 }
 doFilter(){
-    this.activityLift = this.liftSliderValue[0] + ' to ' + this.liftSliderValue[1];
-    this.activityROI = this.roiSliderValue[0] + ' to ' + this.roiSliderValue[1];
-    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.skuSelected.includes(data["TPN"]));
-    filterData = filterData.filter((data:any) => this.typeSelected.includes(data["TPN"]));
-    filterData = filterData.filter((o:any)=> {
-      return o['expect_lift'] <= this.liftSliderValue[1] && o['expect_lift'] >= this.liftSliderValue[0];
-    });
-    filterData = filterData.filter((o:any)=> {
-      return o['expected_roi'] <= this.roiSliderValue[1] && o['expected_roi'] >= this.roiSliderValue[0];
-    });
+    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.selectedSegmentList.includes(data["tpn_category"]));
+    if(this.selectedplacementTypes!='SELECT'){
+      let to_find=this.selectedplacementTypes;
+      filterData=filterData.filter((data:any) =>  new RegExp('\\b' + to_find + '\\b').test( data["activations"]));
+    }
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
-    //this.ngAfterViewInit();
+    this.ngAfterViewInit();
+    let chartData={};
+    //dataSetLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
+    this.TATS={fai:0,fsi:0,sot:0,bbp:0, search:0};
+    this.Chartpoints_pla_rev={fai:0,fsi:0,sot:0,bbp:0,search:0};
+      filterData.forEach((element:any)=>{
+          if(element.activations.includes('FAI')){
+            this.TATS.fai+=1;
+            this.Chartpoints_pla_rev.fai+=element.total_cost;
+          }else if(element.activations.includes('FSI')){
+            this.TATS.fsi+=1;
+            this.Chartpoints_pla_rev.fsi+=element.total_cost;
+          }else  if(element.activations.includes('SOT')){
+            this.TATS.sot+=1;
+            this.Chartpoints_pla_rev.sot+=element.total_cost;
+          }else  if(element.activations.includes('BBP')){
+            this.TATS.bbp+=1;
+            this.Chartpoints_pla_rev.bbp+=element.total_cost;
+          }else  if(element.activations.includes('Search')){
+            this.TATS.search+=1;
+            this.Chartpoints_pla_rev.search+=element.total_cost;
+          }
+    });
+    this.chartRender(this.Chartpoints_pla_rev);
+  }
+  chartRender(data:any){
+    this.reload=false;
+    console.log(data,"Data");
+    let data_points:any=[];
+    this.dataSetLabel=[];
+    for(let [key,value] of Object.entries(this.activationLIB)){
+      this.dataSetLabel.push(value);
+      data_points.push(data[key]);
+    }
+    this.dataSet={ data: data_points, label: 'Incremental Revenue by Placement' };
+    setTimeout(()=>{
+      this.reload=true;
+    },200);
+
   }
   sortData(sort: Sort) {
     const data = this.ELEMENT_DATA.slice();
@@ -159,19 +242,24 @@ doFilter(){
       this.sortedData = data;
       return;
     }
-
+    // tpn: number;
+    // tpn_category:string;
+    // activations:string;
+    // lift: number;
+    // total_cost: number;
     this.sortedData = data.sort((a:any, b:any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'position': return compare(a.position, b.position, isAsc);
-        case 'sku': return compare(a.sku, b.sku, isAsc);
-        case 'activation_type': return compare(a.activation_type, b.activation_type, isAsc);
-        case 'expect_lift': return compare(a.expect_lift, b.expect_lift, isAsc);
-        case 'expected_roi': return compare(a.expected_roi, b.expected_roi, isAsc);
+        case 'tpn': return compare(a.tpn, b.tpn, isAsc);
+        case 'tpn_category': return compare(a.tpn_category, b.tpn_category, isAsc);
+        case 'activations': return compare(a.activations, b.activations, isAsc);
+        case 'lift': return compare(a.lift, b.lift, isAsc);
+        case 'total_cost': return compare(a.total_cost, b.total_cost, isAsc);
         default: return 0;
       }
     });
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.sortedData);
+    this.ngAfterViewInit();
   }
 
   triggerModal(content :any) {

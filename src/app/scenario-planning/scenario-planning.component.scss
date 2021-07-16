@@ -109,7 +109,10 @@ button{
   width: 100%;
   margin-top: 10px;
 }
-
+.unselectable{
+  background-color: #ddd !important;
+  cursor: not-allowed;
+}
 .ucase{
   text-transform: uppercase;
 }
@@ -145,7 +148,6 @@ form {
   text-align: center;
   vertical-align: middle;
   padding: 8px 0;
-  background: #eee;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
@@ -170,12 +172,12 @@ form #increase {
   padding: 0px;
 } */
 div#decrease {
-  background:  $color-amber-1;
+  // background:  $color-amber-1;
   color: black;
   font-size: 25px;
 }
 div#increase {
-  background: $color-amber-1;
+  // background: $color-amber-1;
   color:black;
   font-size: 25px;
 }

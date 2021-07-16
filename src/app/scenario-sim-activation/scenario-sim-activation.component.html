@@ -6,9 +6,6 @@
           </div>
 <!-- Filter Section -->
           <div class="m-5px">
-
-
-
           </div>
 <!-- Filter Section -->
 <!-- Footer Section -->
@@ -18,7 +15,7 @@
                     <img src="assets/svg/undraw_filter.svg" height="150px" width="150px"/>
                   </div>
 
-
+                  <mat-label class="custom_label_1">You Can Pick The Activations/Pack Type For The Simulation</mat-label>
 
                 </div>
                 <div class="footer-logo ">
@@ -108,7 +105,7 @@
               <h3 class="label_constraints">Constraints</h3>
              </div>
             </div> -->
-            <div class="row col-md-12 p-10">
+            <div class="row col-md-12 ">
 
 
               <div class="col-md-9">
@@ -200,68 +197,87 @@
                </table>
 
               </div>
-              <div class="row col-md-12 m-10px">
-                <div class="col-md-6 dflex-jc">
-                  <button mat-raised-button color="primary" (click)="selectAll()">
+
+              </div>
+              <div class="col-md-3 center_master">
+                <div class="mat-elevation-z3">
+                  <button mat-raised-button color="primary" (click)="selectAll()" class="m-10">
                     <div class="d-flex center_all">
                       <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Select All">select_all</mat-icon></div>
                       <div  class="break-line p-10">Select All</div>
                     </div>
                     </button>
-                  </div>
-                  <div class="col-md-6 dflex-jc">
-                    <button mat-raised-button color="primary" (click)="ResetAll()" >
+                    <button mat-raised-button color="primary" (click)="ResetAll()" class="m-10">
                       <div class="d-flex center_all">
-                        <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All"></mat-icon></div>
+                        <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
                         <div  class="break-line p-10">Reset All</div>
                       </div>
                       </button>
+                </div>
+
+
+              </div>
+             </div>
+              <h2 class="divider line glow">User Selection</h2>
+             <div class="row col-md-12" >
+              <div class="col-md-6">
+
+                  <div class="row  mat-elevation-z2 ">
+                    <mat-label class=" ">Total Activation Selected</mat-label>
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <input matInput disabled [value]="totalActivations" class="right_align counts_nos"/>
+                    </mat-form-field>
                   </div>
 
 
 
-            </div>
+                  <div class="row  mat-elevation-z2 ">
+                    <mat-label class="">Total Products Covered</mat-label>
+                    <mat-form-field class="example-full-width" appearance="fill">
+
+                      <input matInput  disabled [value]="totalProducts" class="right_align counts_nos">
+                    </mat-form-field>
+                  </div>
               </div>
-             </div>
-             <div class="row col-md-6" >
-               <div class="col-md-6">
-                <table class="example-full-width" cellspacing="0"><tr>
-                  <td><mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Total Activation Selected</mat-label>
-                    <input matInput>
-                  </mat-form-field></td>
-                  <td><mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Total Products Covered</mat-label>
-                    <input matInput >
-                  </mat-form-field></td>
+              <div class="col-md-6">
 
-                </tr>
-                <tr>
-                  <td><mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Cost Of Total Selected Activations</mat-label>
-                    <input matInput p>
-                  </mat-form-field></td>
+                <div class="row  mat-elevation-z2 ">
+                  <mat-label class=" ">Cost Of Total Selected Activations</mat-label>
+                  <mat-form-field class="example-full-width" appearance="fill">
 
-                </tr>
-              </table>
+                    <input matInput  disabled [value]="sumProducts" class="right_align counts_nos">
+                  </mat-form-field>
 
-               </div>
-               <div class="col-md-6"> </div>
 
-             </div>
+                  </div>
 
-             <div class="row">
-              <div class="row col-md-12">
-                <div class="col-md-6">
+                  <div class="row  mat-elevation-z2 ">
+                    <div class="m-5px view_table_container">
+                      <table class="planner_table view_table">
+                        <thead>
+                          <tr>
+                            <th>S.No</th>
+                            <th>Pack Type</th>
+                            <th>Product TPN Type</th>
+                            <th>Product Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let el of selectedData;let i=index">
+                            <td>{{i+1}}</td>
+                            <td>{{el.pack_type}}</td>
+                            <td>{{el.product_tpn}}</td>
+                            <td>{{el.product_name}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
 
-                </div>
-                <div class="col-md-6"></div>
+                  </div>
               </div>
-              <div class="row">
-                <div class="col-md-6"></div>
-                <div class="col-md-6"></div>
-              </div>
-             </div>
+
+
+
           </div>
       <!--End ofConstraints Section   -->
         <div>

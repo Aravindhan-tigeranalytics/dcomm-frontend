@@ -1,32 +1,22 @@
-<div class="h-100vh bg_pale">
+<div class=" bg_pale">
   <div class="row col-md-12 ">
-      <div class="col-md-2 h-100vh white-bg pr-five border-shadow-mild">
+      <div class="col-md-2  white-bg pr-five border-shadow-mild">
           <div class="p-10 label-wrapper">
             <label> Selection Panel </label>
           </div>
           <div class="m-5px">
-            <div class="field_container">
-              <label class="label_dropdown">CBU</label>
-              <mat-form-field appearance="fill">
-                <mat-label>Choose an option</mat-label>
-                <mat-select>
-                  <mat-option value="option1">Jan-2021</mat-option>
-                  <mat-option value="option3">Feb-2021</mat-option>
-                </mat-select>
-              </mat-form-field>
-              </div>
               <div class="field_container">
-                <label class="label_dropdown">Segment</label>
+                <label class="label_dropdown">Pack Type</label>
               <mat-form-field appearance="fill">
                 <mat-label>Choose an option</mat-label>
-                <mat-select [formControl]="toppings" multiple>
+                <mat-select [formControl]="Segment"  [(ngModel)]="selectedSegmentList" multiple>
                   <mat-select-trigger>
-                    {{toppings.value ? toppings.value[0] : ''}}
-                    <span *ngIf="toppings.value?.length > 1" class="example-additional-selection">
-                      (+{{toppings.value.length - 1}} {{toppings.value?.length === 2 ? 'other' : 'others'}})
+                    {{Segment.value ? Segment.value[0] : ''}}
+                    <span *ngIf="Segment.value?.length > 1" class="example-additional-selection">
+                      (+{{Segment.value.length - 1}} {{Segment.value?.length === 2 ? 'other' : 'others'}})
                     </span>
                   </mat-select-trigger>
-                  <mat-option *ngFor="let topping of toppingList" [value]="topping">{{topping}}</mat-option>
+                  <mat-option *ngFor="let topping of segmentList" [value]="topping">{{topping}}</mat-option>
                 </mat-select>
               </mat-form-field>
               </div>
@@ -34,14 +24,8 @@
                 <label class="label_dropdown">Placement</label>
                <mat-form-field appearance="fill">
 
-                 <mat-select [formControl]="placementTypes" multiple>
-                   <mat-select-trigger>
-                     {{placementTypes.value ? placementTypes.value[0] : ''}}
-                     <span *ngIf="placementTypes.value?.length > 1" class="example-additional-selection">
-                       (+{{placementTypes.value.length - 1}} {{placementTypes.value?.length === 2 ? 'other' : 'others'}})
-                     </span>
-                   </mat-select-trigger>
-                   <mat-option *ngFor="let type of typeSelected" [value]="type">{{type}}</mat-option>
+                 <mat-select [formControl]="placementTypes" [(ngModel)]="selectedplacementTypes">
+                   <mat-option *ngFor="let type of PlacementLabel" [value]="type">{{type}}</mat-option>
                  </mat-select>
                </mat-form-field>
                </div>
@@ -51,7 +35,7 @@
            <div class="footer m-5px">
                 <div class="footer-actions">
                 <div class="row width_100">
-                    <button mat-raised-button color="primary">Apply Filter</button>
+                    <button mat-raised-button color="primary" (click)="doFilter()">Apply Filter</button>
                    <button mat-raised-button color="primary">Reset Filter</button>
                 </div>
 
@@ -86,7 +70,7 @@
                     <div class="d-flex center_all" >
                       <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_download</mat-icon></div>
                       <input hidden accept=".xlsx,.xls,.csv" (change)="testData($event)" #upload_test type="file" id="upload_test">
-                          <div  class="break-line" (click)="upload_test.click()">Download Scenario</div>
+                          <div  class="break-line" (click)="upload_test.click()">Download  Scenario</div>
                     </div>
 
 
@@ -97,7 +81,7 @@
 
                     <div class="d-flex center_all">
                      <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">save</mat-icon></div>
-                     <div  class="break-line"> Save Scenario</div>
+                     <div  class="break-line"> Save  <br> Scenario</div>
                    </div>
                    </button>
                   </div>
@@ -115,15 +99,17 @@
                 </div>
                 </div>
               </div>
-            <div class="row m-5px dflex-jc">
+            <div class="row m-5px dflex-jc ">
 
-          <div class="row m-5px header-fixed custom_scroll p_zero" >
-            <!-- <div class="heading-2"> Recommended Plan</div> -->
+          <div class="row m-5px " >
+            <div class="heading-2"> Simulated Plan</div>
+            <div class="header-fixed custom_scroll p_zero">
+
             <table  matSort (matSortChange)="sortData($event)"
              mat-table [dataSource]="dataSource"
              matSortActive="expect_lift" matSortDirection="asc"
              matSortDisableClear
-             class="mat-elevation-z8 planner_table ">
+             class="planner_table ">
 
               <!-- Checkbox Column -->
               <ng-container matColumnDef="select">
@@ -142,50 +128,65 @@
               </ng-container>
 
               <!-- SKU Column -->
-              <ng-container matColumnDef="tpn">
-                <th  mat-sort-header="tpn" mat-header-cell *matHeaderCellDef> PACK TYPE </th>
-                <td mat-cell *matCellDef="let element"> {{element.tpn}} </td>
+              <ng-container matColumnDef="tpn_category">
+                <th width="20%" mat-sort-header="tpn_category" mat-header-cell *matHeaderCellDef> Pack Type </th>
+                <td width="20%" mat-cell *matCellDef="let element"> {{element.tpn_category}} </td>
               </ng-container>
 
               <!-- Activation Type Column -->
-              <ng-container matColumnDef="tpn_category">
-                <th mat-sort-header="tpn_category" mat-header-cell *matHeaderCellDef>  PRODUCT TPN </th>
-                <td mat-cell *matCellDef="let element"> {{element.tpn_category}} </td>
+              <ng-container matColumnDef="tpn">
+                <th width="20%" mat-sort-header="tpn" mat-header-cell *matHeaderCellDef>  Product TPN </th>
+                <td  width="20%" mat-cell *matCellDef="let element"> {{element.tpn}} </td>
               </ng-container>
 
               <!-- Expect Lift Column -->
               <ng-container matColumnDef="activations">
-                <th mat-sort-header="activations" mat-header-cell *matHeaderCellDef> PRODUCT NAME </th>
-                <td mat-cell *matCellDef="let element"> {{element.activations}} </td>
+                <th width="20%" mat-sort-header="activations" mat-header-cell *matHeaderCellDef> Product Name</th>
+                <td width="20%" mat-cell *matCellDef="let element"> {{element.activations}} </td>
               </ng-container>
 
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="lift">
-                <th mat-sort-header="lift" mat-header-cell *matHeaderCellDef> RECOMMENDED ACTIVITY </th>
-                <td mat-cell *matCellDef="let element"> {{element.lift}} </td>
+                <th width="20%" mat-sort-header="lift" mat-header-cell *matHeaderCellDef> Activity </th>
+                <td width="20%"  mat-cell *matCellDef="let element"> {{element.lift}} </td>
               </ng-container>
 
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="total_cost">
-                <th mat-sort-header="total_cost" mat-header-cell *matHeaderCellDef> Expected LIFT </th>
-                <td mat-cell *matCellDef="let element"> {{element.total_cost}} </td>
+                <th width="20%" mat-sort-header="total_cost" mat-header-cell *matHeaderCellDef> Incremental Expected Lift <br>in peroid  </th>
+                <td width="20%" class="right-align" mat-cell *matCellDef="let element"> {{element.total_cost}} </td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                   (click)="checkbox_row(row)">
               </tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="9999">
+                  <div  class="row col-md-12">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4 dflex center_all ffc filter_no">
+                      <img height="200px" src="assets/svg/undraw_void.svg"/>
+                      <div class="filter_no">No Data Found For The Filter</div>
+                    </div>
+                    <div class="col-md-4"></div>
+                  </div>
 
+                </td>
+               </tr>
             </table>
-          </div>
-          <mat-paginator [pageSizeOptions]="[10,25,50,75,100]" showFirstLastButtons></mat-paginator>
 
-          <div class="row m-5px" >
-            <div class="col-md-12" >
+          </div>
+            <mat-paginator [pageSizeOptions]="[10,25,50,75,100]" showFirstLastButtons></mat-paginator>
+          </div>
+
+
+          <div class="row m-5px p_zero" >
+            <div class="col-md-12 p_zero" >
                 <div class="row">
                   <div class="col-md-2 row center_items">
                       <label class="h1_title">SIMULATED</label>
                   </div>
-                  <div class="col-md-10 bg_white mat-elevation-z2">
+                  <div class="col-md-10 bg_white mat-elevation-z2 p_zero">
                    <div class="bg_theme_color table_bar_cs row center_items">
                       <div class="col-md-2 br_1">Incremental CSV</div>
                       <div class="col-md-2 br_1">Incremental NSV</div>
@@ -194,7 +195,7 @@
                       <div class="col-md-2 br_1"> NSV ROAS</div>
                       <div class="col-md-2">  MAC ROAS</div>
                    </div>
-                    <div class="row table_bar_row center_items">
+                    <div class="row table_bar_row center_items row_items">
                       <div class="col-md-2 br_1_black">55.7k</div>
                       <div class="col-md-2 br_1_black">28.5k</div>
                       <div class="col-md-2 br_1_black">19.5k</div>
@@ -206,8 +207,8 @@
                 </div>
             </div>
           </div>
-          <div class="row m-5px" >
-            <div class="col-md-12" >
+          <div class="row m-5px p_zero" >
+            <div class="col-md-12 p_zero" >
                 <div class="row">
                   <div class="col-md-2 row center_items activation_list">
                       <label class="h1_title">Activations</label>
@@ -222,11 +223,11 @@
                       <div class="col-md-3 cs_font_size"> BBP</div>
                    </div>
                     <div class="row table_bar_row center_items">
-                      <div class="col-md-3 br_1_black cs_font_size">5</div>
-                      <div class="col-md-2 br_1_black cs_font_size">8</div>
-                      <div class="col-md-2 br_1_black cs_font_size">9</div>
-                      <div class="col-md-2 br_1_black cs_font_size">0</div>
-                      <div class="col-md-3 cs_font_size">6</div>
+                      <div class="col-md-3 br_1_black cs_font_size">{{TATS.fsi}}</div>
+                      <div class="col-md-2 br_1_black cs_font_size">{{TATS.fai}}</div>
+                      <div class="col-md-2 br_1_black cs_font_size">{{TATS.search}}</div>
+                      <div class="col-md-2 br_1_black cs_font_size">{{TATS.sot}}</div>
+                      <div class="col-md-3 cs_font_size">{{TATS.bbp}}</div>
                     </div>
                   </div>
                   <div class="col-md-5 bg_white ml-5 mat-elevation-z2">
@@ -249,12 +250,16 @@
                 </div>
             </div>
           </div>
-          <div class="row m-5px">
+          <div class="row m-5px p_zero">
             <div class="col-md-6">
-              <app-scenario-barchart [dataSetLabel]="dataSetLabel" [dataSet]="dataSet"></app-scenario-barchart>
+              <app-scenario-barchart
+              [(dataSetLabel)]="dataSetLabel"
+              [(dataSet)]="dataSet"
+              *ngIf="reload"
+              ></app-scenario-barchart>
             </div>
             <div class="col-md-6">
-              <app-scenario-barchart  [dataSetLabel]="dataSetLabel1" [dataSet]="dataSet1"></app-scenario-barchart>
+              <app-scenario-barchart  [(dataSetLabel)]="dataSetLabel1" [(dataSet)]="dataSet1"></app-scenario-barchart>
             </div>
           </div>
         <div>

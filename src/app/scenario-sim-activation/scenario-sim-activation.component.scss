@@ -20,9 +20,28 @@ $color-blue-1: #0000a0;
   display: flex;
     justify-content: space-between;
 }
+.dflex-left{
+  display: flex;
+    justify-content: left;
+}
 
 .ffc{
   flex-flow: column;
+}
+.theme_color_text{
+  color:$theme_color;
+}
+.ai-center{
+  align-items: center;
+}
+.theme_border{
+  border: 1px solid $theme_color;
+}
+.tat_items{
+  padding: 5px;
+    background-color: $theme_color;
+    border-bottom: 1px solid #ccc;
+    color: white;
 }
 .break-line{
   line-height: normal;
@@ -130,6 +149,22 @@ button{
   text-align: right;
   padding: 7px;
   border-radius: 5px;
+}
+.right_align{
+  text-align: right;
+}
+.counts_nos{
+  font-size: 18px;
+  color: black;
+}
+.empty_height{
+  height:50px;
+}
+.custom_label_1{
+  text-align: center;
+    display: flex;
+    color: #ccc;
+    text-transform: uppercase;
 }
 form {
   width: 300px;
@@ -310,7 +345,25 @@ input[type=number]::-webkit-outer-spin-button {
 .planner_table_bg th {
   color:white
 }
-
+.view_table{
+  width: 100%;
+}
+.view_table_container{
+  max-height: 150px;
+    overflow: auto;
+    width: 100%;
+}
+.view_table tbody tr td{
+  font-size: 12px;
+  padding-left: 5px;
+  border-right: 1px solid #ccc;
+}
+.view_table tbody tr td:nth-child(1){
+  border-left: 1px solid #ccc;
+}
+.view_table tr th{
+padding: 10px;
+}
 
 .custom_search{
   display: flex;
@@ -366,4 +419,116 @@ input[type=number]::-webkit-outer-spin-button {
 .edlp_select{
   min-width: 100%;
   max-width: 100%;
+}
+body {
+  margin: 40px;
+}
+
+// Base Divider class
+.divider {
+  display: flex;
+
+  &:before,
+  &:after {
+    content: "";
+    flex: 1;
+  }
+}
+
+// Base line
+.line {
+  align-items: center;
+  margin: 1em -1em;
+
+  &:before,
+  &:after {
+    height: 1px;
+    margin: 0 1em;
+  }
+}
+
+
+  .one-line {
+    &:before,
+    &:after {
+      background: black;
+    }
+  }
+
+  .razor {
+    &:before,
+    &:after {
+      box-shadow: 0 0.5px 0 black; // Chrome
+      // border-bottom: 0.5px solid black; // Safari
+    }
+  }
+
+  .double-razor {
+    &:before,
+    &:after {
+      height: 3px;
+      box-shadow: // Chrome
+        0 -0.5px 0 black,
+        0 0.5px 0 black;
+      // border: solid black; // Safari
+      border-width: 0;
+    }
+  }
+
+	.glow {
+    &:before,
+    &:after {
+      height: 6px;
+      -webkit-filter: blur(5px);
+      border-radius: 5px;
+    }
+
+    &:before {
+      background: linear-gradient(to right, #0000a0, #55c5a5);
+    }
+
+    &:after {
+      background: linear-gradient(to left, #0000a0, #55c5a5);
+    }
+  }
+.center_master{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+// Gradients
+.gradient {
+  align-items: stretch;
+  margin: 1em 0;
+  height: 2em;
+  line-height: 2em;
+  color: white;
+  background: black;
+
+  &:before {
+    background: linear-gradient(to right, white, black);
+  }
+
+  &:after {
+    background: linear-gradient(to left, white, black);
+	}
+}
+
+// Ribbon thing
+.donotcross {
+  overflow: hidden;
+  align-items: center;
+  background: hsl(50, 100%, 50%);
+  color: black;
+  height: 2em;
+  line-height: 2em;
+
+  &:before,
+  &:after {
+    background: white;
+    padding: 50px 0;
+    height: 0;
+    transform: rotate(45deg);
+  }
 }

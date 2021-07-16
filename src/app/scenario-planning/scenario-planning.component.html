@@ -227,7 +227,7 @@
               <ng-container matColumnDef="list_price">
                 <th width="6%"  mat-sort-header="list_price" mat-header-cell *matHeaderCellDef> LIST PRICE </th>
                 <td  width="6%" mat-cell *matCellDef="let element">
-                  <input type="text"  [(ngModel)]="element.list_price" (focusout)="updateDiscount_price($event,element)" class="width-text small-textbox" />
+                  <input type="number"  [(ngModel)]="element.list_price" (focusout)="updateDiscount_price($event,element)" class="width-text small-textbox" />
                 </td>
               </ng-container>
 
@@ -237,7 +237,7 @@
                 <td width="12%" mat-cell  *matCellDef="let element">
                   <mat-form-field appearance="fill">
                     <mat-select [(ngModel)]="element.promotion_type"  (selectionChange)="setPromoDesc(element.promotion_type,element)">
-                      <mat-option *ngFor="let c of promoCodeList"   [value]="c.id">{{c.name}}</mat-option>
+                      <mat-option *ngFor="let c of element.promotion_type_list"   [value]="c.id">{{c.name}}</mat-option>
                     </mat-select>
                   </mat-form-field>
 
@@ -284,7 +284,7 @@
               <ng-container matColumnDef="selling_price">
                 <th width="8%" mat-sort-header="selling_price" mat-header-cell *matHeaderCellDef> SELLING PRICE </th>
                 <td class="text-align-c" width="8%" mat-cell *matCellDef="let element">
-                  <input type="text" [(ngModel)]="element.selling_price" class="width-text small-textbox " />
+                  <input type="number" readonly [(ngModel)]="element.selling_price" class="unselectable width-text small-textbox " />
                  </td>
               </ng-container>
 
