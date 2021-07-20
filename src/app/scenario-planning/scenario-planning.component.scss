@@ -55,6 +55,8 @@ button{
   white-space: pre-wrap !important;
   font-size: 12px;
   line-height: 2;
+  padding: 10px;
+  margin: 5px;
 }
 
 .white-bg{
@@ -266,7 +268,9 @@ input[type=number]::-webkit-outer-spin-button {
     align-items: center;
 }
 
-
+.ml_5{
+  margin-left: 5px;
+}
 
 .scrollbar
 {

@@ -1,9 +1,8 @@
-import { ConstraintObject } from './../scenario-planning/scenario-planning.component';
-import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { groupByJson } from '../scenario-planning/scenario-planning.component';
+import { ConstraintObject, groupByJson } from 'src/app/scenario-planning/scenario-planning.component';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
@@ -27,12 +26,11 @@ export interface ScenarioPlannerConstraint {
 }
 
 @Component({
-  selector: 'app-scenario-sim-activation',
-  templateUrl: './scenario-sim-activation.component.html',
-  styleUrls: ['./scenario-sim-activation.component.scss']
+  selector: 'app-scenario-opt-activation',
+  templateUrl: './scenario-opt-activation.component.html',
+  styleUrls: ['./scenario-opt-activation.component.scss']
 })
-
-export class ScenarioSimActivationComponent implements OnInit {
+export class ScenarioOptActivationComponent  implements OnInit {
   typeSelected:any = [];
   activityType: ScenarioPlanner[] = [];
   types = new FormControl();

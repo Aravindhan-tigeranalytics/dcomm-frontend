@@ -561,18 +561,18 @@ p{line-height:24px;font-size:14px;margin-bottom:0px;color:#828BB2;font-family:"M
 .single_element .quick_activity_wrap{grid-template-columns:repeat(1, 1fr);grid-gap:15px;margin-bottom:30px;}
 }
 @media only screen and (min-width: 576px) and (max-width: 767px){
-.single_element .quick_activity_wrap{grid-template-columns:repeat(3, 1fr);grid-gap:15px;margin-bottom:30px;}
+.single_element .quick_activity_wrap{grid-template-columns:repeat(2, 1fr);grid-gap:15px;margin-bottom:30px;}
 }
 @media (min-width: 768px) and (max-width: 991.98px){
-.single_element .quick_activity_wrap{grid-template-columns:repeat(3, 1fr);grid-gap:15px;margin-bottom:30px;}
+.single_element .quick_activity_wrap{grid-template-columns:repeat(2, 1fr);grid-gap:15px;margin-bottom:30px;}
 }
 @media (min-width: 992px) and (max-width: 1199.98px){
-.single_element .quick_activity_wrap{grid-template-columns:repeat(3, 1fr);margin-bottom:30px;}
+.single_element .quick_activity_wrap{grid-template-columns:repeat(2, 1fr);margin-bottom:30px;}
 }
 @media (min-width: 1200px) and (max-width: 1500px){
-.single_element .quick_activity_wrap{grid-template-columns:repeat(3, 1fr);}
+.single_element .quick_activity_wrap{grid-template-columns:repeat(2, 1fr);}
 }
-.single_element .single_quick_activity{background-color:#fff;border-radius:10px;-webkit-transition:0.5s;transition:0.5s;padding:5px 10px;position:relative;background:#3B76EF;}
+.single_element .single_quick_activity{background-color:#fff;border-radius:10px;-webkit-transition:0.5s;transition:0.5s;padding:41px 30px;position:relative;background:#3B76EF;}
 .single_element .single_quick_activity:nth-child(2){background:#63C7FF;}
 .single_element .single_quick_activity:nth-child(3){background:#A66DD4;}
 .single_element .single_quick_activity:nth-child(4){background:#6DD4B1;}
@@ -588,7 +588,12 @@ p{line-height:24px;font-size:14px;margin-bottom:0px;color:#828BB2;font-family:"M
 .single_element .single_quick_activity p{-webkit-transition:0.5s;transition:0.5s;font-size:13px;font-weight:400;color:#fff;}
 .single_element .single_quick_activity:hover{background:#3B76EF;}
 .single_element .single_quick_activity:hover::before{
-
+  background-image:url('/assets/svg/undraw_Investing_white.svg');
+  margin-left: 67%;
+  height: 114px;
+  width: 171px;
+  margin-top: 8%;
+  opacity: 0.8;
 }
 .box-radius{
 border-radius: 12px;

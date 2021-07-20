@@ -4,16 +4,15 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class ScenarioPlannerService {
+export class AuthService {
   serviceURL:string=''
   constructor(private http: HttpClient) {
     this.serviceURL=environment.serviceURL;
   }
-  download_excel(payload:any) {
-    return this.http.post(this.serviceURL+'/scenario_planner/download_file',{ params: payload },{'responseType':'blob'});
-  }
-getPlannerData() {
-  return this.http.get(this.serviceURL+'/scenario_planner/get_product_details');
+  header = new HttpHeaders()
+
+  login(payload:any) {
+    return this.http.post(this.serviceURL+'/auth_login/', payload ,{headers:this.header});
 }
 
 

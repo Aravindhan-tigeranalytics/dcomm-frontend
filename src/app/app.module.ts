@@ -1,4 +1,6 @@
 
+import { InterceptorService } from './intercept/interceptor.service';
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -11,7 +13,8 @@ import { ScenarioComponent } from './scenario/scenario.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';4
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatIconModule } from '@angular/material/icon';
 import {MatSortModule} from '@angular/material/sort';
 import { ScenarioPlanningComponent } from './scenario-planning/scenario-planning.component';
@@ -20,8 +23,10 @@ import { ScenarioBarchartComponent } from './scenario-output/scenario-barchart/s
 import { ChartsModule } from 'ng2-charts';
 import {MatMenuModule} from '@angular/material/menu';
 import { ScenarioSimActivationComponent } from './scenario-sim-activation/scenario-sim-activation.component';
+import { LoginComponent } from './login/login.component';
 // import { MatToolbarModule } from '@angular/material/toolbar';
 // import { MatIconModule } from '@angular/material/icon';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +35,9 @@ import { ScenarioSimActivationComponent } from './scenario-sim-activation/scenar
     ScenarioPlanningComponent,
     ScenarioOutputComponent,
     ScenarioBarchartComponent,
-    ScenarioSimActivationComponent
+    ScenarioSimActivationComponent,
+    LoginComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -47,7 +54,8 @@ import { ScenarioSimActivationComponent } from './scenario-sim-activation/scenar
     MatIconModule,
     MatMenuModule,
   ],
-  providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }}],
+  providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }},
+  { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

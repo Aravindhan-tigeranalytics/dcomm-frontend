@@ -2,7 +2,7 @@
   <div class="row col-md-12 ">
       <div class="col-md-2 white-bg pr-five border-shadow-mild">
           <div class="p-10 label-wrapper  mat-elevation-z8">
-            <label> Simulation Activation </label>
+            <label> Optimization Activation </label>
           </div>
 <!-- Filter Section -->
           <div class="m-5px">
@@ -78,7 +78,7 @@
 
                       <div class="d-flex center_all">
                         <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">play_arrow</mat-icon></div>
-                        <div class="break-line" > Simulate Scenario </div>
+                        <div class="break-line" > Optimize Scenario </div>
                       </div>
                     </button>
 
@@ -215,63 +215,6 @@
                 </div>
               </div>
              </div>
-              <h2 class="divider line glow">User Selection</h2>
-              <div class="single_element">
-                        <div class="quick_activity">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="quick_activity_wrap">
-                                        <div class="single_quick_activity">
-                                            <h4>Total Activation Selected</h4>
-                                            <h3># <span class="counter">{{totalActivations}}</span> </h3>
-
-                                        </div>
-                                        <div class="single_quick_activity">
-                                            <h4>Total Products Covered</h4>
-                                            <h3># <span class="counter">{{totalProducts}}</span> </h3>
-
-                                        </div>
-                                        <div class="single_quick_activity">
-                                            <h4>Cost Of Total Selected Activations</h4>
-                                            <h3>$ <span class="counter">{{sumProducts}}</span> </h3>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-
-                            <div class="col-md-6">
-                            <div class="mat-elevation-z2 box-radius">
-                                            <div class=" view_table_container box-radius">
-                                              <table class="planner_table view_table">
-                                                <thead>
-                                                  <tr>
-                                                    <th>S.No</th>
-                                                    <th>Pack Type</th>
-                                                    <th>Product TPN Type</th>
-                                                    <th>Product Name</th>
-                                                  </tr>
-                                                </thead>
-                                                <tbody>
-                                                  <tr *ngFor="let el of selectedData;let i=index">
-                                                    <td>{{i+1}}</td>
-                                                    <td>{{el.pack_type}}</td>
-                                                    <td>{{el.product_tpn}}</td>
-                                                    <td>{{el.product_name}}</td>
-                                                  </tr>
-                                                </tbody>
-                                              </table>
-                                            </div>
-                                        </div>
-                            </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-
           </div>
       <!--End ofConstraints Section   -->
         <div>

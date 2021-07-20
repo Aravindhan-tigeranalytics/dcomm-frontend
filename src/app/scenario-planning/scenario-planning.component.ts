@@ -1,3 +1,4 @@
+import { DataControllerService } from './../data-controller/data-controller.service';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
@@ -9,6 +10,8 @@ import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as Notiflix from 'notiflix';
 import { HtmlTagDefinition } from '@angular/compiler';
+import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
@@ -72,69 +75,26 @@ Notiflix.Notify.init({
 
 export class ScenarioPlanningComponent implements OnInit {
 
-  constructor(private modalService: NgbModal,private routes:Router) {
+  constructor(private modalService: NgbModal,
+    private routes:Router,
+    private apiServices:ScenarioPlannerService,
+    private dataservice:DataControllerService,
+    ) {
     let input=this.routes.getCurrentNavigation()?.extras.state;
     if(input){
     if(typeof(input)!=undefined){
-     let datastream:any=this.routes.getCurrentNavigation()?.extras.state ;
-     if(datastream.source=='from_activation'){
-     // this.selection = new SelectionModel<ScenarioPlanner>(true, [...datastream.data]);
-     let selectedItems=datastream.data[0] || [];
-     let Promolist=datastream.data[1] || [];
-      let grouped=groupByJson(selectedItems,'product_tpn');
-      let grouped_keys=Object.keys(grouped);
-      this.dataSource.data.forEach(row => {
-        if (grouped_keys.includes(row.product_tpn))
-        {
-          row.list_price=grouped[row.product_tpn][0].list_price;
-          row.promotion_type=grouped[row.product_tpn][0].promotion_type;
-          row.promotion_list=grouped[row.product_tpn][0].promotion_list;
-          row.promotion=grouped[row.product_tpn][0].promotion;
-          row.discount=grouped[row.product_tpn][0].discount;
-          row.edlp=grouped[row.product_tpn][0].edlp;
-          row.selling_price= grouped[row.product_tpn][0].selling_price;
-          row.promotion_type_list= grouped[row.product_tpn][0].promotion_type_list;
-          this.selection.select(row);
-        }else{
-           row.promotion_type_list= grouped[grouped_keys[0]][0].promotion_type_list;
-           this.PROMOCODE_LIST=grouped[grouped_keys[0]][0].promotion_type_list;
-        }
-        this.PROMOCODE_LIST=Promolist;
-      });
+      this.datastream=this.routes.getCurrentNavigation()?.extras.state ;
 
-     }
     }
   }
+  this.dataservice.LoginState(true);
   }
-  ELEMENT_DATA: ScenarioPlanner[] = [
-    {pack_type: 'Multipack',product_tpn : '78775737', product_name: 'Mars 4pk', list_price: 15.2,
-    promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-    {pack_type: 'Choco',product_tpn : '125613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Choco',product_tpn : '45462146', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
-       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Baked',product_tpn : '48561354', product_name: 'Twix 9pk', list_price: 1.65,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Baked',product_tpn : '1253613558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Baked',product_tpn : '1256413558', product_name: 'Twix White 9pk', list_price: 8,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Multipack',product_tpn : '135462358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Multipack',product_tpn : '454632146', product_name: 'Mars 100 kcal MP',list_price: 7.05 ,
-       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Multipack',product_tpn : '13546358', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-      {pack_type: 'Multipack',product_tpn : '454621246', product_name: 'Mars 100 kcal MP', list_price: 7.05 ,
-       promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-     {pack_type: 'Multipack',product_tpn : '135463258', product_name: 'Maltesers funsize 9pk',list_price: 1.2,
-     promotion_type: 'SELECT',promotion: 'No',discount:0, edlp: 'Yes',selling_price: 0,promotion_list:[],promotion_type_list:[]},
-  ];
+  ELEMENT_DATA: ScenarioPlanner[] = [];
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //'fsi', 'fai','search', 'sot', 'bpp'
 
   PROMOCODE_LIST:any={};
-
+  datastream:any;
   binaryOption=[
   {id: 'Yes', name: "Yes"},
   {id: 'No', name: "No"},
@@ -143,7 +103,7 @@ export class ScenarioPlanningComponent implements OnInit {
   promoCodeDesc:any=[ {id: 'SELECT', name: "--SELECT--"},];
   displayedColumns: string[] = ['select', 'pack_type','product_tpn', 'product_name', 'list_price',
   'promotion_type','promotion','discount','edlp','selling_price'];
-  dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+  dataSource:any;
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
@@ -163,22 +123,104 @@ export class ScenarioPlanningComponent implements OnInit {
   name = 'This is XLSX TO JSON CONVERTER';
   willDownload = false;
   ngOnInit(): void {
-    this.activityType = [...new Map(this.ELEMENT_DATA.map(item => [item["pack_type"], item])).values()];
-    this.typeSelected =this.activityType.map(item => item["pack_type"]);
-    console.log(this.typeSelected);
-    this.setDefaultSellingPrice();
+    this.apiServices.getPlannerData().subscribe((res:any)=>{
+      if((res['code']=='200') && (res.status=='success')){
+      console.log(res.data,"response");
+      res.data.forEach((element:any) => {
+        element.promotion_list=[];
+        element.promotion_type_list=[];
+        this.ELEMENT_DATA.push(element);
+      });
+      console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA");
+      this.activityType = [...new Map(this.ELEMENT_DATA.map(item => [item["pack_type"], item])).values()];
+      this.typeSelected =this.activityType.map(item => item["pack_type"]);
+      console.log(this.typeSelected);
+      this.setDefaultSellingPrice();
+      this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+  }
+  if(this.datastream){
+
+  if(this.datastream.source=='from_activation'){
+    let selectedItems=this.datastream.data[0] || [];
+    let Promolist=this.datastream.data[1] || [];
+     let grouped=groupByJson(selectedItems,'product_tpn');
+     let grouped_keys=Object.keys(grouped);
+     this.dataSource.data.forEach((row:any) => {
+       if (grouped_keys.includes(row.product_tpn))
+       {
+         row.list_price=grouped[row.product_tpn][0].list_price;
+         row.promotion_type=grouped[row.product_tpn][0].promotion_type;
+         row.promotion_list=grouped[row.product_tpn][0].promotion_list;
+         row.promotion=grouped[row.product_tpn][0].promotion;
+         row.discount=grouped[row.product_tpn][0].discount;
+         row.edlp=grouped[row.product_tpn][0].edlp;
+         row.selling_price= grouped[row.product_tpn][0].selling_price;
+         row.promotion_type_list= grouped[row.product_tpn][0].promotion_type_list;
+         this.selection.select(row);
+       }else{
+          row.promotion_type_list= grouped[grouped_keys[0]][0].promotion_type_list;
+          this.PROMOCODE_LIST=grouped[grouped_keys[0]][0].promotion_type_list;
+       }
+       this.PROMOCODE_LIST=Promolist;
+     });
+
+    }
+
+  }
+  });
 }
 
 simulateScenario(){
   if(this.selection.selected.length>=1){
+    Notiflix.Loading.pulse('Processing...');
+    setTimeout(()=>{
+      Notiflix.Loading.remove();
     this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST]}});
+  },1500);
+
   }else{
     Notiflix.Notify.warning('Please select the records');
   }
 
 }
+optimizeScenario(){
+  this.routes.navigate(['/optimizer'])
+}
 testData(){
-  //console.log(this.ELEMENT_DATA,"ELEMENT_DATA");
+
+}
+downloadRateCardTemplate(){
+  let payload={'download_code':'rate_card_template'};
+  this.apiServices.download_excel(payload).subscribe((blob)=>{
+    const a = document.createElement('a')
+    const objectUrl = URL.createObjectURL(blob)
+    a.href = objectUrl
+    a.download = 'Rate Card Template.xls';
+    a.click();
+    URL.revokeObjectURL(objectUrl);
+    });
+}
+downloadFinTemplate(){
+  let payload={'download_code':'finance_template'};
+  this.apiServices.download_excel(payload).subscribe((blob)=>{
+    const a = document.createElement('a')
+    const objectUrl = URL.createObjectURL(blob)
+    a.href = objectUrl
+    a.download = 'Financials Template.xls';
+    a.click();
+    URL.revokeObjectURL(objectUrl);
+    });
+}
+downloadPromotionTemplate(){
+  let payload={'download_code':'promotion_template'};
+  this.apiServices.download_excel(payload).subscribe((blob)=>{
+    const a = document.createElement('a')
+    const objectUrl = URL.createObjectURL(blob)
+    a.href = objectUrl
+    a.download = 'Promotion Template.xls';
+    a.click();
+    URL.revokeObjectURL(objectUrl);
+    });
 }
 decrementRange(value:any){
   if(value.discount<=5){
@@ -287,7 +329,7 @@ doFilter(){
   async PromoReader(event:any){
     let promoList:any=await this.onFileChange(event);
     try{
-      let groupedPCode=groupByJson(promoList['Sheet1'],'Promotion Code');
+      let groupedPCode=groupByJson(promoList['Promotion Code List'],'Promotion Code');
       this.PROMOCODE_LIST=groupedPCode;
       console.log(this.PROMOCODE_LIST,"Promolist");
       Object.keys(groupedPCode).forEach(element => {
