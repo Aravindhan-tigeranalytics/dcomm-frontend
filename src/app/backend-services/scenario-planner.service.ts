@@ -12,9 +12,11 @@ export class ScenarioPlannerService {
   download_excel(payload:any) {
     return this.http.post(this.serviceURL+'/scenario_planner/download_file',{ params: payload },{'responseType':'blob'});
   }
-getPlannerData() {
-  return this.http.get(this.serviceURL+'/scenario_planner/get_product_details');
-}
-
+  getPlannerData() {
+    return this.http.get(this.serviceURL+'/scenario_planner/get_product_details');
+  }
+  scenatio_planner_simulate(payload:any) {
+    return this.http.post(this.serviceURL+'/scenario_planner/simulate_scenario',{ params: payload });
+  }
 
 }

@@ -24,7 +24,13 @@ $color-blue-1: #0000a0;
   display: flex;
     justify-content: left;
 }
-
+.matrix thead th {
+  color: white;
+  padding: 15px;
+}
+.matrix tbody td {
+  padding: 15px;
+}
 .ffc{
   flex-flow: column;
 }
@@ -165,7 +171,7 @@ button{
     display: flex;
     color: #ccc;
     text-transform: uppercase;
-}
+    margin:5px;}
 form {
   width: 300px;
   margin: 0 auto;
@@ -597,4 +603,23 @@ p{line-height:24px;font-size:14px;margin-bottom:0px;color:#828BB2;font-family:"M
 }
 .box-radius{
 border-radius: 12px;
+}
+
+
+.disabled_checkbox{
+  background-color: #ccc;
+}
+tbody tr:hover {
+  cursor: pointer;
+  background-color: #f5f5f5;
+  border-bottom: none;
+}
+.budget-nos{
+  font-size: 30px;
+    width: 85%;
+    text-align: right;
+    border: 1px solid #0000a0;
+    border-radius: 9px;
+    font-weight: bold;
+    padding-right: 15px;
 }

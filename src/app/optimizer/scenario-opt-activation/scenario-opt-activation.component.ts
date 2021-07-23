@@ -35,15 +35,39 @@ export class ScenarioOptActivationComponent  implements OnInit {
   activityType: ScenarioPlanner[] = [];
   types = new FormControl();
   ELEMENT_DATA_CONSTRAINTS:any=[];
+  ELEMENT_DATA_CONSTRAINTS_MATRIX:any=[];
+  Fav=[];
   selectedData:any=[];
   PROMOCODE_LIST:any={};
   Placements=['FSI','FAI','SEARCH','SOT','BBP'];
   //PackTypes=['Mulipack','Baked','Pack'];
   totalActivations=0;
+  MatrixConstraintsTable={
+    'fsi_fsi':false,
+    'fsi_fai':false,
+    'fsi_search':false,
+    'fsi_sot':false,
+    'fsi_bbp':false,
+
+    'fai_fai':false,
+    'fai_search':false,
+    'fai_sot':false,
+    'fai_bbp':false,
+
+    'search_search':false,
+    'search_sot':false,
+    'search_bbp':false,
+
+    'sot_sot':false,
+    'sot_bbp':false,
+
+    'bbp_bbp':false,
+  };
   totalProducts=0;
   sumProducts:string='0';
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+  dataSourceConstraintsMatrix = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS_MATRIX);
   constructor(private routes:Router) {
     let datastream:any=this.routes.getCurrentNavigation()?.extras.state;
     if(datastream){
@@ -57,13 +81,13 @@ export class ScenarioOptActivationComponent  implements OnInit {
     for (const [key, value] of Object.entries(jsonObject)) {
       let MuliPlex = new ConstraintObject(key);
       this.ELEMENT_DATA_CONSTRAINTS.push(MuliPlex.getConstraint());
+      console.log(this.ELEMENT_DATA_CONSTRAINTS,"entries")
       this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   //    localStorage.setItem("defaultActivations", JSON.stringify(this.selectedData));
     }
 
   }else if(datastream.source=="from_output"){
     this.ELEMENT_DATA_CONSTRAINTS=[];
-
     this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
     console.log(this.ELEMENT_DATA_CONSTRAINTS,"OUTPUT");
     this.selectedData=datastream.data[1] || [];
@@ -99,7 +123,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
 
   }
   simulateScenario(){
-    this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData]} });
+    this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData]} });
     }
   go_back(){
     this.routes.navigate(['/'],{ state: {'source':'from_activation','data':[this.selectedData,this.PROMOCODE_LIST]} });

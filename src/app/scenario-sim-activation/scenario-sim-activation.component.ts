@@ -38,9 +38,17 @@ export class ScenarioSimActivationComponent implements OnInit {
   types = new FormControl();
   ELEMENT_DATA_CONSTRAINTS:any=[];
   selectedData:any=[];
+  response_data:any[]=[];
   PROMOCODE_LIST:any={};
   Placements=['FSI','FAI','SEARCH','SOT','BBP'];
   //PackTypes=['Mulipack','Baked','Pack'];
+  activationLIB:any={
+    fsi: "FSI",
+    fai: "FAI",
+    search: "SEARCH",
+    sot: "SOT",
+    bpp: "BPP",
+  };
   totalActivations=0;
   totalProducts=0;
   sumProducts:string='0';
@@ -50,10 +58,12 @@ export class ScenarioSimActivationComponent implements OnInit {
     let datastream:any=this.routes.getCurrentNavigation()?.extras.state;
     if(datastream){
     if(datastream.source=='from_planning'){
+      console.log("SIMulation Activation");
       this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
       this.selectedData=datastream.data[1] || [];
       this.PROMOCODE_LIST=datastream.data[2] || [];
-      console.log(this.selectedData,"selectedData");
+      this.response_data=datastream.data[3] || [];
+      console.log(this.response_data,"response_data");
       let jsonObject=groupByJson(this.selectedData,'pack_type');
     this.ELEMENT_DATA_CONSTRAINTS=[];
     for (const [key, value] of Object.entries(jsonObject)) {
@@ -67,6 +77,7 @@ export class ScenarioSimActivationComponent implements OnInit {
     this.ELEMENT_DATA_CONSTRAINTS=[];
 
     this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
+    this.response_data=datastream.data[2] || [];
     console.log(this.ELEMENT_DATA_CONSTRAINTS,"OUTPUT");
     this.selectedData=datastream.data[1] || [];
       this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
@@ -101,7 +112,42 @@ export class ScenarioSimActivationComponent implements OnInit {
 
   }
   simulateScenario(){
-    this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData]} });
+    let jsonObject=groupByJson(this.response_data,'pack_type');
+    let keys=Object.keys(jsonObject);
+    console.log(keys,"keys");
+    let validPacktype:any[]=[];
+    let to_filterOb:any={};
+    this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
+      let push=false;
+        for(let [key,value] of Object.entries(element)){
+            if((key!='pack_type') && (value==true)){
+              push=true;
+              let values=to_filterOb[element.pack_type] || [];
+              values.push(this.activationLIB[key]);
+              to_filterOb[element.pack_type]=values;
+            }
+
+        }
+        if(push){validPacktype.push(element.pack_type);
+        }
+    });
+    console.log(validPacktype,"validPacktype",to_filterOb);
+    let filterData:any=[];
+    filterData = this.response_data;
+    let accumulateFilter:any=[];
+    for(let [key,value] of Object.entries(to_filterOb)){
+      filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
+      console.log(filterData,"level1");
+      let PackList:any=value;
+      console.log(PackList,"PackList");
+      PackList.forEach((item:any) => {
+        accumulateFilter.push(filterData.filter((data:any) =>  data["activation_type"].substring().includes(item)));
+      });
+      console.log(accumulateFilter,"level2")
+    };
+    accumulateFilter=accumulateFilter.flat();
+    console.log(accumulateFilter,"filterData")
+    this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
     }
   go_back(){
     this.routes.navigate(['/'],{ state: {'source':'from_activation','data':[this.selectedData,this.PROMOCODE_LIST]} });

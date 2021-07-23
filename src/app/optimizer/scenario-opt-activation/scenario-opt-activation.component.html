@@ -95,13 +95,7 @@
           <!-- Table view section -->
           <!--Constraints Section   -->
          <div class="constraint_section mat-elevation-z3 row p-10 m-5px">
-            <!-- <div class="row col-md-12 headers">
-             <div class="col-md-6">
-             </div>
-             <div class="col-md-6">
-              <h3 class="label_constraints">Constraints</h3>
-             </div>
-            </div> -->
+
             <div class="row col-md-12 ">
 
 
@@ -198,7 +192,7 @@
               </div>
               <div class="col-md-3 center_master">
                 <div class="mat-elevation-z3">
-                  <mat-label class="custom_label_1 dflex-jc">Bulk Actions</mat-label>
+                  <mat-label class="custom_label_1 dflex-jc">Actions</mat-label>
 
                   <button mat-raised-button color="primary" (click)="selectAll()" class="m-10">
                     <div class="d-flex center_all">
@@ -206,17 +200,180 @@
                       <div  class="break-line p-10">Select All</div>
                     </div>
                     </button>
-                    <button mat-raised-button color="primary" (click)="ResetAll()" class="m-10">
+                      <button mat-raised-button color="primary" (click)="ResetAll()" class="m-10">
                       <div class="d-flex center_all">
                         <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
                         <div  class="break-line p-10">Reset All</div>
                       </div>
                       </button>
+                      <hr>
+                      <mat-label class="custom_label_1 dflex-jc">Total Budget</mat-label>
+                      <div class="budget_input">
+
+                          <div>
+                            <input type="number" class="budget-nos" placeholder="" />
+                            <button mat-raised-button color="primary" class="m-10">
+                              <div class="d-flex center_all">
+                                <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
+                                <div  class="break-line p-10">Clear</div>
+                              </div>
+                              </button>
+                          </div>
+
+                      </div>
                 </div>
               </div>
              </div>
           </div>
       <!--End ofConstraints Section   -->
+      <!-- Activation Constraint Matrix -->
+      <div class="constraint_section mat-elevation-z3 row p-10 m-5px">
+
+        <div class="row col-md-12 ">
+
+
+          <div class="col-md-6">
+            <div class="mat-elevation-z2 headline-1 row">
+
+            <div class="headline-1">
+              Activation Combinations Constraints
+            </div>
+            <table  class="mat-table planner_table table_constraint matrix">
+              <thead>
+                <th class="mat-header-cell">Activation</th>
+                <th class="mat-header-cell">FSI</th>
+                <th class="mat-header-cell">FAI</th>
+                <th class="mat-header-cell">SEARCH</th>
+                <th class="mat-header-cell">SOT</th>
+                <th class="mat-header-cell">BBP</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td  width="15%" class="header_bg mat-cell">FSI</td>
+                  <td  width="15%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fsi_fsi']">
+                  </mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_fai']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_search']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_sot']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_bbp']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                </tr>
+                <tr>
+                  <td  width="15%" class="header_bg mat-cell">FAI</td>
+                  <td  width="15%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fsi_fai']"></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fai_fai']"></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox color="primary"
+
+                    [(ngModel)]="MatrixConstraintsTable['fai_search']"
+                    [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fai_sot']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()" ></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fai_bbp']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                </tr>
+                <tr>
+                  <td  width="15%" class="header_bg mat-cell">SEARCH</td>
+                  <td  width="15%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_search']"
+                    color="primary" ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fai_search']"
+                    color="primary" ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['search_search']"
+                    color="primary"
+                     ></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['search_sot']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['search_bbp']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                </tr>
+                <tr>
+                  <td  width="15%" class="header_bg mat-cell">SOT</td>
+                  <td  width="15%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_sot']"
+                    color="primary" ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['fai_sot']"
+                    ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['search_sot']"
+                    ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['sot_sot']"
+                    color="primary" ></mat-checkbox></td>
+                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['sot_bbp']"
+                    color="primary" [disableRipple]="true"
+                    (click)="$event.preventDefault()"></mat-checkbox></td>
+                </tr>
+                <tr>
+                  <td  width="15%" class="header_bg mat-cell">BBP</td>
+                  <td  width="15%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_bbp']"
+                    color="primary" ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['fai_bbp']"
+                    ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['search_bbp']"
+                    ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['sot_bbp']"
+                    ></mat-checkbox></td>
+                  <td  width="15%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['bbp_bbp']"
+                    ></mat-checkbox></td>
+                </tr>
+              </tbody>
+
+            </table>
+
+          </div>
+
+          </div>
+          <div class="col-md-3 center_master">
+            <div class="mat-elevation-z3">
+              <mat-label class="custom_label_1 dflex-jc">Actions</mat-label>
+
+              <button mat-raised-button color="primary" (click)="selectAll()" class="m-10">
+                <div class="d-flex center_all">
+                  <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Select All">select_all</mat-icon></div>
+                  <div  class="break-line p-10">Select All</div>
+                </div>
+                </button>
+                <button mat-raised-button color="primary" (click)="ResetAll()" class="m-10">
+                  <div class="d-flex center_all">
+                    <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
+                    <div  class="break-line p-10">Reset All</div>
+                  </div>
+                  </button>
+            </div>
+          </div>
+         </div>
+      </div>
+      <!-- Activation Constraint Matrix -->
+
         <div>
        </div>
 

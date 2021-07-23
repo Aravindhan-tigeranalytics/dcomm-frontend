@@ -12,11 +12,11 @@ import { ConstraintObject, groupByJson } from '../scenario-planning/scenario-pla
 import { Input } from '@angular/core';
 
 export interface ScenarioPlanner {
-  tpn: number;
-  tpn_category:string;
-  activations:string;
+  product_tpn: number;
+  pack_type: string;
+  product_name:string;
+  activation_type:string;
   lift: number;
-  total_cost: number;
 }
 export interface ScenarioPlannerConstraint {
   pack_type:string
@@ -32,18 +32,22 @@ export interface ScenarioPlannerConstraint {
   styleUrls: ['./scenario-output.component.scss']
 })
 
-
-
 export class ScenarioOutputComponent implements OnInit {
-
+  response_data:any;
+  SOURCE: any;
+  filterData: any;
   constructor(private modalService: NgbModal,private routes:Router) {
    // console.log(this.route.getCurrentNavigation()?.extras.state);
    let datastream:any=this.routes.getCurrentNavigation()?.extras.state;
+   console.log("initiateds");
    if(datastream){
+    this.SOURCE=datastream.source
    if(datastream.source=='from_activation'){
 
     this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
     this.selectedData=datastream.data[1] || [];
+    this.response_data=datastream.data[2] || [];
+    this.filterData=datastream.data[3] || [];
      this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
        let itemlist=[];
       for( const [key,value] of Object.entries(element)){
@@ -56,12 +60,13 @@ export class ScenarioOutputComponent implements OnInit {
 
    }
    console.log(this.activationLIBSelected,"activationLIBSelected");
+
+
   }else{
     this.routes.navigate(['/']);
   }
 
 };
-
   ELEMENT_DATA: ScenarioPlanner[] = [];
   activationLIB:any={
     fsi: "FSI",
@@ -76,8 +81,17 @@ export class ScenarioOutputComponent implements OnInit {
     sot:0,
     bbp:0,
     search:0
-}
- Chartpoints_pla_rev={fai:0,
+  };
+  TATS_BY_PACK:any={
+    'multipack':0,
+    'block':0,
+    'biscuits':0,
+    'pouch':0,
+    'funsize':0,
+    'boked':0
+  };
+ Chartpoints_pla_rev={
+  fai:0,
   fsi:0,
   sot:0,
   bbp:0,
@@ -93,15 +107,14 @@ export class ScenarioOutputComponent implements OnInit {
   PlacementLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
   @Input() dataSetLabel:any=[ 'FAI', 'FSI', 'SOT', 'BBP','Search'];
   @Input() dataSet:any={ data: [0, 0, 0, 0, 0], label: 'Incremental Revenue by Placement' };
-  dataSetLabel1:any=['Baked', 'Multipack',  'Block'];
+  dataSetLabel1:any=[];
   selectedplacementTypes='';
-  dataSet1:any={ data: [45, 37, 33], label: 'Expected Lift by Pack type  ' };
-  displayedColumns: string[] = [ 'tpn', 'tpn_category' ,'activations','lift','total_cost'];
+  dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
+  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
   selectedData:any=[];
-
   skuList: ScenarioPlanner[] = [];
   activityType: ScenarioPlanner[] = [];
   activityLift:any = '';
@@ -110,8 +123,8 @@ export class ScenarioOutputComponent implements OnInit {
   liftSliderValue:any = [5,60];
   roiSliderValue:any = [5,40];
   groupedOnPackType=[];
-    // Configuration for the filters
-  skuSelected:any = [1235,1243,1246];
+  // Configuration for the filters
+  skuSelected:any = [];
   placementTypes = new FormControl();
   //segment
   Segment = new FormControl();
@@ -119,10 +132,20 @@ export class ScenarioOutputComponent implements OnInit {
   selectedSegmentList: any = [];
   constraint_list=[]
   ngOnInit(): void {
-    this.dataSource.paginator = this.paginator;
+    this.ELEMENT_DATA=this.filterData;
+    // this.response_data.filter((item:any)=>{
+
+    // });
+    this.groupedOnPackType=groupByJson(this.filterData,'pack_type');
+    this.segmentList=Object.keys(this.groupedOnPackType);
+    this.selectedSegmentList = this.segmentList;
+    console.log(this.selectedSegmentList,"segmentlist");
+    this.chartInit(this.filterData);
+
    }
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
+    this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
   }
 // File Reader ( EXCEL OR CSV) to JSON Format
@@ -141,7 +164,7 @@ async onFileChange(ev:any) {
       return initial;
     }, {});
     console.log(jsonData,"jsonData");
-    this.groupedOnPackType=groupByJson(jsonData['sheet1'],'tpn_category');
+    this.groupedOnPackType=groupByJson(jsonData['sheet1'],'pack_type');
     this.segmentList=Object.keys(this.groupedOnPackType);
     this.selectedSegmentList = this.segmentList;
      resolve(jsonData);
@@ -168,7 +191,7 @@ async onFileChange(ev:any) {
       if(search_key.length>0){
         for(let i=0;i<search_key.length;i++){
           let to_find:string=search_key[i];
-          temp.push(filterData[key].filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activations"])));
+          temp.push(filterData[key].filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activation_type"])));
          }
       }
       allFilter.push(...temp)
@@ -187,43 +210,67 @@ incrementRange(value:any){
   value.discount=value.discount+5;
 }
 goBack(){
-this.routes.navigate(['/plan-activation'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData]}});
+  console.log(this.SOURCE,"this.SOURCE")
+if(this.SOURCE=='from_opt_activation'){
+  this.routes.navigate(['/optimizer'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data]}});
+
+}else{
+  this.routes.navigate(['/plan-activation'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data]}});
+
+}
+
 }
 doFilter(){
-    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.selectedSegmentList.includes(data["tpn_category"]));
+  console.log(this.selectedSegmentList,"Segmentedlist")
+    let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
     if(this.selectedplacementTypes!='SELECT'){
       let to_find=this.selectedplacementTypes;
-      filterData=filterData.filter((data:any) =>  new RegExp('\\b' + to_find + '\\b').test( data["activations"]));
+      filterData=filterData.filter((data:any) =>  new RegExp('\\b' + to_find + '\\b').test( data["activation_type"]));
     }
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
-    this.ngAfterViewInit();
+    this.dataSource.paginator = this.paginator;
+   // this.ngAfterViewInit();
     let chartData={};
     //dataSetLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
+    this.chartInit(filterData);
+  }
+  chartInit(filterData:any){
     this.TATS={fai:0,fsi:0,sot:0,bbp:0, search:0};
     this.Chartpoints_pla_rev={fai:0,fsi:0,sot:0,bbp:0,search:0};
       filterData.forEach((element:any)=>{
-          if(element.activations.includes('FAI')){
+          if(element.activation_type.includes('FAI')){
             this.TATS.fai+=1;
-            this.Chartpoints_pla_rev.fai+=element.total_cost;
-          }else if(element.activations.includes('FSI')){
+            this.Chartpoints_pla_rev.fai+=element.cost;
+          } if(element.activation_type.includes('FSI')){
             this.TATS.fsi+=1;
-            this.Chartpoints_pla_rev.fsi+=element.total_cost;
-          }else  if(element.activations.includes('SOT')){
+            this.Chartpoints_pla_rev.fsi+=element.cost;
+          }  if(element.activation_type.includes('SOT')){
             this.TATS.sot+=1;
-            this.Chartpoints_pla_rev.sot+=element.total_cost;
-          }else  if(element.activations.includes('BBP')){
+            this.Chartpoints_pla_rev.sot+=element.cost;
+          }  if(element.activation_type.includes('BBP')){
             this.TATS.bbp+=1;
-            this.Chartpoints_pla_rev.bbp+=element.total_cost;
-          }else  if(element.activations.includes('Search')){
+            this.Chartpoints_pla_rev.bbp+=element.cost;
+          }  if(element.activation_type.includes('Search')){
             this.TATS.search+=1;
-            this.Chartpoints_pla_rev.search+=element.total_cost;
+            this.Chartpoints_pla_rev.search+=element.cost;
           }
     });
+
+    console.log(this.Chartpoints_pla_rev,"this.Chartpoints_pla_rev");
+    let byPacktype=groupByJson(filterData,'pack_type');
     this.chartRender(this.Chartpoints_pla_rev);
+    this.chartExpLift(filterData,byPacktype);
+    console.log(byPacktype,"byPacktype")
+    //TATS_BY_PACK
+    for(let [key,value] of Object.entries(byPacktype)){
+        let lvalue:any=value;
+        this.TATS_BY_PACK[key.toLowerCase()]=lvalue.length;
+
+    }
+console.log(this.TATS_BY_PACK,"TATS_BY_PACK")
   }
   chartRender(data:any){
     this.reload=false;
-    console.log(data,"Data");
     let data_points:any=[];
     this.dataSetLabel=[];
     for(let [key,value] of Object.entries(this.activationLIB)){
@@ -236,25 +283,38 @@ doFilter(){
     },200);
 
   }
+  chartExpLift(data:any,byPacktype:any){
+    this.reload=false;
+    let data_points1:any=[];
+    this.dataSetLabel1=[];
+    for(let [key,value] of Object.entries(byPacktype)){
+      this.dataSetLabel1.push(key);
+      let items:any=value;
+      let tssum=0;
+      items.map((item:any)=>{
+        tssum+=parseInt(item.lift);
+      });
+      console.log(tssum.toFixed(2),"tssum");
+      data_points1.push(tssum);
+    }
+    console.log(this.dataSetLabel1,"dataSetLabel1");
+    console.log(data_points1,"data_points1");
+    this.dataSet1={ data: data_points1, label: 'Expected Lift By Pack Type' };
+    setTimeout(()=>{
+      this.reload=true;
+    },200);
+
+  }
   sortData(sort: Sort) {
     const data = this.ELEMENT_DATA.slice();
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
     }
-    // tpn: number;
-    // tpn_category:string;
-    // activations:string;
-    // lift: number;
-    // total_cost: number;
     this.sortedData = data.sort((a:any, b:any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'tpn': return compare(a.tpn, b.tpn, isAsc);
-        case 'tpn_category': return compare(a.tpn_category, b.tpn_category, isAsc);
-        case 'activations': return compare(a.activations, b.activations, isAsc);
         case 'lift': return compare(a.lift, b.lift, isAsc);
-        case 'total_cost': return compare(a.total_cost, b.total_cost, isAsc);
         default: return 0;
       }
     });
@@ -301,7 +361,7 @@ doFilter(){
     if (!row) {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.tpn + 1}`;
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.product_tpn + 1}`;
   }
   updateProductCounter(){
       //totalProducts

@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
         setTimeout(()=>{
           this.router.navigate(['/']);
           this.dataservice.LoginState(true);
-        },500);
+        },50);
 
       }else{
 

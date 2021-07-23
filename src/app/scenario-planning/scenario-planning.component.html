@@ -10,19 +10,8 @@
               <label class="label_dropdown">Peroid</label>
               <mat-form-field appearance="fill">
                 <mat-label>Choose an option</mat-label>
-                <mat-select>
-                  <mat-option value="option1">Jan-2021</mat-option>
-                  <mat-option value="option3">Feb-2021</mat-option>
-                  <mat-option value="option3">Mar-2021</mat-option>
-                  <mat-option value="option3">APR-2021</mat-option>
-                  <mat-option value="option3">May-2021</mat-option>
-                  <mat-option value="option3">Jun-2021</mat-option>
-                  <mat-option value="option3">Jul-2021</mat-option>
-                  <mat-option value="option3">Aug-2021</mat-option>
-                  <mat-option value="option3">Sep-2021</mat-option>
-                  <mat-option value="option3">Oct-2021</mat-option>
-                  <mat-option value="option3">Nov-2021</mat-option>
-                  <mat-option value="option3">Dec-2021</mat-option>
+                <mat-select (selectionChange)="changePeroidList($event.value)" [(value)]="activePeroid">
+                  <mat-option *ngFor="let item of PeroidList" [value]="item.value">{{item.name}}</mat-option>
                 </mat-select>
               </mat-form-field>
               </div>
@@ -64,34 +53,42 @@
                       <div  class="break-line">Reset Filter</div>
                     </div>
                     </button>
-                    <button class="button-wt"
+                    <button class="button-wt "
                     (click)="downloadRateCardTemplate()"
                     mat-raised-button color="primary">
                   <div class="d-flex center_all">
                     <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_download</mat-icon></div>
                     <div  class="break-line"> Rate Card Template</div>
                   </div>
+
                    </button>
-                   <button class="button-wt" mat-raised-button color="primary">
+
+                   <button class="button-wt remove_hover" mat-raised-button color="primary" (click)="rateFile.click()" >
 
                     <div class="d-flex center_all">
                       <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_upload</mat-icon></div>
-                      <div  class="break-line"> Rate Card</div>
-                    </div>
+                       <input hidden accept=".xlsx,.xls,.csv" (change)="onRateFileSelected()" #rateFile type="file" id="ratefile">
+
+                      <div  class="break-line"> Rate Card ({{RateCardCount}})
+                      </div>
+                      </div>
                      </button>
 
-                     <button (click)="downloadFinTemplate()" class="button-wt" mat-raised-button color="primary">
+                     <button  class="button-wt" mat-raised-button color="primary">
 
                       <div class="d-flex center_all" >
                         <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_download</mat-icon></div>
+
                         <div  class="break-line"> Financials Template</div>
                       </div>
                     </button>
-                    <button class="button-wt" mat-raised-button color="primary">
+                    <button (click)="finFile.click()" class="button-wt" mat-raised-button color="primary">
 
                       <div class="d-flex center_all">
                        <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_upload</mat-icon></div>
-                       <div  class="break-line"> Financials</div>
+                       <input hidden accept=".xlsx,.xls,.csv" (change)="onFinancialsSelected()" #finFile type="file" id="finfile">
+
+                       <div  class="break-line"> Financials ({{financialsCount}}) </div>
                      </div>
                      </button>
                 </div>
@@ -130,11 +127,11 @@
                         <div  class="break-line" >Promotion Template</div>
                     </div>
                      </button>
-                       <button class="button-wt" mat-raised-button color="primary">
+                       <button class="button-wt" (click)="skuPlan.click()" mat-raised-button color="primary">
                         <div class="d-flex center_all">
                         <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">local_offer</mat-icon></div>
                         <input hidden accept=".xlsx,.xls,.csv" (change)="PromoReader($event)" #skuPlan type="file" id="skufile">
-                        <div  class="break-line" (click)="skuPlan.click()">Upload Promotion</div>
+                        <div  class="break-line" >Upload Promotion</div>
                         </div>
                      </button>
 
@@ -186,25 +183,25 @@
 
               <!-- PACK TYPE Column -->
               <ng-container matColumnDef="pack_type">
-                <th width="10%" mat-sort-header="pack_type" mat-header-cell *matHeaderCellDef> PACK TYPE </th>
+                <th width="10%"  mat-header-cell *matHeaderCellDef> PACK TYPE </th>
                 <td width="10%" mat-cell *matCellDef="let element"> {{element.pack_type}} </td>
               </ng-container>
 
               <!-- Product TPN Column -->
               <ng-container matColumnDef="product_tpn">
-                <th width="10%" mat-sort-header="product_tpn" mat-header-cell *matHeaderCellDef> PRODUCT TPN </th>
+                <th width="10%" mat-header-cell *matHeaderCellDef> PRODUCT TPN </th>
                 <td width="10%" mat-cell *matCellDef="let element"> {{element.product_tpn}} </td>
               </ng-container>
 
               <!--  PRODUCT NAME Column -->
               <ng-container matColumnDef="product_name">
-                <th width="15%" mat-sort-header="product_name" mat-header-cell *matHeaderCellDef> PRODUCT NAME  </th>
+                <th width="15%"  mat-header-cell *matHeaderCellDef> PRODUCT NAME  </th>
                 <td  width="15%" mat-cell *matCellDef="let element"> {{element.product_name}} </td>
               </ng-container>
 
               <!--  LIST PRICE Column -->
               <ng-container matColumnDef="list_price">
-                <th width="6%"  mat-sort-header="list_price" mat-header-cell *matHeaderCellDef> LIST PRICE </th>
+                <th width="6%"   mat-header-cell *matHeaderCellDef> LIST PRICE </th>
                 <td  width="6%" mat-cell *matCellDef="let element">
                   <input type="number"  [(ngModel)]="element.list_price" (focusout)="updateDiscount_price($event,element)" class="width-text small-textbox" />
                 </td>
@@ -212,7 +209,7 @@
 
             <!-- Expected PROMOTION TYPE Column -->
               <ng-container matColumnDef="promotion_type">
-                <th  width="12%" mat-sort-header="promotion_type" mat-header-cell *matHeaderCellDef> PROMOTION TYPE </th>
+                <th  width="12%"  mat-header-cell *matHeaderCellDef> PROMOTION TYPE </th>
                 <td width="12%" mat-cell  *matCellDef="let element">
                   <mat-form-field appearance="fill">
                     <mat-select [(ngModel)]="element.promotion_type"  (selectionChange)="setPromoDesc(element.promotion_type,element)">
@@ -224,7 +221,7 @@
               </ng-container>
             <!-- Expected PROMOTION Column -->
             <ng-container matColumnDef="promotion">
-              <th width="13%" mat-sort-header="promotion" mat-header-cell *matHeaderCellDef> PROMOTION </th>
+              <th width="13%" mat-header-cell *matHeaderCellDef> PROMOTION </th>
               <td width="13%" mat-cell  *matCellDef="let element">
                <!-- <select [(ngModel)]="element.promotion" (change)="updateDiscount($event,element)" class="small_select">
                   <option *ngFor="let c of element.promotion_list" [ngValue]="c.value" [value]="c.Value" >{{c.Description}}</option>
@@ -239,7 +236,7 @@
             </ng-container>
                <!-- Expected DISCOUNT Column -->
               <ng-container matColumnDef="discount">
-                <th  width="10%" mat-sort-header="discount" mat-header-cell *matHeaderCellDef> DISCOUNT % </th>
+                <th  width="10%"  mat-header-cell *matHeaderCellDef> DISCOUNT % </th>
                 <td width="10%" mat-cell *matCellDef="let element">
                   <div class="tuner_container">
                     <div class="value-button" id="decrease" (click)="decrementRange(element)" value="Decrease Value">-</div>
@@ -250,7 +247,7 @@
               </ng-container>
                <!-- Expected EDLP Column -->
               <ng-container matColumnDef="edlp">
-                <th width="10%" mat-sort-header="edlp" mat-header-cell *matHeaderCellDef> EDLP </th>
+                <th width="10%"  mat-header-cell *matHeaderCellDef> EDLP </th>
                 <td width="10%" mat-cell *matCellDef="let element">
                   <mat-form-field appearance="fill">
                     <mat-select [(ngModel)]="element.edlp" class="table_select" (selectionChange)="EDLPChange($event,element)">
@@ -261,7 +258,7 @@
               </ng-container>
                <!-- Expected EDLP Column -->
               <ng-container matColumnDef="selling_price">
-                <th width="8%" mat-sort-header="selling_price" mat-header-cell *matHeaderCellDef> SELLING PRICE </th>
+                <th width="8%" mat-header-cell *matHeaderCellDef> SELLING PRICE </th>
                 <td class="text-align-c" width="8%" mat-cell *matCellDef="let element">
                   <input type="number" readonly [(ngModel)]="element.selling_price" class="unselectable width-text small-textbox " />
                  </td>

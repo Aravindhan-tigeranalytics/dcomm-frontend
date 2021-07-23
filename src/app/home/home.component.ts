@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import jwt_decode from "jwt-decode";
 import { Subscription } from 'rxjs';
+
 import { DataControllerService } from '../data-controller/data-controller.service';
 @Component({
   selector: 'app-home',
