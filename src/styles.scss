@@ -141,6 +141,9 @@ tbody tr:hover {
 .m-10px{
   margin: 10px;
 }
+.white{
+ background-color: white;
+}
 .action_center{
   box-shadow: rgb(0 0 0 / 10%) 0px 4px 12px;
   margin: 5px;
@@ -150,7 +153,12 @@ tbody tr:hover {
  .planner_table_bg mat-form-field {
     display: block !important;
 }
-
+.d-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
 
 .scrollbar
 {

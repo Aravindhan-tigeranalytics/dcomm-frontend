@@ -74,7 +74,7 @@
                   </div>
                 </div>
                   <div class="col-md-2 action_btn_container">
-                    <button class="button-wt" mat-raised-button color="primary" (click)="simulateScenario()">
+                    <button class="button-wt" mat-raised-button color="primary" (click)="optimizeScenario()">
 
                       <div class="d-flex center_all">
                         <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">play_arrow</mat-icon></div>
@@ -105,87 +105,32 @@
                 <div class="headline-1">
                   Select Activations
                 </div>
-                <table
-                mat-table [dataSource]="dataSourceConstraints"
-                class=" planner_table table_constraint">
-                 <!--TITLES -->
-                <ng-container matColumnDef="pack_type">
-                  <th mat-header-cell *matHeaderCellDef>
-                    Activations / Pack Type
-                  </th>
-                  <td class="header_bg" mat-cell *matCellDef="let element" width="25%"> {{element.pack_type}} </td>
-                </ng-container>
-                 <!-- FSI Column -->
-                  <ng-container matColumnDef="fsi">
-                   <th mat-header-cell *matHeaderCellDef>
-                    FSI
-                   </th>
-                   <td mat-cell *matCellDef="let element"  width="15%">
-                     <mat-checkbox color="primary"  [(ngModel)]="element.fsi">
-                     </mat-checkbox>
-                   </td>
-                 </ng-container>
 
-                 <!--FAI Column -->
-                <ng-container matColumnDef="fai">
-                  <th mat-header-cell *matHeaderCellDef>
-                   FAI
-                  </th>
-                  <td mat-cell *matCellDef="let element" width="15%">
-                    <mat-checkbox color="primary" [(ngModel)]="element.fai">
-                    </mat-checkbox>
-                  </td>
-                </ng-container>
-                 <!--SEARCH Column -->
-                  <ng-container matColumnDef="search">
-                  <th mat-header-cell *matHeaderCellDef>
-                   SEARCH
-                  </th>
-                  <td mat-cell *matCellDef="let element" width="15%">
-                    <mat-checkbox color="primary" [(ngModel)]="element.search">
-                    </mat-checkbox>
-                  </td>
-                </ng-container>
-                  <!--SOT Column -->
-                   <ng-container matColumnDef="sot">
-                    <th mat-header-cell *matHeaderCellDef>
-                     SOT
-                    </th>
-                    <td mat-cell *matCellDef="let element" width="15%">
-                      <mat-checkbox color="primary"  [(ngModel)]="element.sot">
-                      </mat-checkbox>
-                    </td>
-                  </ng-container>
-                   <!--BPP Column -->
-                   <ng-container matColumnDef="bpp">
-                    <th mat-header-cell *matHeaderCellDef width="15%">
-                     BBP
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                      <mat-checkbox color="primary"  [(ngModel)]="element.bpp">
-                      </mat-checkbox>
-                    </td>
-                  </ng-container>
+                <table  class=" planner_table table_constraint">
+                  <thead>
+                    <tr class="mat-header-row">
+                      <th width="25%">Activations / Pack Type</th>
+                      <th width="15%" *ngFor="let element of DynActivationColumns">{{element.name}}</th>
+                    </tr>
+
+                  </thead>
+                  <tbody>
+                     <tr *ngFor="let row of ELEMENT_DATA_CONSTRAINTS" class="mat-row">
+                       <ng-container *ngFor="let el of displayedColumnsConstraints;let i = index">
+                        <td *ngIf="i!=0" class="mat-cell header_bg">
+                          <mat-checkbox color="primary"  [(ngModel)]="row[el]">
+                          </mat-checkbox>
+                         </td>
+                         <td *ngIf="i==0" class="mat-cell header_bg">
+                           {{row.pack_type}}
+                         </td>
+                       </ng-container>
 
 
+                    </tr>
+                  </tbody>
+                </table>
 
-                 <tr mat-header-row *matHeaderRowDef="displayedColumnsConstraints"></tr>
-                 <tr mat-row *matRowDef="let row; columns: displayedColumnsConstraints;">
-                 </tr>
-                 <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell" colspan="6">
-                    <div  class="row col-md-12">
-                      <div class="col-md-4"></div>
-                      <div class="col-md-4 dflex center_all ffc filter_no">
-                        <img height="200px" src="assets/svg/undraw_void.svg"/>
-                        <div class="filter_no">No Records Selected</div>
-                      </div>
-                      <div class="col-md-4"></div>
-                    </div>
-
-                  </td>
-                 </tr>
-               </table>
 
               </div>
 
@@ -368,6 +313,19 @@
                     <div  class="break-line p-10">Reset All</div>
                   </div>
                   </button>
+            </div>
+          </div>
+          <div class="col-md-3 center_master">
+            <div class="mat-elevation-z3 p-10">
+                  <mat-label class="custom_label_1 dflex-jc">Total Products Covered</mat-label>
+                  <div class="budget_input">
+
+                      <div>
+                        <input type="number" disabled class="budget-nos" placeholder="" />
+
+                      </div>
+
+                  </div>
             </div>
           </div>
          </div>

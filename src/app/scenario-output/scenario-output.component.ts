@@ -10,9 +10,11 @@ import * as XLSX from 'xlsx';
 import { MatPaginator } from '@angular/material/paginator';
 import { ConstraintObject, groupByJson } from '../scenario-planning/scenario-planning.component';
 import { Input } from '@angular/core';
+import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 
 export interface ScenarioPlanner {
   product_tpn: number;
+  date: string;
   pack_type: string;
   product_name:string;
   activation_type:string;
@@ -43,6 +45,22 @@ export class ScenarioOutputComponent implements OnInit {
    if(datastream){
     this.SOURCE=datastream.source
    if(datastream.source=='from_activation'){
+
+    this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
+    this.selectedData=datastream.data[1] || [];
+    this.response_data=datastream.data[2] || [];
+    this.filterData=datastream.data[3] || [];
+     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
+       let itemlist=[];
+      for( const [key,value] of Object.entries(element)){
+        if((value) && (this.activationLIB[key]!=undefined)){
+          itemlist.push(this.activationLIB[key]);
+        }
+      }
+       this.activationLIBSelected[element.pack_type]=itemlist;
+     });
+
+   }else if(datastream.source=='from_opt_activation'){
 
     this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
     this.selectedData=datastream.data[1] || [];
@@ -96,13 +114,14 @@ export class ScenarioOutputComponent implements OnInit {
   sot:0,
   bbp:0,
   search:0};
+
   activationLIBSelected:any={};
   binaryOption=[
   {id: 'Yes', name: "Yes"},
   {id: 'No', name: "No"},];
   reload:boolean=true;
   ELEMENT_DATA_CONSTRAINTS:any=[];
-  displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
+  //displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   PlacementLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
   @Input() dataSetLabel:any=[ 'FAI', 'FSI', 'SOT', 'BBP','Search'];
@@ -110,7 +129,7 @@ export class ScenarioOutputComponent implements OnInit {
   dataSetLabel1:any=[];
   selectedplacementTypes='';
   dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
-  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','lift',];
+  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'date','activation_type','lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -119,6 +138,7 @@ export class ScenarioOutputComponent implements OnInit {
   activityType: ScenarioPlanner[] = [];
   activityLift:any = '';
   activityROI:any = '';
+  renderedData: any;
   closeModal: any;
   liftSliderValue:any = [5,60];
   roiSliderValue:any = [5,40];
@@ -133,9 +153,6 @@ export class ScenarioOutputComponent implements OnInit {
   constraint_list=[]
   ngOnInit(): void {
     this.ELEMENT_DATA=this.filterData;
-    // this.response_data.filter((item:any)=>{
-
-    // });
     this.groupedOnPackType=groupByJson(this.filterData,'pack_type');
     this.segmentList=Object.keys(this.groupedOnPackType);
     this.selectedSegmentList = this.segmentList;
@@ -147,6 +164,8 @@ export class ScenarioOutputComponent implements OnInit {
    ngAfterViewInit() {
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
+    this.dataSource.connect().subscribe(d => {
+      this.renderedData = d});
   }
 // File Reader ( EXCEL OR CSV) to JSON Format
 async onFileChange(ev:any) {
@@ -180,6 +199,32 @@ async onFileChange(ev:any) {
     this.ELEMENT_DATA=FilteredSet;
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.ngAfterViewInit();
+  }
+  downloadProducts(){
+    let filename="Scenario-Planner"
+    var options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      decimalseparator: '.',
+      showLabels: true,
+      showTitle: true,
+      title: filename,
+      useBom: true,
+      noDownload: false,
+      headers: ['Product TPN','Pack Type', 'Product Name', 'Date', 'Activity','Expected Lift'],
+      nullToEmptyString: true,
+    };
+    this.renderedData.map((item:any)=>
+    {
+      for(let [key,value] of Object.entries(item)){
+        if(!this.displayedColumns.includes(key)){
+            delete item[key];
+        }
+      }
+
+
+    });
+    new Angular5Csv(this.renderedData, filename, options);
   }
   test_filter(){
     let SearchObject=this.activationLIBSelected;
@@ -223,16 +268,17 @@ if(this.SOURCE=='from_opt_activation'){
 doFilter(){
   console.log(this.selectedSegmentList,"Segmentedlist")
     let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
-    if(this.selectedplacementTypes!='SELECT'){
-      let to_find=this.selectedplacementTypes;
-      filterData=filterData.filter((data:any) =>  new RegExp('\\b' + to_find + '\\b').test( data["activation_type"]));
+    if(this.selectedplacementTypes.length!=0){
+      let to_find:any=this.selectedplacementTypes;
+      console.log(to_find,"to_find");
+      filterData=recursiveFind(filterData,to_find);
     }
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
     this.dataSource.paginator = this.paginator;
    // this.ngAfterViewInit();
     let chartData={};
     //dataSetLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
-    this.chartInit(filterData);
+  //  this.chartInit(filterData);
   }
   chartInit(filterData:any){
     this.TATS={fai:0,fsi:0,sot:0,bbp:0, search:0};
@@ -260,7 +306,7 @@ doFilter(){
     let byPacktype=groupByJson(filterData,'pack_type');
     this.chartRender(this.Chartpoints_pla_rev);
     this.chartExpLift(filterData,byPacktype);
-    console.log(byPacktype,"byPacktype")
+   // console.log(byPacktype,"byPacktype")
     //TATS_BY_PACK
     for(let [key,value] of Object.entries(byPacktype)){
         let lvalue:any=value;
@@ -386,3 +432,21 @@ function compare(a: number | string, b: number | string, isAsc: boolean) {
 }
 
 
+function recursiveFind(inputArr:any,find:any):any{
+//break-condition
+if(find.length==0){
+  return inputArr
+}else{
+  // if(find.length==1){
+  //   inputArr=inputArr.filter((data:any) => find[0] == data["activation_type"]);
+  //   find.shift();
+  // }else{
+  //   inputArr=inputArr.filter((data:any) => data["activation_type"].includes(find[0]));
+  //   find.shift();
+  //   console.log(inputArr,"inputArr");
+  // }
+     inputArr=inputArr.filter((data:any) => data["activation_type"].includes(find[0]));
+     find.shift();
+  return recursiveFind(inputArr,find)
+}
+}

@@ -15,6 +15,10 @@ export class ScenarioPlannerService {
   getPlannerData() {
     return this.http.get(this.serviceURL+'/scenario_planner/get_product_details');
   }
+  getActivationList() {
+    return this.http.get(this.serviceURL+'/scenario_planner/get_activationlist');
+  }
+  //get_activationlist
   scenatio_planner_simulate(payload:any) {
     return this.http.post(this.serviceURL+'/scenario_planner/simulate_scenario',{ params: payload });
   }

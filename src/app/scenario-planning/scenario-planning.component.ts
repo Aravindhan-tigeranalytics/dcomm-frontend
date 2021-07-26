@@ -24503,6 +24503,8 @@ export class ScenarioPlanningComponent implements OnInit {
   PeroidList:any=[];
   activePeroid:string='';
   activityLift:any = '';
+  DynActivationColumns:any={};
+
   activityROI:any = '';
   closeModal: any;
   search_tag:string='';
@@ -24529,7 +24531,8 @@ export class ScenarioPlanningComponent implements OnInit {
         element.promotion_type_list=[];
         this.ELEMENT_DATA.push(element);
       });
-      this.PeroidList=res.misc;
+      this.PeroidList=res.misc.peroid_list;
+      this.DynActivationColumns=res.misc.activation_list;
       console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA");
       this.activityType = [...new Map(this.ELEMENT_DATA.map(item => [item["pack_type"], item])).values()];
       this.typeSelected =this.activityType.map(item => item["pack_type"]);
@@ -24639,22 +24642,22 @@ simulateScenario(){
     });
     Notiflix.Loading.dots('Loading...');
     let start=0;
-    let timer=setInterval(()=>{
-      start=start+5;
-      Notiflix.Loading.change('Loading... '+start+'%');
-      if(start==95){
-        Notiflix.Loading.change('Processing....');
-        clearTimeout(timer);
-      }
+    // let timer=setInterval(()=>{
+    //   start=start+5;
+    //   Notiflix.Loading.change('Loading... '+start+'%');
+    //   if(start==95){
+    //     Notiflix.Loading.change('Processing....');
+    //     clearTimeout(timer);
+    //   }
 
-    },1000)
+    // },1000)
     console.log(payload,"payload")
-       this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
-         console.log(res,"response");
-         this.response_data=res.data;
+      //  this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
+         // console.log(res,"response");
+         // this.response_data=res.data;
       Notiflix.Loading.remove();
       this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
-       });
+    //    });
   }else{
     if(code=='records'){
       Notiflix.Notify.warning('Please select the records');
@@ -24869,6 +24872,21 @@ doFilter(){
       let calculated_price=element.list_price-((element.discount/100)*(element.list_price))
       element.selling_price=parseFloat(calculated_price.toFixed(2));
   }
+  let toChange=element.pack_type;
+  this.ELEMENT_DATA.forEach((item)=>{
+    if(item.pack_type==toChange){
+      //gbl_selling_price
+        item.selling_price=element.selling_price;
+        item.discount=element.discount;
+        item.promotion_type=element.promotion_type;
+        item.promotion=element.promotion;
+        item.list_price=element.list_price;
+        item.edlp=element.edlp;
+        item.promotion_list=element.promotion_list;
+    }
+
+  });
+
   }
   // Update the Promotion Code Discount based on the Desc Selected
   updateDiscount(event:any,row:any){
@@ -24913,7 +24931,15 @@ doFilter(){
     let availList:any=Object.keys(jsonObject);
     if(!availList.includes(row.pack_type)){
       let MuliPlex = new ConstraintObject(row.pack_type);
-      this.ELEMENT_DATA_CONSTRAINTS.push(MuliPlex.getConstraint());
+      console.log(MuliPlex.getConstraint(),"constraint");
+      let object:any={'pack_type':row.pack_type};
+      this.DynActivationColumns.forEach((element:any) => {
+        object[element.value]=false;
+      });
+      console.log(object,"object")
+      this.ELEMENT_DATA_CONSTRAINTS.push(object);
+      //this.DynActivationColumns
+      console.log(this.DynActivationColumns,"DynActivationColumns");
       this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
      }
      else{
