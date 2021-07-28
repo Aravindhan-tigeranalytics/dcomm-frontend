@@ -91,8 +91,8 @@ $theme-h-label:grey;
     justify-content: center;
 }
 .header-fixed{
-  max-height: 370px;
-  min-height: 370px;
+  max-height: 215px;
+  min-height: 215px;
   overflow: auto;
   margin-top: 0px !important;
 }
@@ -112,8 +112,7 @@ $theme-h-label:grey;
 form {
   width: 300px;
   margin: 0 auto;
-  text-align: center;
-  padding-top: 50px;
+  text-align: left;
 }
 
 .value-button {
@@ -177,6 +176,12 @@ input[type=number]::-webkit-outer-spin-button {
 .bg_theme_color{
   background-color:$theme-color;
 }
+.bg_black_color{
+  background-color:black;
+}
+.bg_green_color{
+  background-color:#001e61;;
+}
 .table_bar_cs{
   padding: 10px;
   color:white;
@@ -205,9 +210,17 @@ button{
   text-align: center;
 }
 .h1_title{
-font-weight: 500;
-color:$theme-h-label;
-text-transform: uppercase;
+  font-weight: 500;
+  text-transform: uppercase;
+  background-color: #001e61;
+  padding: 7px;
+  border-top-right-radius: 17px;
+  color: white;
+  font-size: 9px;
+  border-top-left-radius: 17px;
+  border-bottom: 1px solid #fff;
+  width: 100px;
+  text-align: center;
 }
 .ml-5{
   margin-left: 5px;
@@ -240,4 +253,43 @@ text-transform: uppercase;
 
 .space-around{
   justify-content: space-around !important;
+}
+.mat-row:nth-child(even){
+  background-color: #0000a005;
+}
+
+.mat-row:nth-child(odd){
+  background-color: #f1f1f1;
+}
+.table_style_1{
+  border-left: 1px solid #ccc;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.modal-title{
+  color: #0000a0;
+  font-size: 17px;
+}
+.cs-mat-select{
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 8px;
+}
+
+button .break-line{
+  padding: 3px;
+}
+.dflex-sp{
+  display: flex;
+  justify-content: space-around;
+}
+.m-top-10px {
+  margin-top: 10px;
+}
+.mat-select-panel{
+  z-index: 1080 !important;
+}
+.ml_10{
+  margin-left: 10px;
 }

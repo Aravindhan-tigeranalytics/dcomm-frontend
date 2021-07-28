@@ -11,6 +11,7 @@ import * as XLSX from 'xlsx';
 import * as Notiflix from 'notiflix';
 import { HtmlTagDefinition } from '@angular/compiler';
 import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+import { environment } from 'src/environments/environment';
 
 export interface ScenarioPlanner {
   pack_type: string;
@@ -50,6 +51,8 @@ export interface ScenarioPlannerConstraint {
     this.search=false;
     this.sot=false;
     this.bpp=false;
+
+
          }
     getConstraint(){
       return {"pack_type":this.pack_type,
@@ -63,7 +66,7 @@ export interface ScenarioPlannerConstraint {
 Notiflix.Notify.init({
   width:'300px',
   timeout: 5000,
-  position:'right-top',
+  position:'left-top',
   cssAnimationStyle: 'from-bottom',
   distance:'20px',
   opacity: 1,
@@ -78,6 +81,7 @@ export class ScenarioPlanningComponent implements OnInit {
   RateCardCount: number=0;
   rateCardInfoData: any;
   financialsData: any;
+  currencySymbol:string='';
   financialsCount: number=0;
   response_data=[
     {
@@ -24470,6 +24474,7 @@ export class ScenarioPlanningComponent implements OnInit {
     private apiServices:ScenarioPlannerService,
     private dataservice:DataControllerService,
     ) {
+      this.currencySymbol=environment.currencySymbol;
     let input=this.routes.getCurrentNavigation()?.extras.state;
     if(input){
     if(typeof(input)!=undefined){
@@ -24612,9 +24617,9 @@ optimizeScenario(){
     //  });
   }else{
     if(code=='records'){
-      Notiflix.Notify.warning('Please select the records');
+      Notiflix.Notify.info('Please select the records');
     }else if(code=='peroid'){
-      Notiflix.Notify.warning('Please select the peroid');
+      Notiflix.Notify.info('Please select the peroid');
     }
   }
 }
@@ -24635,6 +24640,10 @@ simulateScenario(){
   if(this.selection.selected.length==0){
     mandatory=true;
     code='records';
+  }
+  if(this.rateCardInfoData==undefined || this.rateCardInfoData==''){
+    mandatory=true;
+    code='ratecard';
   }
   if(!mandatory){
     this.selection.selected.forEach((ele)=>{
@@ -24660,9 +24669,11 @@ simulateScenario(){
     //    });
   }else{
     if(code=='records'){
-      Notiflix.Notify.warning('Please select the records');
+      Notiflix.Notify.info('Please select the records');
     }else if(code=='peroid'){
-      Notiflix.Notify.warning('Please select the peroid');
+      Notiflix.Notify.info('Please select the peroid');
+    }else if(code=='ratecard'){
+      Notiflix.Notify.info('Please upload the ratecard');
     }
   }
 
@@ -24812,7 +24823,7 @@ doFilter(){
   async PromoReader(event:any){
     let promoList:any=await this.onFileChange(event);
     try{
-      let groupedPCode=groupByJson(promoList['Promotion Code List'],'Promotion Code');
+      let groupedPCode=groupByJson(promoList['Promotion Code List'],'Promotion_Type');
       this.PROMOCODE_LIST=groupedPCode;
       console.log(this.PROMOCODE_LIST,"Promolist");
       Object.keys(groupedPCode).forEach(element => {
@@ -24822,7 +24833,7 @@ doFilter(){
         element.promotion_type_list=this.promoCodeList;
       });
     }catch(exception){
-      Notiflix.Notify.warning('Invalid File Format');
+      Notiflix.Notify.info('Invalid File Format');
     }
 
   }
@@ -24837,7 +24848,7 @@ doFilter(){
         element.promotion='';
         element.edlp='Yes';
       }
-    //  this.setSellingPrice(element);
+      this.setSellingPrice(element);
   }
   // Update change on the cases 1 and 2 and 3
   //Case 1: promotion NO and EDLP NO =Selling=Listprice
@@ -24869,20 +24880,30 @@ doFilter(){
       element.selling_price=element.list_price;
   }
   if(element.promotion_type!='SELECT' && element.edlp=='No'){
-      let calculated_price=element.list_price-((element.discount/100)*(element.list_price))
-      element.selling_price=parseFloat(calculated_price.toFixed(2));
+      let calculated_price=element.list_price-((element.discount/100)*(element.list_price));
+      if(calculated_price){
+        element.selling_price=parseFloat(calculated_price.toFixed(2));
+      }else{
+        element.selling_price=element.list_price;
+      }
+
   }
   let toChange=element.pack_type;
   this.ELEMENT_DATA.forEach((item)=>{
     if(item.pack_type==toChange){
       //gbl_selling_price
         item.selling_price=element.selling_price;
-        item.discount=element.discount;
+
         item.promotion_type=element.promotion_type;
         item.promotion=element.promotion;
         item.list_price=element.list_price;
         item.edlp=element.edlp;
         item.promotion_list=element.promotion_list;
+        if(element.discount){
+          item.discount=element.discount;
+        }else{
+          item.discount=0;
+        }
     }
 
   });
@@ -24953,9 +24974,11 @@ doFilter(){
       }
       }
   }
-  async onRateFileSelected() {
+  async onRateFileSelected(event:any) {
     const inputNode: any = document.querySelector('#ratefile');
-    console.log(inputNode.files[0])
+    let filejson:any=await this.onFileChange(event);
+    if(filejson.hasOwnProperty('RateCard')){
+
     this.rateCardInfoData = inputNode.files[0]
     let filename = inputNode.files[0].name
     var extension:any = filename.substr(filename.lastIndexOf('.'));
@@ -24965,11 +24988,15 @@ doFilter(){
       this.rateCardInfoData['data']= await this.get_filebase64('ratefile');
     }
     else{
-      Notiflix.Notify.warning('Invalid File Format');
+      Notiflix.Notify.info('Invalid File Format');
     }
 
     const formdata = new FormData();
-    formdata.append('file',inputNode.files[0])
+    formdata.append('file',inputNode.files[0]);
+
+  }else{
+    Notiflix.Notify.info('Please upload the rate card template');
+  }
   }
   async onFinancialsSelected() {
     const inputNode: any = document.querySelector('#finfile');
@@ -24984,7 +25011,7 @@ doFilter(){
       //
     }
     else{
-      Notiflix.Notify.warning('Invalid File Format');
+      Notiflix.Notify.info('Invalid File Format');
     }
     console.log(this.financialsData,"FileDataset")
     const formdata = new FormData();

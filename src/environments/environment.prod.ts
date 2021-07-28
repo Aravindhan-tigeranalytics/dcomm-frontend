@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  serviceURL:'http://localhost:5000'
+  serviceURL:'http://localhost:5000',
+  currencySymbol:'£'
 };

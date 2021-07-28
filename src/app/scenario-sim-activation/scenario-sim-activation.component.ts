@@ -5,6 +5,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { groupByJson } from '../scenario-planning/scenario-planning.component';
 import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+import * as Notiflix from 'notiflix';
+import { environment } from 'src/environments/environment';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
@@ -26,7 +28,9 @@ export interface ScenarioPlannerConstraint {
   sot: boolean;
   bbp: boolean;
 }
-
+Notiflix.Notify.init({
+  position:'right-bottom',
+})
 @Component({
   selector: 'app-scenario-sim-activation',
   templateUrl: './scenario-sim-activation.component.html',
@@ -51,9 +55,10 @@ export class ScenarioSimActivationComponent implements OnInit {
   sumProducts:string='0';
   displayedColumnsConstraints: string[] = [];
   dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
+  currencySymbol: any;
   constructor(private routes:Router,private apiServices:ScenarioPlannerService,) {
     this.datastream=this.routes.getCurrentNavigation()?.extras.state;
-
+    this.currencySymbol=environment.currencySymbol;
 }
 
   ngOnInit(): void {
@@ -105,17 +110,17 @@ export class ScenarioSimActivationComponent implements OnInit {
 
      }else{
     //  this.selectedData=JSON.parse(localStorage.getItem('defaultActivations')|| '');
-      let jsonObject=groupByJson(this.selectedData,'pack_type');
-      for (const [key, value] of Object.entries(jsonObject)) {
-        let MuliPlex = new ConstraintObject(key);
-        let object:any={'pack_type':key};
-        this.DynActivationColumns.forEach((element:any) => {
-          object[element.value]=false;
-        });
-        this.ELEMENT_DATA_CONSTRAINTS.push(object);
-        this.dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
-      }
-
+      // let jsonObject=groupByJson(this.selectedData,'pack_type');
+      // for (const [key, value] of Object.entries(jsonObject)) {
+      //   let MuliPlex = new ConstraintObject(key);
+      //   let object:any={'pack_type':key};
+      //   this.DynActivationColumns.forEach((element:any) => {
+      //     object[element.value]=false;
+      //   });
+      //   this.ELEMENT_DATA_CONSTRAINTS.push(object);
+      //   this.dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
+      // }
+this.routes.navigate(['/']);
     }
     this.setActivation();
   });
@@ -135,61 +140,83 @@ export class ScenarioSimActivationComponent implements OnInit {
   simulateScenario(){
     let jsonObject=groupByJson(this.response_data,'pack_type');
     let keys=Object.keys(jsonObject);
-    console.log(keys,"keys");
+    //console.log(keys,"keys");
     let validPacktype:any[]=[];
     let to_filterOb:any={};
+    let NoneSelected=false;
     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
       let push=false;
         for(let [key,value] of Object.entries(element)){
             if((key!='pack_type') && (value==true)){
               push=true;
+              NoneSelected=true;
               let values=to_filterOb[element.pack_type] || [];
               values.push(this.activationLIB[key]);
               to_filterOb[element.pack_type]=values;
             }
-
         }
         if(push){validPacktype.push(element.pack_type);
         }
     });
-    console.log(validPacktype,"validPacktype",to_filterOb);
+    console.log(NoneSelected,"NoneSelected");
     let filterData:any=[];
     filterData = this.response_data;
     let accumulateFilter:any=[];
     for(let [key,value] of Object.entries(to_filterOb)){
       filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
-      console.log(filterData,"level");
+    //  console.log(filterData,"level");
       let PackList:any=value;
       //console.log(PackList.join(' '),"PackList");
         filterData=filterData.filter((data:any) =>  data["activation_type"]==PackList.join(' '));
-      console.log(filterData,"level");
-      accumulateFilter.push(filterData);
+      //console.log(filterData,"filterData");
+      if(filterData.length==0){
+       // console.log(PackList,"PackList");
+        PackList.forEach((element:any) => {
+          filterData=this.response_data.filter((data:any) => data["activation_type"].trim()==element.trim());
+          accumulateFilter.push(filterData);
+        });
+
+      }else{
+        accumulateFilter.push(filterData);
+      }
+      //console.log(filterData,"AfterFilter");
+
     };
 
-     console.log(accumulateFilter,"accumulateFilter");
+     //console.log(accumulateFilter,"accumulateFilter");
      accumulateFilter=accumulateFilter.flat();
-     console.log(accumulateFilter,"filterData_")
+   //  console.log(accumulateFilter,"filterData_")
+   if(NoneSelected){
     this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
+
+   }else{
+     Notiflix.Notify.info('Please select the activations');
+   }
     }
   go_back(){
-    this.routes.navigate(['/'],{ state: {'source':'from_activation','data':[this.selectedData,this.PROMOCODE_LIST]} });
+    let that=this;
+    Notiflix.Confirm.show('Exit Simulation','Are you sure?','Yes','No',
+    function(){
+      that.routes.navigate(['/'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST]} });
+    });
+
     }
     selectAll(){
     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
-        element.fsi=true;
-        element.fai=true;
-        element.search=true;
-        element.sot=true;
-        element.bbp=true;
+      for(let [key,value] of Object.entries(element)){
+        if(key!='pack_type'){
+          element[key]=true;
+        }
+      }
     });
     }
     ResetAll(){
       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
-        element.fsi=false;
-        element.fai=false;
-        element.search=false;
-        element.sot=false;
-        element.bbp=false;
-    });
+        for(let [key,value] of Object.entries(element)){
+          if(key!='pack_type'){
+          element[key]=false;
+        }
+        }
+      });
     }
 }

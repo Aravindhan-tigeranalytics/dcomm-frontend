@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import * as Notiflix from 'notiflix';
 import { ScenarioPlannerService } from 'src/app/backend-services/scenario-planner.service';
 import { ConstraintObject, groupByJson } from 'src/app/scenario-planning/scenario-planning.component';
+import { environment } from 'src/environments/environment';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
@@ -53,29 +55,47 @@ export class ScenarioOptActivationComponent  implements OnInit {
     'fsi_search':false,
     'fsi_sot':false,
     'fsi_bbp':false,
+    'fsi_tax':false,
+    'fsi_tbp':false,
 
     'fai_fai':false,
     'fai_search':false,
     'fai_sot':false,
     'fai_bbp':false,
+    'fai_tax':false,
+    'fai_tbp':false,
 
     'search_search':false,
     'search_sot':false,
     'search_bbp':false,
+    'search_tax':false,
+    'search_tbp':false,
 
     'sot_sot':false,
     'sot_bbp':false,
+    'sot_tax':false,
+    'sot_tbp':false,
 
     'bbp_bbp':false,
+    'bbp_tax':false,
+    'bbp_tbp':false,
+
+    'tax_tax':false,
+    'tax_tbp':false,
+
+    'tpb_tbp':false,
+
   };
   totalProducts=0;
   sumProducts:string='0';
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   dataSourceConstraintsMatrix = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS_MATRIX);
+  currencySymbol: any;
+  totalBudget: number=0;
   constructor(private routes:Router,private apiServices:ScenarioPlannerService,) {
     this.datastream=this.routes.getCurrentNavigation()?.extras.state;
-
+    this.currencySymbol=environment.currencySymbol;
 }
 
   ngOnInit(): void {
@@ -155,6 +175,9 @@ export class ScenarioOptActivationComponent  implements OnInit {
     this.sumProducts=sumLocal.toFixed(2);
 
   }
+  clearBudget(){
+    this.totalBudget=0;
+  }
   optimizeScenario(){
     let jsonObject=groupByJson(this.response_data,'pack_type');
     let keys=Object.keys(jsonObject);
@@ -195,24 +218,28 @@ export class ScenarioOptActivationComponent  implements OnInit {
     this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
     }
   go_back(){
-    this.routes.navigate(['/'],{ state: {'source':'from_activation','data':[this.selectedData,this.PROMOCODE_LIST]} });
+    let that=this;
+    Notiflix.Confirm.show('Exit Optimizer','Are you sure?','Yes','No',
+    function(){
+      that.routes.navigate(['/'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST]} });
+    });
     }
     selectAll(){
-    this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
-        element.fsi=true;
-        element.fai=true;
-        element.search=true;
-        element.sot=true;
-        element.bpp=true;
-    });
+      this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
+        for(let [key,value] of Object.entries(element)){
+          if(key!='pack_type'){
+            element[key]=true;
+          }
+        }
+      });
     }
     ResetAll(){
       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
-        element.fsi=false;
-        element.fai=false;
-        element.search=false;
-        element.sot=false;
-        element.bpp=false;
-    });
+        for(let [key,value] of Object.entries(element)){
+          if(key!='pack_type'){
+            element[key]=false;
+          }
+        }
+      });
     }
 }

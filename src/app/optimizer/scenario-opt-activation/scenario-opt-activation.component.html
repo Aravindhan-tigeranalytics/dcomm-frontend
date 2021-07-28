@@ -110,7 +110,7 @@
                   <thead>
                     <tr class="mat-header-row">
                       <th width="25%">Activations / Pack Type</th>
-                      <th width="15%" *ngFor="let element of DynActivationColumns">{{element.name}}</th>
+                      <th width="14.2%" *ngFor="let element of DynActivationColumns">{{element.name}}</th>
                     </tr>
 
                   </thead>
@@ -156,11 +156,17 @@
                       <div class="budget_input">
 
                           <div>
-                            <input type="number" class="budget-nos" placeholder="" />
+                            <div  class="budget-nos">
+                             <span class="curr">
+                              {{this.currencySymbol}}
+                             </span>
+                              <input type="number"   [(ngModel)]="totalBudget" placeholder="" />
+                            </div>
+
                             <button mat-raised-button color="primary" class="m-10">
                               <div class="d-flex center_all">
                                 <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
-                                <div  class="break-line p-10">Clear</div>
+                                <div  class="break-line p-10" (click)="clearBudget()">Clear</div>
                               </div>
                               </button>
                           </div>
@@ -177,7 +183,7 @@
         <div class="row col-md-12 ">
 
 
-          <div class="col-md-6">
+          <div class="col-md-9">
             <div class="mat-elevation-z2 headline-1 row">
 
             <div class="headline-1">
@@ -185,110 +191,203 @@
             </div>
             <table  class="mat-table planner_table table_constraint matrix">
               <thead>
-                <th class="mat-header-cell">Activation</th>
+                <th class="mat-header-cell" width="20%" >Activation</th>
                 <th class="mat-header-cell">FSI</th>
                 <th class="mat-header-cell">FAI</th>
                 <th class="mat-header-cell">SEARCH</th>
                 <th class="mat-header-cell">SOT</th>
                 <th class="mat-header-cell">BBP</th>
+                <th class="mat-header-cell" width="20%">TAXONOMY_AISLE</th>
+                <th class="mat-header-cell">TBP</th>
               </thead>
               <tbody>
                 <tr>
-                  <td  width="15%" class="header_bg mat-cell">FSI</td>
-                  <td  width="15%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fsi_fsi']">
+                  <td  width="14.2%" class="header_bg mat-cell">FSI</td>
+                  <td  width="14.2%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fsi_fsi']">
                   </mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fsi_fai']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fsi_search']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fsi_sot']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fsi_bbp']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
+                    <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                      [(ngModel)]="MatrixConstraintsTable['fsi_tax']"
+                      color="primary" [disableRipple]="true"
+                      (click)="$event.preventDefault()"></mat-checkbox></td>
+                      <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                        [(ngModel)]="MatrixConstraintsTable['fsi_tbp']"
+                        color="primary" [disableRipple]="true"
+                        (click)="$event.preventDefault()"></mat-checkbox></td>
                 </tr>
                 <tr>
-                  <td  width="15%" class="header_bg mat-cell">FAI</td>
-                  <td  width="15%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fsi_fai']"></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fai_fai']"></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox color="primary"
+                  <td  width="14.2%" class="header_bg mat-cell">FAI</td>
+                  <td  width="14.2%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fsi_fai']"></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTable['fai_fai']"></mat-checkbox></td>
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox color="primary"
 
                     [(ngModel)]="MatrixConstraintsTable['fai_search']"
                     [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fai_sot']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()" ></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fai_bbp']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
+                    <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                      [(ngModel)]="MatrixConstraintsTable['fai_tax']"
+                      color="primary" [disableRipple]="true"
+                      (click)="$event.preventDefault()"></mat-checkbox></td>
+                      <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                        [(ngModel)]="MatrixConstraintsTable['fai_tbp']"
+                        color="primary" [disableRipple]="true"
+                        (click)="$event.preventDefault()"></mat-checkbox></td>
                 </tr>
                 <tr>
-                  <td  width="15%" class="header_bg mat-cell">SEARCH</td>
-                  <td  width="15%"><mat-checkbox
+                  <td  width="14.2%" class="header_bg mat-cell">SEARCH</td>
+                  <td  width="14.2%"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fsi_search']"
                     color="primary" ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox
+                  <td  width="14.2%"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fai_search']"
                     color="primary" ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox
+                  <td  width="14.2%"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['search_search']"
                     color="primary"
                      ></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['search_sot']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['search_bbp']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
+                    <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                      [(ngModel)]="MatrixConstraintsTable['search_tax']"
+                      color="primary" [disableRipple]="true"
+                      (click)="$event.preventDefault()"></mat-checkbox></td>
+                      <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                        [(ngModel)]="MatrixConstraintsTable['search_tbp']"
+                        color="primary" [disableRipple]="true"
+                        (click)="$event.preventDefault()"></mat-checkbox></td>
                 </tr>
                 <tr>
-                  <td  width="15%" class="header_bg mat-cell">SOT</td>
-                  <td  width="15%"><mat-checkbox
+                  <td  width="14.2%" class="header_bg mat-cell">SOT</td>
+                  <td  width="14.2%"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fsi_sot']"
                     color="primary" ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox color="primary"
+                  <td  width="14.2%"><mat-checkbox color="primary"
                     [(ngModel)]="MatrixConstraintsTable['fai_sot']"
                     ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox color="primary"
+                  <td  width="14.2%"><mat-checkbox color="primary"
                     [(ngModel)]="MatrixConstraintsTable['search_sot']"
                     ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox
+                  <td  width="14.2%"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['sot_sot']"
                     color="primary" ></mat-checkbox></td>
-                  <td  width="15%" class="disabled_checkbox"><mat-checkbox
+                  <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['sot_bbp']"
                     color="primary" [disableRipple]="true"
                     (click)="$event.preventDefault()"></mat-checkbox></td>
+                    <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                      [(ngModel)]="MatrixConstraintsTable['sot_tax']"
+                      color="primary" [disableRipple]="true"
+                      (click)="$event.preventDefault()"></mat-checkbox></td>
+                      <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                        [(ngModel)]="MatrixConstraintsTable['sot_tbp']"
+                        color="primary" [disableRipple]="true"
+                        (click)="$event.preventDefault()"></mat-checkbox></td>
                 </tr>
                 <tr>
-                  <td  width="15%" class="header_bg mat-cell">BBP</td>
-                  <td  width="15%"><mat-checkbox
+                  <td  width="14.2%" class="header_bg mat-cell">BBP</td>
+                  <td  width="14.2%"><mat-checkbox
                     [(ngModel)]="MatrixConstraintsTable['fsi_bbp']"
                     color="primary" ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox color="primary"
+                  <td  width="14.2%"><mat-checkbox color="primary"
                     [(ngModel)]="MatrixConstraintsTable['fai_bbp']"
                     ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox color="primary"
+                  <td  width="14.2%"><mat-checkbox color="primary"
                     [(ngModel)]="MatrixConstraintsTable['search_bbp']"
                     ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox color="primary"
+                  <td  width="14.2%"><mat-checkbox color="primary"
                     [(ngModel)]="MatrixConstraintsTable['sot_bbp']"
                     ></mat-checkbox></td>
-                  <td  width="15%"><mat-checkbox color="primary"
+                  <td  width="14.2%"><mat-checkbox color="primary"
                     [(ngModel)]="MatrixConstraintsTable['bbp_bbp']"
                     ></mat-checkbox></td>
+                    <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                      [(ngModel)]="MatrixConstraintsTable['bbp_tax']"
+                      color="primary" [disableRipple]="true"
+                      (click)="$event.preventDefault()"></mat-checkbox></td>
+
+                      <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                        [(ngModel)]="MatrixConstraintsTable['bbp_tbp']"
+                        color="primary" [disableRipple]="true"
+                        (click)="$event.preventDefault()"></mat-checkbox></td>
+
+                </tr>
+                <tr>
+                  <td  width="20%" class="header_bg mat-cell">TAXONOMY_AISLE</td>
+                  <td  width="14.2%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_tax']"
+                    color="primary" ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['fai_tax']"
+                    ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['search_tax']"
+                    ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['sot_tax']"
+                    ></mat-checkbox></td>
+                    <td  width="14.2%"><mat-checkbox color="primary"
+                      [(ngModel)]="MatrixConstraintsTable['bbp_tax']"
+                      ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['tax_tax']"
+                    ></mat-checkbox></td>
+                    <td  width="14.2%" class="disabled_checkbox"><mat-checkbox
+                      [(ngModel)]="MatrixConstraintsTable['tax_tbp']"
+                      color="primary" [disableRipple]="true"
+                      (click)="$event.preventDefault()"></mat-checkbox></td>
+                </tr>
+                <tr>
+                  <td  width="14.2%" class="header_bg mat-cell">TBP</td>
+                  <td  width="14.2%"><mat-checkbox
+                    [(ngModel)]="MatrixConstraintsTable['fsi_tbp']"
+                    color="primary" ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['fai_tbp']"
+                    ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['search_tbp']"
+                    ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['sot_tbp']"
+                    ></mat-checkbox></td>
+                  <td  width="14.2%"><mat-checkbox color="primary"
+                    [(ngModel)]="MatrixConstraintsTable['bbp_tbp']"
+                    ></mat-checkbox></td>
+                    <td  width="14.2%"><mat-checkbox color="primary"
+                      [(ngModel)]="MatrixConstraintsTable['tax_tbp']"
+                      ></mat-checkbox></td>
+                      <td  width="14.2%"><mat-checkbox color="primary"
+                        [(ngModel)]="MatrixConstraintsTable['tax_tax']"
+                        ></mat-checkbox></td>
                 </tr>
               </tbody>
 
@@ -313,21 +412,23 @@
                     <div  class="break-line p-10">Reset All</div>
                   </div>
                   </button>
+                  <div class="mat-elevation-z3 p-10">
+                    <mat-label class="custom_label_1 dflex-jc">Total Products Covered</mat-label>
+                    <div class="budget_input">
+
+                        <div>
+                          <input type="number" disabled class="budget-nos" placeholder="" />
+
+                        </div>
+
+                    </div>
+              </div>
             </div>
+
           </div>
-          <div class="col-md-3 center_master">
-            <div class="mat-elevation-z3 p-10">
-                  <mat-label class="custom_label_1 dflex-jc">Total Products Covered</mat-label>
-                  <div class="budget_input">
+          <!-- <div class="col-md-3 center_master">
 
-                      <div>
-                        <input type="number" disabled class="budget-nos" placeholder="" />
-
-                      </div>
-
-                  </div>
-            </div>
-          </div>
+          </div> -->
          </div>
       </div>
       <!-- Activation Constraint Matrix -->

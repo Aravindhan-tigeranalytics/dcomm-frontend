@@ -18,9 +18,24 @@ export class ScenarioPlannerService {
   getActivationList() {
     return this.http.get(this.serviceURL+'/scenario_planner/get_activationlist');
   }
+  getpackTypeList() {
+    return this.http.get(this.serviceURL+'/scenario_planner/activationlist');
+  }
   //get_activationlist
   scenatio_planner_simulate(payload:any) {
     return this.http.post(this.serviceURL+'/scenario_planner/simulate_scenario',{ params: payload });
   }
-
+//save scenario
+scenario_planner_simulate_save(payload:any) {
+  return this.http.post(this.serviceURL+'/scenario_planner/planner_data', payload );
+}
+// list save scenario
+scenario_planner_list() {
+  return this.http.get(this.serviceURL+'/scenario_planner/planner_data' );
+}
+//scenario_planner/planner_datas_detail/
+// list save scenario
+scenario_planner_listdetails(payload:number) {
+  return this.http.get(this.serviceURL+'/scenario_planner/planner_datas_detail/'+payload );
+}
 }

@@ -67,7 +67,7 @@
 
                     <div class="d-flex center_all">
                       <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_upload</mat-icon></div>
-                       <input hidden accept=".xlsx,.xls,.csv" (change)="onRateFileSelected()" #rateFile type="file" id="ratefile">
+                       <input hidden accept=".xlsx,.xls,.csv" (change)="onRateFileSelected($event)" #rateFile type="file" id="ratefile">
 
                       <div  class="break-line"> Rate Card ({{RateCardCount}})
                       </div>
@@ -201,7 +201,7 @@
 
               <!--  LIST PRICE Column -->
               <ng-container matColumnDef="list_price">
-                <th width="6%"   mat-header-cell *matHeaderCellDef> LIST PRICE </th>
+                <th width="6%"   mat-header-cell *matHeaderCellDef> LIST PRICE ({{currencySymbol}})</th>
                 <td  width="6%" mat-cell *matCellDef="let element">
                   <input type="number"  [(ngModel)]="element.list_price" (focusout)="updateDiscount_price($event,element)" class="width-text small-textbox" />
                 </td>
@@ -229,7 +229,7 @@
 
                  <mat-form-field appearance="fill">
                   <mat-select [(ngModel)]="element.promotion"   (selectionChange)="updateDiscount($event,element)">
-                    <mat-option *ngFor="let c of element.promotion_list"   [value]="c.Value">{{c.Description}}</mat-option>
+                    <mat-option *ngFor="let c of element.promotion_list"   [value]="c.Final_Price">{{c.Promotion_Text}}</mat-option>
                   </mat-select>
                 </mat-form-field>
               </td>
@@ -258,7 +258,7 @@
               </ng-container>
                <!-- Expected EDLP Column -->
               <ng-container matColumnDef="selling_price">
-                <th width="8%" mat-header-cell *matHeaderCellDef> SELLING PRICE </th>
+                <th width="8%" mat-header-cell *matHeaderCellDef> SELLING PRICE ({{currencySymbol}})</th>
                 <td class="text-align-c" width="8%" mat-cell *matCellDef="let element">
                   <input type="number" readonly [(ngModel)]="element.selling_price" class="unselectable width-text small-textbox " />
                  </td>

@@ -1,20 +1,24 @@
+import { HtmlTagDefinition } from '@angular/compiler';
 import { Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import { MatPaginator } from '@angular/material/paginator';
 import { ConstraintObject, groupByJson } from '../scenario-planning/scenario-planning.component';
 import { Input } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
+import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+import * as Notiflix from 'notiflix';
+import { environment } from 'src/environments/environment';
 
 export interface ScenarioPlanner {
   product_tpn: number;
-  date: string;
+  incr_sales: string;
   pack_type: string;
   product_name:string;
   activation_type:string;
@@ -28,6 +32,9 @@ export interface ScenarioPlannerConstraint {
   sot: boolean;
   bpp: boolean;
 }
+Notiflix.Notify.init({
+  position:'right-bottom',
+})
 @Component({
   selector: 'app-scenario-output',
   templateUrl: './scenario-output.component.html',
@@ -35,86 +42,37 @@ export interface ScenarioPlannerConstraint {
 })
 
 export class ScenarioOutputComponent implements OnInit {
+
   response_data:any;
   SOURCE: any;
+  valueSelected:any=0;
+  modalOptions:NgbModalOptions | undefined;
   filterData: any;
-  constructor(private modalService: NgbModal,private routes:Router) {
+  defaultData:any
+  datastream:any;
+  reload1: boolean=true;
+  TATSPack_ARRAY: any=[];
+  currencySymbol: any;
+  constructor(private modalService: NgbModal,
+    private routes:Router,private apiServices:ScenarioPlannerService) {
    // console.log(this.route.getCurrentNavigation()?.extras.state);
-   let datastream:any=this.routes.getCurrentNavigation()?.extras.state;
-   console.log("initiateds");
-   if(datastream){
-    this.SOURCE=datastream.source
-   if(datastream.source=='from_activation'){
-
-    this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
-    this.selectedData=datastream.data[1] || [];
-    this.response_data=datastream.data[2] || [];
-    this.filterData=datastream.data[3] || [];
-     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
-       let itemlist=[];
-      for( const [key,value] of Object.entries(element)){
-        if((value) && (this.activationLIB[key]!=undefined)){
-          itemlist.push(this.activationLIB[key]);
-        }
-      }
-       this.activationLIBSelected[element.pack_type]=itemlist;
-     });
-
-   }else if(datastream.source=='from_opt_activation'){
-
-    this.ELEMENT_DATA_CONSTRAINTS=datastream.data[0] || [];
-    this.selectedData=datastream.data[1] || [];
-    this.response_data=datastream.data[2] || [];
-    this.filterData=datastream.data[3] || [];
-     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
-       let itemlist=[];
-      for( const [key,value] of Object.entries(element)){
-        if((value) && (this.activationLIB[key]!=undefined)){
-          itemlist.push(this.activationLIB[key]);
-        }
-      }
-       this.activationLIBSelected[element.pack_type]=itemlist;
-     });
-
-   }
-   console.log(this.activationLIBSelected,"activationLIBSelected");
-
-
-  }else{
-    this.routes.navigate(['/']);
+    this.datastream=this.routes.getCurrentNavigation()?.extras.state;
+    this.currencySymbol=environment.currencySymbol;
+   this.modalOptions = {
+    backdrop:'static',
+    backdropClass:'customBackdrop'
   }
 
 };
-  ELEMENT_DATA: ScenarioPlanner[] = [];
-  activationLIB:any={
-    fsi: "FSI",
-    fai: "FAI",
-    search: "SEARCH",
-    sot: "SOT",
-    bpp: "BPP",
-  };
-   TATS={
-    fai:0,
-    fsi:0,
-    sot:0,
-    bbp:0,
-    search:0
-  };
-  TATS_BY_PACK:any={
-    'multipack':0,
-    'block':0,
-    'biscuits':0,
-    'pouch':0,
-    'funsize':0,
-    'boked':0
-  };
- Chartpoints_pla_rev={
-  fai:0,
-  fsi:0,
-  sot:0,
-  bbp:0,
-  search:0};
-
+   ELEMENT_DATA: ScenarioPlanner[] = [];
+   activationLIB:any={};
+   TATS:any={};
+   packTypeList:any={};
+   TATS_ARRAY:any=[];
+   DynActivationColumns:any=[];
+   TATS_BY_PACK:any={};
+   Chartpoints_pla_rev:any={};
+   FileName:string='';
   activationLIBSelected:any={};
   binaryOption=[
   {id: 'Yes', name: "Yes"},
@@ -123,13 +81,15 @@ export class ScenarioOutputComponent implements OnInit {
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
-  PlacementLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
+  PlacementLabel:any=[];
   @Input() dataSetLabel:any=[ 'FAI', 'FSI', 'SOT', 'BBP','Search'];
   @Input() dataSet:any={ data: [0, 0, 0, 0, 0], label: 'Incremental Revenue by Placement' };
   dataSetLabel1:any=[];
+  saveList:any=[{'name':'SELECT','id':0},
+  {'name':'Load1','id':1}]
   selectedplacementTypes='';
   dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
-  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'date','activation_type','lift',];
+  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','incr_sales','lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -148,17 +108,70 @@ export class ScenarioOutputComponent implements OnInit {
   placementTypes = new FormControl();
   //segment
   Segment = new FormControl();
-  segmentList: string[] = [];
+  segmentList: any[] = [];
   selectedSegmentList: any = [];
   constraint_list=[]
   ngOnInit(): void {
-    this.ELEMENT_DATA=this.filterData;
-    this.groupedOnPackType=groupByJson(this.filterData,'pack_type');
-    this.segmentList=Object.keys(this.groupedOnPackType);
-    this.selectedSegmentList = this.segmentList;
-    console.log(this.selectedSegmentList,"segmentlist");
-    this.chartInit(this.filterData);
+    this.apiServices.getActivationList().subscribe((res:any)=>{
+      console.log(res,"RES");
+      if(res.code==200){
+        this.DynActivationColumns=res.data;
+        for(let [key,value] of Object.entries(res.data)){
+          let values:any=value;
+          this.activationLIB[values.value]=values.name;
+          this.PlacementLabel.push(values.name);
+        }
+    if(this.datastream){
+      this.SOURCE=this.datastream.source
+     if(this.datastream.source=='from_activation'){
+      this.ELEMENT_DATA_CONSTRAINTS=this.datastream.data[0] || [];
+      this.selectedData=this.datastream.data[1] || [];
+      this.response_data=this.datastream.data[2] || [];
+      this.filterData=this.datastream.data[3] || [];
+      this.defaultData=this.datastream.data[3] || [];
+       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
+         let itemlist=[];
+        for( const [key,value] of Object.entries(element)){
+          if((value) && (this.activationLIB[key]!=undefined)){
+            itemlist.push(this.activationLIB[key]);
+          }
+        }
+         this.activationLIBSelected[element.pack_type]=itemlist;
+       });
 
+     }else if(this.datastream.source=='from_opt_activation'){
+
+      this.ELEMENT_DATA_CONSTRAINTS=this.datastream.data[0] || [];
+      this.selectedData=this.datastream.data[1] || [];
+      this.response_data=this.datastream.data[2] || [];
+      this.filterData=this.datastream.data[3] || [];
+      this.defaultData=this.datastream.data[3] || [];
+       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
+         let itemlist=[];
+        for( const [key,value] of Object.entries(element)){
+          if((value) && (this.activationLIB[key]!=undefined)){
+            itemlist.push(this.activationLIB[key]);
+          }
+        }
+         this.activationLIBSelected[element.pack_type]=itemlist;
+       });
+
+     }
+     this.ngAfterViewInit();
+     this.getSavedData();
+     console.log(this.activationLIBSelected,"activationLIBSelected");
+     this.ELEMENT_DATA=this.filterData;
+     this.groupedOnPackType=groupByJson(this.filterData,'pack_type');
+     console.log("groupedOnPackType",this.groupedOnPackType);
+     this.segmentList=Object.keys(this.groupedOnPackType);
+     this.selectedSegmentList = this.segmentList;
+     this.chartInit(this.filterData);
+
+    }else{
+      this.routes.navigate(['/']);
+    }
+  }
+  });
    }
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
@@ -200,6 +213,118 @@ async onFileChange(ev:any) {
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.ngAfterViewInit();
   }
+  saveScenarioTrigger(content:any) {
+    this.modalService.open(content, this.modalOptions).result.then((result) => {
+
+    });
+  }
+  LoadSaveList(){
+    if(this.valueSelected!=0){
+      //load data
+      this.apiServices.scenario_planner_listdetails(this.valueSelected).subscribe((res:any)=>{
+        console.log(res,"listDetails");
+        let response=res;
+        if(res.code==200 && res.status=='success'){
+          this.resetFilter();
+          console.log(response['data'][0].json_data,"data");
+          let filterData:any = response['data'][0].json_data.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
+          if(this.selectedplacementTypes.length!=0){
+            let to_find:any=[...this.selectedplacementTypes];
+            console.log(to_find,"to_find");
+            filterData=recursiveFind(filterData,to_find);
+            console.log(to_find,"to_find")
+          }
+          this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
+          this.dataSource.paginator = this.paginator;
+          this.chartInit(filterData);
+          Notiflix.Notify.success('Senario is loaded successfully !!!');
+          this.modalService.dismissAll();
+        }
+      });
+    }else{
+      //load default data
+      let filterData:any = this.defaultData.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
+      if(this.selectedplacementTypes.length!=0){
+        let to_find:any=[...this.selectedplacementTypes];
+        console.log(to_find,"to_find");
+        filterData=recursiveFind(filterData,to_find);
+        console.log(to_find,"to_find")
+      }
+      this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
+      this.dataSource.paginator = this.paginator;
+      this.chartInit(filterData);
+      this.modalService.dismissAll();
+    }
+  }
+  saveScenario(){
+    let planner_type='';
+    if(this.SOURCE=='from_opt_activation'){
+      planner_type='optimizer';
+    }else{
+      planner_type='simulation'
+    }
+
+    let payload={
+      "name":this.FileName,
+      "json_data":this.filterData,
+      "planner_type":planner_type
+  }
+  if(this.FileName.trim()!=''){
+  this.apiServices.scenario_planner_simulate_save(payload).subscribe((res:any)=>{
+    console.log(res,"res")
+  if(res.code==200){
+    this.modalService.dismissAll();
+    Notiflix.Report.success('Simulation Save','Scenario Planner - Simulation is Saved Successfully','Click');
+    this.getSavedData();
+  }else{
+    if(res.status=='Failed'){
+        Notiflix.Notify.failure('Failed to save record');
+    }
+  }
+  });
+}else{
+  Notiflix.Notify.failure('Please Enter The Scenario Name')
+}
+  }
+  getSavedData(){
+      this.apiServices.scenario_planner_list().subscribe((res:any) =>{
+          console.log(res,"scenatio_list");
+          this.saveList=[];
+        if(res.code==200 && res.status=='success'){
+          if(this.SOURCE=='from_opt_activation'){
+           // planner_type='optimizer';
+           this.saveList=[{'name':'Default','id':0}];
+           this.saveList.push(...res.data['optimizer']);
+          }else{
+           // planner_type='simulation'
+           //this.saveList=res.data['simulation'];
+           this.saveList=[{'name':'Default','id':0}];
+           this.saveList.push(...res.data['simulation']);
+          }
+
+        }
+      });
+  }
+   getpackTypeList(filterData:any,byPacktype:any){
+    this.TATS_ARRAY=[];
+    for(let [key,value] of Object.entries(this.activationLIB)){
+      this.TATS_ARRAY.push({'name':value,'value':this.TATS[key]})
+    }
+
+        this.TATSPack_ARRAY=[];
+        console.log(this.TATS,"TATS");
+        for(let [key,value] of Object.entries(this.packTypeList)){
+          let values:any=value;
+          this.TATSPack_ARRAY.push({'name':values.name,'value':this.TATS[key]})
+        }
+        console.log(this.TATSPack_ARRAY,"TATSPack_ARRAY");
+        for(let [key,value] of Object.entries(byPacktype)){
+          let lvalue:any=value;
+          this.TATS_BY_PACK[key.toLowerCase()]=lvalue.length;
+          }
+
+
+  }
   downloadProducts(){
     let filename="Scenario-Planner"
     var options = {
@@ -211,7 +336,7 @@ async onFileChange(ev:any) {
       title: filename,
       useBom: true,
       noDownload: false,
-      headers: ['Product TPN','Pack Type', 'Product Name', 'Date', 'Activity','Expected Lift'],
+      headers: ['Product TPN','Pack Type', 'Product Name', 'Incremental Sales', 'Activity','Expected Lift'],
       nullToEmptyString: true,
     };
     this.renderedData.map((item:any)=>
@@ -221,8 +346,6 @@ async onFileChange(ev:any) {
             delete item[key];
         }
       }
-
-
     });
     new Angular5Csv(this.renderedData, filename, options);
   }
@@ -254,6 +377,7 @@ decrementRange(value:any){
 incrementRange(value:any){
   value.discount=value.discount+5;
 }
+
 goBack(){
   console.log(this.SOURCE,"this.SOURCE")
 if(this.SOURCE=='from_opt_activation'){
@@ -265,72 +389,72 @@ if(this.SOURCE=='from_opt_activation'){
 }
 
 }
+resetFilter(){
+  this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+    this.dataSource.paginator = this.paginator;
+    this.chartInit(this.ELEMENT_DATA);
+}
 doFilter(){
   console.log(this.selectedSegmentList,"Segmentedlist")
     let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
     if(this.selectedplacementTypes.length!=0){
-      let to_find:any=this.selectedplacementTypes;
+      let to_find:any=[...this.selectedplacementTypes];
       console.log(to_find,"to_find");
       filterData=recursiveFind(filterData,to_find);
+      console.log(to_find,"to_find")
     }
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
     this.dataSource.paginator = this.paginator;
-   // this.ngAfterViewInit();
-    let chartData={};
-    //dataSetLabel:any=['SELECT', 'FAI', 'FSI', 'SOT', 'BBP','Search'];
-  //  this.chartInit(filterData);
+    this.chartInit(filterData);
   }
   chartInit(filterData:any){
-    this.TATS={fai:0,fsi:0,sot:0,bbp:0, search:0};
-    this.Chartpoints_pla_rev={fai:0,fsi:0,sot:0,bbp:0,search:0};
-      filterData.forEach((element:any)=>{
-          if(element.activation_type.includes('FAI')){
-            this.TATS.fai+=1;
-            this.Chartpoints_pla_rev.fai+=element.cost;
-          } if(element.activation_type.includes('FSI')){
-            this.TATS.fsi+=1;
-            this.Chartpoints_pla_rev.fsi+=element.cost;
-          }  if(element.activation_type.includes('SOT')){
-            this.TATS.sot+=1;
-            this.Chartpoints_pla_rev.sot+=element.cost;
-          }  if(element.activation_type.includes('BBP')){
-            this.TATS.bbp+=1;
-            this.Chartpoints_pla_rev.bbp+=element.cost;
-          }  if(element.activation_type.includes('Search')){
-            this.TATS.search+=1;
-            this.Chartpoints_pla_rev.search+=element.cost;
-          }
+     this.TATS={};
+     this.DynActivationColumns.forEach((element:any) => {
+      this.TATS[element.value]=0;
+      this.Chartpoints_pla_rev[element.value]=0;
     });
-
-    console.log(this.Chartpoints_pla_rev,"this.Chartpoints_pla_rev");
-    let byPacktype=groupByJson(filterData,'pack_type');
-    this.chartRender(this.Chartpoints_pla_rev);
-    this.chartExpLift(filterData,byPacktype);
-   // console.log(byPacktype,"byPacktype")
-    //TATS_BY_PACK
-    for(let [key,value] of Object.entries(byPacktype)){
-        let lvalue:any=value;
-        this.TATS_BY_PACK[key.toLowerCase()]=lvalue.length;
-
+     for(let [key,value] of Object.entries(this.activationLIB)){
+      filterData.forEach((element:any)=>{
+          if(element.activation_type.includes(value)){
+            this.TATS[key]+=1;
+            this.Chartpoints_pla_rev[key]+=element.cost;
+          }
+     });
     }
-console.log(this.TATS_BY_PACK,"TATS_BY_PACK")
+
+  let byPacktype=groupByJson(filterData,'pack_type');
+  this.chartRender(this.Chartpoints_pla_rev);
+  this.chartExpLift(filterData,byPacktype);
+  this.getpackTypeList(filterData,byPacktype);
   }
   chartRender(data:any){
     this.reload=false;
     let data_points:any=[];
     this.dataSetLabel=[];
     for(let [key,value] of Object.entries(this.activationLIB)){
-      this.dataSetLabel.push(value);
-      data_points.push(data[key]);
+      console.log(key,value,"value_key",data[key]);
+      if(data[key]!=0){
+        this.dataSetLabel.push(value);
+        data_points.push(data[key]);
+      }
+
     }
-    this.dataSet={ data: data_points, label: 'Incremental Revenue by Placement' };
+    this.dataSet={ data: data_points, label: 'Incremental Revenue by Placement' ,backgroundColor:[
+      'rgb(156, 39, 176)',
+      'rgb(103, 58, 183 )',
+      'rgb(33, 150, 243 )',
+      'rgb(0, 150, 136 )',
+      'rgb(139, 195, 74 )',
+      'rgb(233, 30, 99 )',
+      'rgb(103, 58, 183 )',
+     ]};
     setTimeout(()=>{
       this.reload=true;
     },200);
 
   }
   chartExpLift(data:any,byPacktype:any){
-    this.reload=false;
+    this.reload1=false;
     let data_points1:any=[];
     this.dataSetLabel1=[];
     for(let [key,value] of Object.entries(byPacktype)){
@@ -343,16 +467,39 @@ console.log(this.TATS_BY_PACK,"TATS_BY_PACK")
       console.log(tssum.toFixed(2),"tssum");
       data_points1.push(tssum);
     }
-    console.log(this.dataSetLabel1,"dataSetLabel1");
-    console.log(data_points1,"data_points1");
-    this.dataSet1={ data: data_points1, label: 'Expected Lift By Pack Type' };
+    console.log(data_points1,"data_points1")
+    this.dataSet1={ data: data_points1, label: 'Expected Lift By Pack Type' ,backgroundColor:[
+      'rgb(156, 39, 176)',
+      'rgb(103, 58, 183 )',
+      'rgb(33, 150, 243 )',
+      'rgb(0, 150, 136 )',
+      'rgb(139, 195, 74 )',
+      'rgb(233, 30, 99 )',
+      'rgb(103, 58, 183 )',
+     ]};
+    this.apiServices.getpackTypeList().subscribe((res: any) => {
+      console.log(res, "getpackTypeList");
+      if (res.code == 200 && res.status == 'success') {
+        this.packTypeList = res.data;
+        this.packTypeList.forEach((element:any) => {
+          element['counts']=0;
+        });
+        this.packTypeList.forEach((element:any) => {
+          console.log(byPacktype[element.name],"byPacktype[element.name]");
+          element['counts']=byPacktype[element.name]?.length || 0;
+        });
+        console.log(this.packTypeList,"updated");
+      }
+    });
     setTimeout(()=>{
-      this.reload=true;
+      this.reload1=true;
+      console.log(this.dataSet1, this.dataSetLabel)
     },200);
 
   }
   sortData(sort: Sort) {
-    const data = this.ELEMENT_DATA.slice();
+    console.log("sort");
+    const data = this.filterData.slice();
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -364,8 +511,12 @@ console.log(this.TATS_BY_PACK,"TATS_BY_PACK")
         default: return 0;
       }
     });
+    console.log(this.sortedData,"sortedData")
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.sortedData);
-    this.ngAfterViewInit();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.connect().subscribe(d => {
+      this.renderedData = d});
+   // this.ngAfterViewInit();
   }
 
   triggerModal(content :any) {
