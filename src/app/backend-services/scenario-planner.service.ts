@@ -38,4 +38,12 @@ scenario_planner_list() {
 scenario_planner_listdetails(payload:number) {
   return this.http.get(this.serviceURL+'/scenario_planner/planner_datas_detail/'+payload );
 }
+//delete
+scenario_planner_listdelete(payload:number) {
+  return this.http.delete(this.serviceURL+'/scenario_planner/planner_datas_detail/'+payload );
+}
+//delete
+get_processed_data(payload:any) {
+  return this.http.post(this.serviceURL+'/scenario_planner/groupped_planner_data',payload );
+}
 }

@@ -49,7 +49,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
   Placements=['FSI','FAI','SEARCH','SOT','BBP'];
   //PackTypes=['Mulipack','Baked','Pack'];
   totalActivations=0;
-  MatrixConstraintsTable={
+  MatrixConstraintsTable:any={
     'fsi_fsi':false,
     'fsi_fai':false,
     'fsi_search':false,
@@ -110,8 +110,6 @@ export class ScenarioOptActivationComponent  implements OnInit {
           this.activationLIB[values.value]=values.name;
           this.displayedColumnsConstraints.push(values.value)
         }
-        console.log(this.displayedColumnsConstraints,"this.displayedColumnsConstraints");
-        console.log(this.activationLIB,"this.activationLIB");
       }
     if(this.datastream){
       if(this.datastream.source=='from_planning'){
@@ -120,9 +118,9 @@ export class ScenarioOptActivationComponent  implements OnInit {
         this.selectedData=this.datastream.data[1] || [];
         this.PROMOCODE_LIST=this.datastream.data[2] || [];
         this.response_data=this.datastream.data[3] || [];
-        console.log(this.response_data,"response_data");
-        let jsonObject=groupByJson(this.selectedData,'pack_type');
 
+        let jsonObject=groupByJson(this.selectedData,'pack_type');
+        console.log(jsonObject,"jsonObject");
       this.ELEMENT_DATA_CONSTRAINTS=[];
       for (const [key, value] of Object.entries(jsonObject)) {
         console.log("key",key);
@@ -204,17 +202,26 @@ export class ScenarioOptActivationComponent  implements OnInit {
     let accumulateFilter:any=[];
     for(let [key,value] of Object.entries(to_filterOb)){
       filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
-      console.log(filterData,"level");
+    //  console.log(filterData,"level");
       let PackList:any=value;
       //console.log(PackList.join(' '),"PackList");
         filterData=filterData.filter((data:any) =>  data["activation_type"]==PackList.join(' '));
-      console.log(filterData,"level");
-      accumulateFilter.push(filterData);
+      //console.log(filterData,"filterData");
+      if(filterData.length==0){
+       // console.log(PackList,"PackList");
+        PackList.forEach((element:any) => {
+          filterData=this.response_data.filter((data:any) => data["activation_type"].trim()==element.trim());
+          accumulateFilter.push(filterData);
+        });
+
+      }else{
+        accumulateFilter.push(filterData);
+      }
+      //console.log(filterData,"AfterFilter");
+
     };
 
-     console.log(accumulateFilter,"accumulateFilter");
-     accumulateFilter=accumulateFilter.flat();
-     console.log(accumulateFilter,"filterData_")
+    accumulateFilter=accumulateFilter.flat();
     this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
     }
   go_back(){
@@ -233,6 +240,14 @@ export class ScenarioOptActivationComponent  implements OnInit {
         }
       });
     }
+    selectAllConstraint(){
+      console.log("constaint")
+
+        for(let [key,value] of Object.entries(this.MatrixConstraintsTable)){
+          this.MatrixConstraintsTable[key]=true;
+        }
+        console.log(this.MatrixConstraintsTable)
+    }
     ResetAll(){
       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
         for(let [key,value] of Object.entries(element)){
@@ -241,5 +256,10 @@ export class ScenarioOptActivationComponent  implements OnInit {
           }
         }
       });
+    }
+    ResetAllConstraint(){
+      for(let [key,value] of Object.entries(this.MatrixConstraintsTable)){
+        this.MatrixConstraintsTable[key]=false;
+       }
     }
 }

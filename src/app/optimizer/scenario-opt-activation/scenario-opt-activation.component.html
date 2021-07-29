@@ -386,7 +386,7 @@
                       [(ngModel)]="MatrixConstraintsTable['tax_tbp']"
                       ></mat-checkbox></td>
                       <td  width="14.2%"><mat-checkbox color="primary"
-                        [(ngModel)]="MatrixConstraintsTable['tax_tax']"
+                        [(ngModel)]="MatrixConstraintsTable['tbp_tbp']"
                         ></mat-checkbox></td>
                 </tr>
               </tbody>
@@ -400,13 +400,13 @@
             <div class="mat-elevation-z3">
               <mat-label class="custom_label_1 dflex-jc">Actions</mat-label>
 
-              <button mat-raised-button color="primary" (click)="selectAll()" class="m-10">
+              <button mat-raised-button color="primary" (click)="selectAllConstraint()" class="m-10">
                 <div class="d-flex center_all">
                   <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Select All">select_all</mat-icon></div>
                   <div  class="break-line p-10">Select All</div>
                 </div>
                 </button>
-                <button mat-raised-button color="primary" (click)="ResetAll()" class="m-10">
+                <button mat-raised-button color="primary" (click)="ResetAllConstraint()" class="m-10">
                   <div class="d-flex center_all">
                     <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
                     <div  class="break-line p-10">Reset All</div>
@@ -417,7 +417,7 @@
                     <div class="budget_input">
 
                         <div>
-                          <input type="number" disabled class="budget-nos" placeholder="" />
+                          <input type="number" [(ngModel)]="this.totalProducts" disabled class="budget-nos" placeholder="" />
 
                         </div>
 

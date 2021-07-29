@@ -24487,7 +24487,7 @@ export class ScenarioPlanningComponent implements OnInit {
   ELEMENT_DATA: ScenarioPlanner[] = [];
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //'fsi', 'fai','search', 'sot', 'bpp'
-
+  Ratecardjson:any;
   PROMOCODE_LIST:any={};
   datastream:any;
   binaryOption=[
@@ -24581,7 +24581,7 @@ changePeroidList(event:any){
   });
 }
 optimizeScenario(){
-  let payload={ 'rate_card':this.rateCardInfoData,
+  let payload={ 'rate_card':this.Ratecardjson['RateCard'],
                 'financials':this.financialsData,
                 'products':this.selection.selected};
   let code='';
@@ -24628,7 +24628,7 @@ simulateScenario(){
   //scenatio_planner_simulate
   //rateCardInfoData financialsData
   //this.activePeroid
-  let payload={ 'rate_card':this.rateCardInfoData,
+  let payload={ 'rate_card':this.Ratecardjson['RateCard'],
                 'financials':this.financialsData,
                 'products':this.selection.selected};
   let code='';
@@ -24661,12 +24661,23 @@ simulateScenario(){
 
     // },1000)
     console.log(payload,"payload")
-      //  this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
-         // console.log(res,"response");
-         // this.response_data=res.data;
-      Notiflix.Loading.remove();
-      this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
-    //    });
+
+
+      //   this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
+      //  console.log(res,"response");
+      //  if(res.status=='success'){
+      //   this.response_data=res.data;
+      //   Notiflix.Loading.remove();
+      //   this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
+
+      //  }else if(res.status=='databricks_error'){
+      //   Notiflix.Loading.remove();
+      //   Notiflix.Notify.failure('Failed to process with inputs')
+      //  }
+      // });
+       Notiflix.Loading.remove();
+       this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
+
   }else{
     if(code=='records'){
       Notiflix.Notify.info('Please select the records');
@@ -24976,8 +24987,8 @@ doFilter(){
   }
   async onRateFileSelected(event:any) {
     const inputNode: any = document.querySelector('#ratefile');
-    let filejson:any=await this.onFileChange(event);
-    if(filejson.hasOwnProperty('RateCard')){
+    this.Ratecardjson=await this.onFileChange(event);
+    if(this.Ratecardjson.hasOwnProperty('RateCard')){
 
     this.rateCardInfoData = inputNode.files[0]
     let filename = inputNode.files[0].name
@@ -24994,6 +25005,7 @@ doFilter(){
     const formdata = new FormData();
     formdata.append('file',inputNode.files[0]);
 
+    console.log(this.Ratecardjson['RateCard'],"this.Ratecardjson")
   }else{
     Notiflix.Notify.info('Please upload the rate card template');
   }

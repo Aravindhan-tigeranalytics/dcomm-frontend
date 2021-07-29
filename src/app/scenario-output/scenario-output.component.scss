@@ -255,11 +255,11 @@ button{
   justify-content: space-around !important;
 }
 .mat-row:nth-child(even){
-  background-color: #0000a005;
+  background-color: #f1f1f1;
 }
 
 .mat-row:nth-child(odd){
-  background-color: #f1f1f1;
+  background-color: #0000a005;
 }
 .table_style_1{
   border-left: 1px solid #ccc;

@@ -223,7 +223,7 @@
                       <div class="col-md-2 cs_font_size">  MAC ROAS</div>
                    </div>
                     <div class="row table_bar_row center_items row_items">
-                      <div class="col-md-2 cs_font_size br_1_black">-</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{incremantalCSV | shortNumber : '1.2-2' }}</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
@@ -234,7 +234,7 @@
                 </div>
             </div>
           </div>
-          <div class="row m-5px p_zero" >
+          <div class="row m-5px p_zero" *ngIf="SOURCE=='from_activation'">
             <div class="col-md-12 " >
               <label class="h1_title">Activations</label>
                 <div class="row ">
@@ -255,7 +255,7 @@
                 </div>
               </div>
             </div>
-                <div class="row m-5px p_zero" >
+                <div class="row m-5px p_zero" *ngIf="SOURCE=='from_activation'">
                   <div class="col-md-12 " >
                     <label class="h1_title">Pack Types</label>
                 <div class="row ">
@@ -276,6 +276,27 @@
                 </div>
             </div>
           </div>
+          <div class="row m-5px p_zero" *ngIf="SOURCE=='from_opt_activation'">
+            <div class="col-md-12 " >
+              <label class="h1_title">Optimized Budget Share</label>
+                <div class="row ">
+                  <div class="col-md-12 bg_white mat-elevation-z2 ">
+                   <div class="bg_green_color table_bar_cs row center_items">
+                    <div class="col-md-12 dflex-sp">
+                      <div class="cs_font_size col-md-1" *ngFor="let item of TATS_ARRAY ">{{item.name}}</div>
+
+                    </div>
+                    </div>
+                    <div class="row table_bar_row center_items">
+                      <div class="col-md-12 dflex-sp">
+                        <div class="cs_font_size col-md-1" *ngFor="let item of TATS_ARRAY ">{{item.value}}</div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           <div class="row m-5px p_zero">
             <div class="col-md-6">
               <app-scenario-barchart
@@ -334,7 +355,7 @@
           <div class="dflex">
             <button type="button" (click)="LoadSaveList()" class="btn btn-outline-dark d-flex ml_10" ><mat-icon aria-hidden="false" aria-label="Close">get_app</mat-icon>Load</button>
 
-            <button type="button" class="btn btn-outline-dark d-flex ml_10" ><mat-icon aria-hidden="false" aria-label="Close">delete</mat-icon>Delete</button>
+            <button type="button" class="btn btn-outline-dark d-flex ml_10" (click)="deleteSavedList()"><mat-icon aria-hidden="false" aria-label="Close">delete</mat-icon>Delete</button>
 
           </div>
 

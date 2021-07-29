@@ -53,6 +53,7 @@ export class ScenarioOutputComponent implements OnInit {
   reload1: boolean=true;
   TATSPack_ARRAY: any=[];
   currencySymbol: any;
+  incremantalCSV: number=0;
   constructor(private modalService: NgbModal,
     private routes:Router,private apiServices:ScenarioPlannerService) {
    // console.log(this.route.getCurrentNavigation()?.extras.state);
@@ -83,7 +84,11 @@ export class ScenarioOutputComponent implements OnInit {
   dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   PlacementLabel:any=[];
   @Input() dataSetLabel:any=[ 'FAI', 'FSI', 'SOT', 'BBP','Search'];
-  @Input() dataSet:any={ data: [0, 0, 0, 0, 0], label: 'Incremental Revenue by Placement' };
+  @Input() dataSet:any={ data: [0, 0, 0, 0, 0],
+    title: {
+      text: 'Incremental Revenue by Placements',
+      display: true
+    } };
   dataSetLabel1:any=[];
   saveList:any=[{'name':'SELECT','id':0},
   {'name':'Load1','id':1}]
@@ -157,15 +162,14 @@ export class ScenarioOutputComponent implements OnInit {
        });
 
      }
+     this.ELEMENT_DATA=this.filterData;
      this.ngAfterViewInit();
      this.getSavedData();
-     console.log(this.activationLIBSelected,"activationLIBSelected");
-     this.ELEMENT_DATA=this.filterData;
      this.groupedOnPackType=groupByJson(this.filterData,'pack_type');
-     console.log("groupedOnPackType",this.groupedOnPackType);
      this.segmentList=Object.keys(this.groupedOnPackType);
      this.selectedSegmentList = this.segmentList;
-     this.chartInit(this.filterData);
+     this.chartInit(this.ELEMENT_DATA);
+
 
     }else{
       this.routes.navigate(['/']);
@@ -175,6 +179,7 @@ export class ScenarioOutputComponent implements OnInit {
    }
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
+     console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA__");
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
     this.dataSource.connect().subscribe(d => {
@@ -207,15 +212,29 @@ async onFileChange(ev:any) {
     }
     // Input Handler for the promocode upload
   async testData(event:any){
-    let promoList:any=await this.onFileChange(event);
-    let FilteredSet=promoList['sheet1'];
-    this.ELEMENT_DATA=FilteredSet;
-    this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
-    this.ngAfterViewInit();
+    // let promoList:any=await this.onFileChange(event);
+    // let FilteredSet=promoList['sheet1'];
+    // this.ELEMENT_DATA=FilteredSet;
+    // this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+    // this.ngAfterViewInit();
   }
   saveScenarioTrigger(content:any) {
     this.modalService.open(content, this.modalOptions).result.then((result) => {
 
+    });
+  }
+  deleteSavedList(){
+    let that=this;
+    Notiflix.Confirm.show('Confirm Delete','Are you sure you want to delete this item?','Yes','No',
+    ()=>{
+      //scenario_planner_listdelete
+      this.apiServices.scenario_planner_listdelete(this.valueSelected).subscribe((res:any)=>{
+        if(res.code==200 && res.status=='success'){
+          that.getSavedData();
+          Notiflix.Notify.success('Deleted Successfully ! ');
+
+        }
+      });
     });
   }
   LoadSaveList(){
@@ -226,18 +245,25 @@ async onFileChange(ev:any) {
         let response=res;
         if(res.code==200 && res.status=='success'){
           this.resetFilter();
-          console.log(response['data'][0].json_data,"data");
-          let filterData:any = response['data'][0].json_data.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
+          let filterData:any=response['data'][0].json_data;
+           this.groupedOnPackType=groupByJson(filterData,'pack_type');
+            this.segmentList=Object.keys(this.groupedOnPackType);
+            this.selectedSegmentList = this.segmentList;
+           filterData = filterData.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
+
           if(this.selectedplacementTypes.length!=0){
             let to_find:any=[...this.selectedplacementTypes];
             console.log(to_find,"to_find");
             filterData=recursiveFind(filterData,to_find);
             console.log(to_find,"to_find")
           }
+
+
           this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
-          this.dataSource.paginator = this.paginator;
+         this.dataSource.paginator = this.paginator;
           this.chartInit(filterData);
           Notiflix.Notify.success('Senario is loaded successfully !!!');
+          this.filterData=filterData;
           this.modalService.dismissAll();
         }
       });
@@ -274,8 +300,9 @@ async onFileChange(ev:any) {
     console.log(res,"res")
   if(res.code==200){
     this.modalService.dismissAll();
-    Notiflix.Report.success('Simulation Save','Scenario Planner - Simulation is Saved Successfully','Click');
+    Notiflix.Notify.success('Simulation is Saved Successfully');
     this.getSavedData();
+    this.FileName='';
   }else{
     if(res.status=='Failed'){
         Notiflix.Notify.failure('Failed to save record');
@@ -303,6 +330,8 @@ async onFileChange(ev:any) {
           }
 
         }
+
+        console.log(this.saveList,"saveList");
       });
   }
    getpackTypeList(filterData:any,byPacktype:any){
@@ -350,26 +379,26 @@ async onFileChange(ev:any) {
     new Angular5Csv(this.renderedData, filename, options);
   }
   test_filter(){
-    let SearchObject=this.activationLIBSelected;
-    let allFilter=[];
-    let filterData:any=groupByJson(this.dataSource.data,'tpn_category');
-    for(const [key,value] of Object.entries(SearchObject)){
-      let temp=[];
-      let search_key:any=value;
-      if(search_key.length>0){
-        for(let i=0;i<search_key.length;i++){
-          let to_find:string=search_key[i];
-          temp.push(filterData[key].filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activation_type"])));
-         }
-      }
-      allFilter.push(...temp)
-    }
+    // let SearchObject=this.activationLIBSelected;
+    // let allFilter=[];
+    // let filterData:any=groupByJson(this.dataSource.data,'tpn_category');
+    // for(const [key,value] of Object.entries(SearchObject)){
+    //   let temp=[];
+    //   let search_key:any=value;
+    //   if(search_key.length>0){
+    //     for(let i=0;i<search_key.length;i++){
+    //       let to_find:string=search_key[i];
+    //       temp.push(filterData[key].filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activation_type"])));
+    //      }
+    //   }
+    //   allFilter.push(...temp)
+    // }
 
-    var merged = [].concat.apply([], allFilter);
-    this.ELEMENT_DATA=merged;
+    // var merged = [].concat.apply([], allFilter);
+    // this.ELEMENT_DATA=merged;
 
-    this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
-    this.ngAfterViewInit();
+    // this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+    // this.ngAfterViewInit();
   }
 decrementRange(value:any){
     value.discount=value.discount-5;
@@ -412,13 +441,19 @@ doFilter(){
      this.DynActivationColumns.forEach((element:any) => {
       this.TATS[element.value]=0;
       this.Chartpoints_pla_rev[element.value]=0;
+      //this.incremantalCSV+=element.incr_sales;
+    });
+    filterData.forEach((element:any)=>{
+      this.incremantalCSV+=element.incr_sales;
     });
      for(let [key,value] of Object.entries(this.activationLIB)){
       filterData.forEach((element:any)=>{
           if(element.activation_type.includes(value)){
             this.TATS[key]+=1;
             this.Chartpoints_pla_rev[key]+=element.cost;
+
           }
+
      });
     }
 
@@ -439,7 +474,8 @@ doFilter(){
       }
 
     }
-    this.dataSet={ data: data_points, label: 'Incremental Revenue by Placement' ,backgroundColor:[
+    this.dataSet={ data: data_points,
+      label: 'Incremental Revenue by Placement' ,backgroundColor:[
       'rgb(156, 39, 176)',
       'rgb(103, 58, 183 )',
       'rgb(33, 150, 243 )',

@@ -158,21 +158,24 @@ this.routes.navigate(['/']);
         if(push){validPacktype.push(element.pack_type);
         }
     });
-    console.log(NoneSelected,"NoneSelected");
+    //console.log(NoneSelected,"NoneSelected");
     let filterData:any=[];
     filterData = this.response_data;
     let accumulateFilter:any=[];
+
     for(let [key,value] of Object.entries(to_filterOb)){
+      console.log(key,"key")
       filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
-    //  console.log(filterData,"level");
+      console.log(filterData,"level",key);
       let PackList:any=value;
       //console.log(PackList.join(' '),"PackList");
+      console.log(filterData,"filterData");
         filterData=filterData.filter((data:any) =>  data["activation_type"]==PackList.join(' '));
-      //console.log(filterData,"filterData");
+      console.log(filterData,"level");
       if(filterData.length==0){
-       // console.log(PackList,"PackList");
         PackList.forEach((element:any) => {
-          filterData=this.response_data.filter((data:any) => data["activation_type"].trim()==element.trim());
+          filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
+          filterData=filterData.filter((data:any) => data["activation_type"].trim()==element.trim());
           accumulateFilter.push(filterData);
         });
 
@@ -185,9 +188,17 @@ this.routes.navigate(['/']);
 
      //console.log(accumulateFilter,"accumulateFilter");
      accumulateFilter=accumulateFilter.flat();
-   //  console.log(accumulateFilter,"filterData_")
+    console.log(accumulateFilter,"filterData_");
+    console.log(this.response_data,"this.response_data");
    if(NoneSelected){
-    this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
+    console.log(accumulateFilter,"converting");
+    this.apiServices.get_processed_data({data:accumulateFilter}).subscribe((res:any)=>{
+      console.log(res.data,"resdata");
+      if(res.code==200 && res.status=='success'){
+        this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,res.data]} });
+      }
+
+    })
 
    }else{
      Notiflix.Notify.info('Please select the activations');

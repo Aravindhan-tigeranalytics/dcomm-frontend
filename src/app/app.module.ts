@@ -24,6 +24,7 @@ import { ChartsModule } from 'ng2-charts';
 import {MatMenuModule} from '@angular/material/menu';
 import { ScenarioSimActivationComponent } from './scenario-sim-activation/scenario-sim-activation.component';
 import { LoginComponent } from './login/login.component';
+import { ShortNumberPipe } from './pipes/short-number.pipe';
 // import { MatToolbarModule } from '@angular/material/toolbar';
 // import { MatIconModule } from '@angular/material/icon';
 
@@ -37,6 +38,7 @@ import { LoginComponent } from './login/login.component';
     ScenarioBarchartComponent,
     ScenarioSimActivationComponent,
     LoginComponent,
+    ShortNumberPipe,
 
   ],
   imports: [
@@ -53,6 +55,7 @@ import { LoginComponent } from './login/login.component';
     ChartsModule,
     MatIconModule,
     MatMenuModule,
+
   ],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }},
   { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
