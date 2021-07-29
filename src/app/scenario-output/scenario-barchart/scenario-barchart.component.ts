@@ -28,13 +28,21 @@ export class ScenarioBarchartComponent implements OnInit {
     layout: {
       padding: 20
   },
-    scales: { xAxes: [{}], yAxes: [{
+    scales: { xAxes: [{
+      gridLines: {
+        drawOnChartArea: false
+    }
+    }], yAxes: [{
         ticks: {
             callback: (label, index, labels)=> {
                 return label+' '+this.currencySymbol;
             }
         },
-    }] },
+        gridLines: {
+          drawOnChartArea: false
+      }
+    },
+  ] },
     plugins: {
       datalabels: {
         anchor: 'end',

@@ -19,6 +19,7 @@ import { environment } from 'src/environments/environment';
 export interface ScenarioPlanner {
   product_tpn: number;
   incr_sales: string;
+  cost:number;
   pack_type: string;
   product_name:string;
   activation_type:string;
@@ -95,7 +96,7 @@ export class ScenarioOutputComponent implements OnInit {
   {'name':'Load1','id':1}]
   selectedplacementTypes='';
   dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
-  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','incr_sales','lift',];
+  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','cost','incr_sales','lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -183,6 +184,7 @@ export class ScenarioOutputComponent implements OnInit {
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
      console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA__");
+     this.ELEMENT_DATA=this.ELEMENT_DATA.sort((a:any, b:any) => b.lift - a.lift);
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
     this.dataSource.connect().subscribe(d => {
@@ -262,6 +264,8 @@ async onFileChange(ev:any) {
           }
 
 
+          filterData=filterData.sort((a:any, b:any) => b.lift - a.lift);
+          console.log(filterData,"filterData");
           this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
          this.dataSource.paginator = this.paginator;
           this.chartInit(filterData);
@@ -549,9 +553,11 @@ doFilter(){
       return;
     }
     this.sortedData = data.sort((a:any, b:any) => {
-      const isAsc = sort.direction === 'asc';
+      const isAsc = sort.direction === 'desc';
       switch (sort.active) {
         case 'lift': return compare(a.lift, b.lift, isAsc);
+        case 'cost': return compare(a.cost, b.cost, isAsc);
+        case 'incr_sales': return compare(a.incr_sales, b.incr_sales, isAsc);
         default: return 0;
       }
     });

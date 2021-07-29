@@ -154,36 +154,41 @@
 
               <!-- SKU Column -->
               <ng-container matColumnDef="pack_type">
-                <th width="20%" mat-sort-header="pack_type" mat-header-cell *matHeaderCellDef> Pack Type </th>
-                <td width="20%" mat-cell *matCellDef="let element"> {{element.pack_type}} </td>
+                <th width="15%" mat-sort-header="pack_type" mat-header-cell *matHeaderCellDef> Pack Type </th>
+                <td width="15%" mat-cell *matCellDef="let element"> {{element.pack_type}} </td>
               </ng-container>
               <!-- SKU Date -->
               <ng-container matColumnDef="incr_sales">
-                <th width="20%" mat-sort-header="incr_sales" mat-header-cell *matHeaderCellDef> Incremental Sales </th>
-                <td width="20%" mat-cell *matCellDef="let element"> {{element.incr_sales | number : '1.2-2' }} </td>
+                <th width="20%" mat-sort-header="incr_sales" mat-header-cell *matHeaderCellDef> Incremental Sales  </th>
+                <td width="20%" mat-cell *matCellDef="let element">({{this.currencySymbol}}) {{element.incr_sales | number : '1.2-2' }} </td>
+              </ng-container>
+               <!-- Cost -->
+               <ng-container matColumnDef="cost">
+                <th width="20%" mat-sort-header="cost" mat-header-cell *matHeaderCellDef> Cost </th>
+                <td width="20%"  mat-cell *matCellDef="let element">({{this.currencySymbol}})  {{element.cost | number : '1.2-2' }} </td>
               </ng-container>
               <!-- Activation Type Column -->
               <ng-container matColumnDef="product_tpn">
-                <th width="20%" mat-sort-header="product_tpn" mat-header-cell *matHeaderCellDef>  Product TPN </th>
-                <td  width="20%" mat-cell *matCellDef="let element"> {{element.product_tpn}} </td>
+                <th width="15%" mat-sort-header="product_tpn" mat-header-cell *matHeaderCellDef>  Product TPN </th>
+                <td  width="15%" mat-cell *matCellDef="let element"> {{element.product_tpn}} </td>
               </ng-container>
 
               <!-- Expect Lift Column -->
               <ng-container matColumnDef="product_name">
-                <th width="20%" mat-sort-header="product_name" mat-header-cell *matHeaderCellDef> Product Name</th>
-                <td width="20%" mat-cell *matCellDef="let element"> {{element.product_name}} </td>
+                <th width="15%" mat-sort-header="product_name" mat-header-cell *matHeaderCellDef> Product Name</th>
+                <td width="15%" mat-cell *matCellDef="let element"> {{element.product_name}} </td>
               </ng-container>
 
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="activation_type">
-                <th width="20%" mat-sort-header="activation_type" mat-header-cell *matHeaderCellDef> Activity </th>
-                <td width="20%"  mat-cell *matCellDef="let element"> {{element.activation_type}} </td>
+                <th width="18%" mat-sort-header="activation_type" mat-header-cell *matHeaderCellDef> Activity </th>
+                <td width="18%"  mat-cell *matCellDef="let element"> {{element.activation_type}} </td>
               </ng-container>
 
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="lift">
-                <th width="20%" mat-sort-header="lift" mat-header-cell *matHeaderCellDef> Expected Lift  ({{this.currencySymbol}})</th>
-                <td width="20%" class="right-align" mat-cell *matCellDef="let element"> {{element.lift | number : '1.2-2' }} %</td>
+                <th width="15%" mat-sort-header="lift" mat-header-cell *matHeaderCellDef> Expected Lift  </th>
+                <td width="15%" style="color:green;" class="right-align" mat-cell *matCellDef="let element"> {{element.lift | number : '1.2-2' }} %</td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"

@@ -298,7 +298,7 @@ simulateScenario(){
       //   this.response_data=res.data;
       //   Notiflix.Loading.remove();
       //   this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
-      //     this.selection.selected,this.PROMOCODE_LIST,this.response_data,]}});
+      //     this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
 
       //  }else if(res.status=='databricks_error'){
       //   Notiflix.Loading.remove();
