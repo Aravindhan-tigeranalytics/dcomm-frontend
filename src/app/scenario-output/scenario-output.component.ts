@@ -450,14 +450,16 @@ doFilter(){
       filterData.forEach((element:any)=>{
           if(element.activation_type.includes(value)){
             this.TATS[key]+=1;
-            this.Chartpoints_pla_rev[key]+=element.cost;
+            this.Chartpoints_pla_rev[key]+=element.incr_sales.toFixed(2);
 
           }
 
      });
     }
+    console.log(this.Chartpoints_pla_rev,"1");
 
   let byPacktype=groupByJson(filterData,'pack_type');
+  console.log(filterData,byPacktype,"1");
   this.chartRender(this.Chartpoints_pla_rev);
   this.chartExpLift(filterData,byPacktype);
   this.getpackTypeList(filterData,byPacktype);

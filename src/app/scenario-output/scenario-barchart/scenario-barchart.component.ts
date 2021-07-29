@@ -37,7 +37,7 @@ export class ScenarioBarchartComponent implements OnInit {
         anchor: 'end',
         align: 'end',
         font: {
-          size: 15
+          size: 10
         },
         formatter: (value:any, ctx:any) => {
           var perc = value+" "+ this.currencySymbol;
