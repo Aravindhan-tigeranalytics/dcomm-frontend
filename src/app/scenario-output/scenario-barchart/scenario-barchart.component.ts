@@ -24,7 +24,10 @@ export class ScenarioBarchartComponent implements OnInit {
   barChartPlugins = [pluginDataLabels];
   barChartOptions: ChartOptions = {
     responsive: true,
-    legend: { position: 'bottom',  },
+    legend: { position: 'top',  },
+    layout: {
+      padding: 20
+  },
     scales: { xAxes: [{}], yAxes: [{
         ticks: {
             callback: (label, index, labels)=> {

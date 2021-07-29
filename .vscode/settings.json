@@ -1,0 +1,9 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/066fc627-241c-4166-b66f-70f51b9b4b95/resourceGroups/MARS-SRM-UK-DEV-RG/providers/Microsoft.Web/sites/dcommfrontend",
+    "appService.deploySubpath": "dist",
+    "SCM_DO_BUILD_DURING_DEPLOYMENT":false
+}

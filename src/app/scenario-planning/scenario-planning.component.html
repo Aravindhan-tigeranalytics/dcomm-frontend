@@ -186,6 +186,10 @@
                 <th width="10%"  mat-header-cell *matHeaderCellDef> PACK TYPE </th>
                 <td width="10%" mat-cell *matCellDef="let element"> {{element.pack_type}} </td>
               </ng-container>
+              <ng-container matColumnDef="pack_sub_type">
+                <th width="15%"  mat-header-cell *matHeaderCellDef> PACK SUB TYPE </th>
+                <td width="15%" mat-cell *matCellDef="let element"> {{element.pack_sub_type}} </td>
+              </ng-container>
 
               <!-- Product TPN Column -->
               <ng-container matColumnDef="product_tpn">

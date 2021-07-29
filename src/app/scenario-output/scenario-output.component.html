@@ -183,7 +183,7 @@
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="lift">
                 <th width="20%" mat-sort-header="lift" mat-header-cell *matHeaderCellDef> Expected Lift  ({{this.currencySymbol}})</th>
-                <td width="20%" class="right-align" mat-cell *matCellDef="let element"> {{element.lift}} </td>
+                <td width="20%" class="right-align" mat-cell *matCellDef="let element"> {{element.lift | number : '1.2-2' }} %</td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"

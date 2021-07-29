@@ -124,7 +124,7 @@
                      <tr *ngFor="let row of ELEMENT_DATA_CONSTRAINTS" class="mat-row">
                        <ng-container *ngFor="let el of displayedColumnsConstraints;let i = index">
                         <td *ngIf="i!=0" class="mat-cell header_bg">
-                          <mat-checkbox color="primary"  [(ngModel)]="row[el]">
+                          <mat-checkbox color="primary"  [(ngModel)]="row[el]" (change)="selectedActivation(el,$event)">
                           </mat-checkbox>
                          </td>
                          <td *ngIf="i==0" class="mat-cell header_bg">
@@ -276,7 +276,7 @@
                                     <div class="quick_activity_wrap">
                                         <div class="single_quick_activity mat-elevation-z8">
                                             <h4>Total Activation Selected</h4>
-                                            <h3 class="numbers"># <span class="counter">{{totalActivations}}</span> </h3>
+                                            <h3 class="numbers"># <span class="counter">{{actselected}}</span> </h3>
 
                                         </div>
                                         <div class="single_quick_activity mat-elevation-z8">
@@ -286,7 +286,7 @@
                                         </div>
                                         <div class="single_quick_activity mat-elevation-z8">
                                             <h4>Cost Of Total Selected Activations</h4>
-                                            <h3 class="numbers">{{this.currencySymbol}}<span class="counter">{{sumProducts}}</span> </h3>
+                                            <h3 class="numbers">{{this.currencySymbol}}<span class="counter">{{PackCostSum}}</span> </h3>
 
                                         </div>
 
@@ -295,7 +295,7 @@
                             </div>
                             <div class="row">
 
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                             <div class="mat-elevation-z2 box-radius">
                                             <div class=" view_table_container box-radius">
                                               <table class="planner_table view_table">
@@ -303,6 +303,7 @@
                                                   <tr>
                                                     <th>S.No</th>
                                                     <th>Pack Type</th>
+                                                    <th>Sub Pack Type</th>
                                                     <th>Product TPN Type</th>
                                                     <th>Product Name</th>
                                                   </tr>
@@ -311,6 +312,7 @@
                                                   <tr *ngFor="let el of selectedData;let i=index">
                                                     <td>{{i+1}}</td>
                                                     <td>{{el.pack_type}}</td>
+                                                    <td>{{el.pack_sub_type}}</td>
                                                     <td>{{el.product_tpn}}</td>
                                                     <td>{{el.product_name}}</td>
                                                   </tr>

@@ -54,6 +54,7 @@ export class ScenarioOutputComponent implements OnInit {
   TATSPack_ARRAY: any=[];
   currencySymbol: any;
   incremantalCSV: number=0;
+  Ratecardjson: any;
   constructor(private modalService: NgbModal,
     private routes:Router,private apiServices:ScenarioPlannerService) {
    // console.log(this.route.getCurrentNavigation()?.extras.state);
@@ -68,7 +69,7 @@ export class ScenarioOutputComponent implements OnInit {
    ELEMENT_DATA: ScenarioPlanner[] = [];
    activationLIB:any={};
    TATS:any={};
-   packTypeList:any={};
+   packTypeList:any;
    TATS_ARRAY:any=[];
    DynActivationColumns:any=[];
    TATS_BY_PACK:any={};
@@ -134,6 +135,7 @@ export class ScenarioOutputComponent implements OnInit {
       this.response_data=this.datastream.data[2] || [];
       this.filterData=this.datastream.data[3] || [];
       this.defaultData=this.datastream.data[3] || [];
+      this.Ratecardjson=this.datastream.data[4] || [];
        this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
          let itemlist=[];
         for( const [key,value] of Object.entries(element)){
@@ -151,6 +153,7 @@ export class ScenarioOutputComponent implements OnInit {
       this.response_data=this.datastream.data[2] || [];
       this.filterData=this.datastream.data[3] || [];
       this.defaultData=this.datastream.data[3] || [];
+      this.Ratecardjson=this.datastream.data[4] || [];
        this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
          let itemlist=[];
         for( const [key,value] of Object.entries(element)){
@@ -342,15 +345,18 @@ async onFileChange(ev:any) {
 
         this.TATSPack_ARRAY=[];
         console.log(this.TATS,"TATS");
-        for(let [key,value] of Object.entries(this.packTypeList)){
-          let values:any=value;
-          this.TATSPack_ARRAY.push({'name':values.name,'value':this.TATS[key]})
-        }
-        console.log(this.TATSPack_ARRAY,"TATSPack_ARRAY");
-        for(let [key,value] of Object.entries(byPacktype)){
-          let lvalue:any=value;
-          this.TATS_BY_PACK[key.toLowerCase()]=lvalue.length;
+        if(this.packTypeList){
+          for(let [key,value] of Object.entries(this.packTypeList)){
+            let values:any=value;
+            this.TATSPack_ARRAY.push({'name':values.name,'value':this.TATS[key]})
           }
+          console.log(this.TATSPack_ARRAY,"TATSPack_ARRAY");
+          for(let [key,value] of Object.entries(byPacktype)){
+            let lvalue:any=value;
+            this.TATS_BY_PACK[key.toLowerCase()]=lvalue.length;
+            }
+        }
+
 
 
   }
@@ -410,10 +416,10 @@ incrementRange(value:any){
 goBack(){
   console.log(this.SOURCE,"this.SOURCE")
 if(this.SOURCE=='from_opt_activation'){
-  this.routes.navigate(['/optimizer'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data]}});
+  this.routes.navigate(['/optimizer'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,this.Ratecardjson]}});
 
 }else{
-  this.routes.navigate(['/plan-activation'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data]}});
+  this.routes.navigate(['/plan-activation'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,this.Ratecardjson]}});
 
 }
 

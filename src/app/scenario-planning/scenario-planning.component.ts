@@ -16,6 +16,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 export interface ScenarioPlanner {
   pack_type: string;
+  pack_sub_type:string;
   product_tpn: string;
   product_name: string;
   list_price: number;
@@ -120,7 +121,7 @@ export class ScenarioPlanningComponent implements OnInit {
   monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   promoCodeList:any=[ {id: 'SELECT', name: "--SELECT--"},];
   promoCodeDesc:any=[ {id: 'SELECT', name: "--SELECT--"},];
-  displayedColumns: string[] = ['select', 'pack_type','product_tpn', 'product_name', 'list_price',
+  displayedColumns: string[] = ['select', 'pack_type','pack_sub_type','product_tpn', 'product_name', 'list_price',
   'promotion_type','promotion','discount','edlp','selling_price'];
   dataSource:any;
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
@@ -207,7 +208,8 @@ changePeroidList(event:any){
 optimizeScenario(){
   let payload={ 'rate_card':this.Ratecardjson['RateCard'],
                 'financials':this.financialsData,
-                'products':this.selection.selected};
+                'products':this.selection.selected,
+                'planner_type':'simulation'};
   let code='';
   let mandatory=false;
   if(this.activePeroid==''){
@@ -252,9 +254,7 @@ simulateScenario(){
   //scenatio_planner_simulate
   //rateCardInfoData financialsData
   //this.activePeroid
-  let payload={ 'rate_card':this.Ratecardjson['RateCard'],
-                'financials':this.financialsData,
-                'products':this.selection.selected};
+
   let code='';
   let mandatory=false;
   if(this.activePeroid==''){
@@ -273,6 +273,11 @@ simulateScenario(){
     this.selection.selected.forEach((ele)=>{
       ele.month=this.activePeroid;
     });
+
+  let payload={ 'rate_card':this.Ratecardjson['RateCard'],
+  'financials':this.financialsData,
+  'products':this.selection.selected,
+  'planner_type':'simulation'};
     Notiflix.Loading.dots('Loading...');
     let start=0;
     // let timer=setInterval(()=>{
@@ -287,20 +292,23 @@ simulateScenario(){
     console.log(payload,"payload")
 
 
-        this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
-       console.log(res,"response");
-       if(res.status=='success'){
-        this.response_data=res.data;
-        Notiflix.Loading.remove();
-        this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
+      //   this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
+      //  console.log(res,"response");
+      //  if(res.status=='success'){
+      //   this.response_data=res.data;
+      //   Notiflix.Loading.remove();
+      //   this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+      //     this.selection.selected,this.PROMOCODE_LIST,this.response_data,]}});
 
-       }else if(res.status=='databricks_error'){
-        Notiflix.Loading.remove();
-        Notiflix.Notify.failure('Failed to process with inputs')
-       }
-      });
-      //  Notiflix.Loading.remove();
-      //  this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
+      //  }else if(res.status=='databricks_error'){
+      //   Notiflix.Loading.remove();
+      //   Notiflix.Notify.failure('Failed to process with inputs')
+      //  }
+      // });
+       Notiflix.Loading.remove();
+       this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+        this.selection.selected,this.PROMOCODE_LIST,this.response_data,
+      this.Ratecardjson]}});
 
   }else{
     if(code=='records'){

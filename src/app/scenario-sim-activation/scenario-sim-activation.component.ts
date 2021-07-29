@@ -45,6 +45,9 @@ export class ScenarioSimActivationComponent implements OnInit {
   selectedData:any=[];
   response_data:any[]=[];
   PROMOCODE_LIST:any={};
+  PackCost:any={};
+  PackCostSum:number=0;
+  Ratecardjson:any={};
   datastream:any;
   DynActivationColumns:any=[];
   //Placements=['FSI','FAI','Search_Banner','SOT','BBP'];
@@ -56,6 +59,7 @@ export class ScenarioSimActivationComponent implements OnInit {
   displayedColumnsConstraints: string[] = [];
   dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
   currencySymbol: any;
+  actselected: number=0;
   constructor(private routes:Router,private apiServices:ScenarioPlannerService,) {
     this.datastream=this.routes.getCurrentNavigation()?.extras.state;
     this.currencySymbol=environment.currencySymbol;
@@ -64,7 +68,7 @@ export class ScenarioSimActivationComponent implements OnInit {
   ngOnInit(): void {
     this.displayedColumnsConstraints= ['pack_type'];
     this.apiServices.getActivationList().subscribe((res:any)=>{
-      console.log(res,"RES")
+      //console.log(res,"RES")
       if(res.code==200){
         this.DynActivationColumns=res.data;
         for(let [key,value] of Object.entries(this.DynActivationColumns)){
@@ -72,29 +76,31 @@ export class ScenarioSimActivationComponent implements OnInit {
           this.activationLIB[values.value]=values.name;
           this.displayedColumnsConstraints.push(values.value)
         }
-        console.log(this.displayedColumnsConstraints,"this.displayedColumnsConstraints");
-        console.log(this.activationLIB,"this.activationLIB");
+        //console.log(this.displayedColumnsConstraints,"this.displayedColumnsConstraints");
+        //console.log(this.activationLIB,"this.activationLIB");
       }
     if(this.datastream){
       if(this.datastream.source=='from_planning'){
-        console.log("SIMulation Activation");
+        //console.log("SIMulation Activation");
         this.ELEMENT_DATA_CONSTRAINTS=this.datastream.data[0] || [];
         this.selectedData=this.datastream.data[1] || [];
         this.PROMOCODE_LIST=this.datastream.data[2] || [];
         this.response_data=this.datastream.data[3] || [];
-        console.log(this.response_data,"response_data");
+        this.Ratecardjson=this.datastream.data[4] || [];
+
+        //console.log(this.response_data,"response_data");
         let jsonObject=groupByJson(this.selectedData,'pack_type');
 
       this.ELEMENT_DATA_CONSTRAINTS=[];
       for (const [key, value] of Object.entries(jsonObject)) {
-        console.log("key",key);
+        //console.log("key",key);
         let MuliPlex = new ConstraintObject(key);
         let object:any={'pack_type':key};
         this.DynActivationColumns.forEach((element:any) => {
           object[element.value]=false;
         });
         this.ELEMENT_DATA_CONSTRAINTS.push(object);
-        console.log(this.ELEMENT_DATA_CONSTRAINTS,"this.ELEMENT_DATA_CONSTRAINTS");
+        //console.log(this.ELEMENT_DATA_CONSTRAINTS,"this.ELEMENT_DATA_CONSTRAINTS");
         this.dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
       }
 
@@ -104,7 +110,34 @@ export class ScenarioSimActivationComponent implements OnInit {
       this.response_data=this.datastream.data[2] || [];
       console.log(this.ELEMENT_DATA_CONSTRAINTS,"OUTPUT");
       this.selectedData=this.datastream.data[1] || [];
+      this.Ratecardjson=this.datastream.data[3] || [];
+      let jsonObject=groupByJson(this.Ratecardjson['RateCard'],'activation_type');
+      console.log(jsonObject,"jsonObject");
         this.dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
+      console.log(this.selectedData,"this.selectedData");
+      this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
+        for(let [key,value] of Object.entries(element) ){
+            if(key!='pack_type'){
+              if(value){
+                jsonObject[this.activationLIB[key]].forEach((item:any) => {
+                  if(this.PackCost[this.activationLIB[key]]){
+                    this.PackCost[this.activationLIB[key]]+=item.total_cost_per_week*item.number_of_activation_weeks;
+                  }else{
+                    this.PackCost[this.activationLIB[key]]=item.total_cost_per_week*item.number_of_activation_weeks;
+
+                  }
+                })
+              }
+            }
+        }
+      });
+      let dosum=0;
+      for(let [key,value] of Object.entries(this.PackCost)){
+        let values:any=value;
+        dosum+=values;
+      }
+      this.actselected=Object.entries(this.PackCost).length;
+      this.PackCostSum=dosum;
 
     }
 
@@ -126,12 +159,60 @@ this.routes.navigate(['/']);
   });
 
   }
+  selectedActivation(item:any,event:any){
+    console.log(item,"item",this.activationLIB[item]);
+    let key=this.activationLIB[item];
+    let cost=0;
+    console.log(this.Ratecardjson,"this.Ratecardjson",key)
+    let jsonObject=groupByJson(this.Ratecardjson['RateCard'],'activation_type');
+    //console.log(jsonObject,"jsonObject")
+    jsonObject[key].forEach((item:any) => {
+      cost+=item.total_cost_per_week*item.number_of_activation_weeks;
+    })
+    //console.log(cost,"cost",event.checked);
+    if(event.checked){
+      if(this.PackCost[key]){
+        this.PackCost[key]+=cost;
+        //this.removeKey(key);
+      }else{
+        this.PackCost[key]=cost;
+      }
+  }else {
+    console.log(this.PackCost,"key")
+    debugger;
+
+    if(this.PackCost[key]){
+      this.PackCost[key]-=cost;
+      this.removeKey(key);
+    }else{
+      if(this.PackCost[key]!=0 && this.PackCost[key]!=undefined){
+        this.PackCost[key]=cost;
+      }else{
+        delete this.PackCost[key];
+      }
+
+    }
+  }
+  //console.log(this.PackCost,"packcost");
+  let dosum=0;
+for(let [key,value] of Object.entries(this.PackCost)){
+  let values:any=value;
+  dosum+=values;
+}
+this.actselected=Object.entries(this.PackCost).length;
+this.PackCostSum=dosum;
+}
+removeKey(key:any){
+  if(this.PackCost[key]==0){
+    delete this.PackCost[key];
+  }
+}
   setActivation(){
     this.totalActivations=this.ELEMENT_DATA_CONSTRAINTS.length;
     this.totalProducts=this.selectedData.length;
     let sumLocal=0;
     this.selectedData.map((element:any) => {
-      console.log(element,typeof(element));
+      //console.log(element,typeof(element));
       sumLocal+=element.selling_price;
     });
     this.sumProducts=sumLocal.toFixed(2);
@@ -164,14 +245,14 @@ this.routes.navigate(['/']);
     let accumulateFilter:any=[];
 
     for(let [key,value] of Object.entries(to_filterOb)){
-      console.log(key,"key")
+      //console.log(key,"key")
       filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
-      console.log(filterData,"level",key);
+      //console.log(filterData,"level",key);
       let PackList:any=value;
-      //console.log(PackList.join(' '),"PackList");
-      console.log(filterData,"filterData");
+      ////console.log(PackList.join(' '),"PackList");
+      //console.log(filterData,"filterData");
         filterData=filterData.filter((data:any) =>  data["activation_type"]==PackList.join(' '));
-      console.log(filterData,"level");
+      //console.log(filterData,"level");
       if(filterData.length==0){
         PackList.forEach((element:any) => {
           filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
@@ -188,14 +269,15 @@ this.routes.navigate(['/']);
 
      //console.log(accumulateFilter,"accumulateFilter");
      accumulateFilter=accumulateFilter.flat();
-    console.log(accumulateFilter,"filterData_");
+    //console.log(accumulateFilter,"filterData_");
     console.log(this.response_data,"this.response_data");
    if(NoneSelected){
-    console.log(accumulateFilter,"converting");
+    //console.log(accumulateFilter,"converting");
     this.apiServices.get_processed_data({data:accumulateFilter}).subscribe((res:any)=>{
-      console.log(res.data,"resdata");
+      //console.log(res.data,"resdata");
       if(res.code==200 && res.status=='success'){
-        this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,res.data]} });
+        this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,
+          this.selectedData,this.response_data,res.data,this.Ratecardjson]} });
       }
 
     })
