@@ -55,6 +55,7 @@ export class ScenarioOutputComponent implements OnInit {
   TATSPack_ARRAY: any=[];
   currencySymbol: any;
   incremantalCSV: number=0;
+  totalActivationCost:number=0;
   Ratecardjson: any;
   constructor(private modalService: NgbModal,
     private routes:Router,private apiServices:ScenarioPlannerService) {
@@ -119,8 +120,10 @@ export class ScenarioOutputComponent implements OnInit {
   selectedSegmentList: any = [];
   constraint_list=[]
   ngOnInit(): void {
+    Notiflix.Loading.dots('Loading...');
     this.apiServices.getActivationList().subscribe((res:any)=>{
       console.log(res,"RES");
+      Notiflix.Loading.remove();
       if(res.code==200){
         this.DynActivationColumns=res.data;
         for(let [key,value] of Object.entries(res.data)){
@@ -243,10 +246,14 @@ async onFileChange(ev:any) {
     });
   }
   LoadSaveList(){
+    this.incremantalCSV=0;
+    this.totalActivationCost=0;
     if(this.valueSelected!=0){
       //load data
+      Notiflix.Loading.dots('Loading...');
       this.apiServices.scenario_planner_listdetails(this.valueSelected).subscribe((res:any)=>{
         console.log(res,"listDetails");
+        Notiflix.Loading.remove();
         let response=res;
         if(res.code==200 && res.status=='success'){
           this.resetFilter();
@@ -455,6 +462,7 @@ doFilter(){
     });
     filterData.forEach((element:any)=>{
       this.incremantalCSV+=element.incr_sales;
+      this.totalActivationCost+=element.cost;
     });
      for(let [key,value] of Object.entries(this.activationLIB)){
       filterData.forEach((element:any)=>{

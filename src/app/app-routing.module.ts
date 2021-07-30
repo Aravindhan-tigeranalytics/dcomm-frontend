@@ -8,7 +8,7 @@ import { LoginComponent } from './login/login.component';
 
 
 const routes: Routes = [
-  { path: '', component: ScenarioPlanningComponent },
+  { path: '', component: ScenarioPlanningComponent, },
   { path: 'plan-activation', component: ScenarioSimActivationComponent },
   { path: 'scenarioresult', component: ScenarioOutputComponent },
   { path: 'login', component: LoginComponent },

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../backend-services/auth.services';
 import { Subscription } from 'rxjs';
+import Notiflix from 'notiflix';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit {
     let formData: FormData = new FormData();
     formData.append('username',this.username);
     formData.append('password', this.password);
+    Notiflix.Loading.dots('Loading...');
     this.service.login(formData).subscribe((res:any)=>{
       console.log(res,"res");
       if(res.token){
@@ -32,6 +34,7 @@ export class LoginComponent implements OnInit {
         setTimeout(()=>{
           this.router.navigate(['/']);
           this.dataservice.LoginState(true);
+          Notiflix.Loading.remove();
         },50);
 
       }else{
@@ -39,7 +42,8 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('token','');
         this.router.navigate(['login']);
         this.dataservice.LoginState(false);
+        Notiflix.Loading.remove();
       }
-    })
+    });
   }
 }

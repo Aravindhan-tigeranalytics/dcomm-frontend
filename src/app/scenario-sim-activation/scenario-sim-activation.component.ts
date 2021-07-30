@@ -67,8 +67,10 @@ export class ScenarioSimActivationComponent implements OnInit {
 
   ngOnInit(): void {
     this.displayedColumnsConstraints= ['pack_type'];
+    Notiflix.Loading.dots('Loading...');
     this.apiServices.getActivationList().subscribe((res:any)=>{
       //console.log(res,"RES")
+      Notiflix.Loading.remove();
       if(res.code==200){
         this.DynActivationColumns=res.data;
         for(let [key,value] of Object.entries(this.DynActivationColumns)){
@@ -100,7 +102,7 @@ export class ScenarioSimActivationComponent implements OnInit {
           object[element.value]=false;
         });
         this.ELEMENT_DATA_CONSTRAINTS.push(object);
-        //console.log(this.ELEMENT_DATA_CONSTRAINTS,"this.ELEMENT_DATA_CONSTRAINTS");
+        console.log(this.ELEMENT_DATA_CONSTRAINTS,"this.ELEMENT_DATA_CONSTRAINTS");
         this.dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
       }
 
@@ -108,37 +110,22 @@ export class ScenarioSimActivationComponent implements OnInit {
       this.ELEMENT_DATA_CONSTRAINTS=[];
       this.ELEMENT_DATA_CONSTRAINTS=this.datastream.data[0] || [];
       this.response_data=this.datastream.data[2] || [];
-      console.log(this.ELEMENT_DATA_CONSTRAINTS,"OUTPUT");
+      //console.log(this.ELEMENT_DATA_CONSTRAINTS,"OUTPUT");
       this.selectedData=this.datastream.data[1] || [];
       this.Ratecardjson=this.datastream.data[3] || [];
       let jsonObject=groupByJson(this.Ratecardjson['RateCard'],'activation_type');
-      console.log(jsonObject,"jsonObject");
+      //console.log(jsonObject,"jsonObject");
         this.dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
-      console.log(this.selectedData,"this.selectedData");
+      //console.log(this.selectedData,"this.selectedData");
       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
         for(let [key,value] of Object.entries(element) ){
             if(key!='pack_type'){
               if(value){
-                jsonObject[this.activationLIB[key]].forEach((item:any) => {
-                  if(this.PackCost[this.activationLIB[key]]){
-                    this.PackCost[this.activationLIB[key]]+=item.total_cost_per_week*item.number_of_activation_weeks;
-                  }else{
-                    this.PackCost[this.activationLIB[key]]=item.total_cost_per_week*item.number_of_activation_weeks;
-
-                  }
-                })
+                this.actselected+=1;
               }
             }
         }
-      });
-      let dosum=0;
-      for(let [key,value] of Object.entries(this.PackCost)){
-        let values:any=value;
-        dosum+=values;
-      }
-      this.actselected=Object.entries(this.PackCost).length;
-      this.PackCostSum=dosum;
-
+        });
     }
 
      }else{
@@ -160,47 +147,18 @@ this.routes.navigate(['/']);
 
   }
   selectedActivation(item:any,event:any){
-    console.log(item,"item",this.activationLIB[item]);
+    //console.log(item,"item",this.activationLIB[item]);
     let key=this.activationLIB[item];
     let cost=0;
-    console.log(this.Ratecardjson,"this.Ratecardjson",key)
-    let jsonObject=groupByJson(this.Ratecardjson['RateCard'],'activation_type');
-    //console.log(jsonObject,"jsonObject")
-    jsonObject[key].forEach((item:any) => {
-      cost+=item.total_cost_per_week*item.number_of_activation_weeks;
-    })
     //console.log(cost,"cost",event.checked);
     if(event.checked){
-      if(this.PackCost[key]){
-        this.PackCost[key]+=cost;
-        //this.removeKey(key);
-      }else{
-        this.PackCost[key]=cost;
-      }
+      this.actselected+=1;
   }else {
-    console.log(this.PackCost,"key")
-    debugger;
-
-    if(this.PackCost[key]){
-      this.PackCost[key]-=cost;
-      this.removeKey(key);
-    }else{
-      if(this.PackCost[key]!=0 && this.PackCost[key]!=undefined){
-        this.PackCost[key]=cost;
-      }else{
-        delete this.PackCost[key];
-      }
-
-    }
+    //console.log(this.PackCost,"key")
+    this.actselected-=1;
   }
-  //console.log(this.PackCost,"packcost");
-  let dosum=0;
-for(let [key,value] of Object.entries(this.PackCost)){
-  let values:any=value;
-  dosum+=values;
-}
-this.actselected=Object.entries(this.PackCost).length;
-this.PackCostSum=dosum;
+  console.log(this.actselected,"this.actselected");
+
 }
 removeKey(key:any){
   if(this.PackCost[key]==0){
@@ -273,7 +231,9 @@ removeKey(key:any){
     console.log(this.response_data,"this.response_data");
    if(NoneSelected){
     //console.log(accumulateFilter,"converting");
+    Notiflix.Loading.dots('Loading...');
     this.apiServices.get_processed_data({data:accumulateFilter}).subscribe((res:any)=>{
+      Notiflix.Loading.remove();
       //console.log(res.data,"resdata");
       if(res.code==200 && res.status=='success'){
         this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,
@@ -289,8 +249,8 @@ removeKey(key:any){
   go_back(){
     let that=this;
     Notiflix.Confirm.show('Exit Simulation','Are you sure?','Yes','No',
-    function(){
-      that.routes.navigate(['/'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST]} });
+    ()=>{
+      that.routes.navigate(['/'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST,this.Ratecardjson]} });
     });
 
     }

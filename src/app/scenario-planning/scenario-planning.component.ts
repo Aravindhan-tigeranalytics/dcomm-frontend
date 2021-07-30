@@ -154,6 +154,7 @@ export class ScenarioPlanningComponent implements OnInit {
   ngOnInit(): void {
    this.setDefaultMonth();
     this.apiServices.getPlannerData().subscribe((res:any)=>{
+      Notiflix.Loading.dots('Loading...');
       if((res['code']=='200') && (res.status=='success')){
       console.log(res.data,"response");
       res.data.forEach((element:any) => {
@@ -175,6 +176,8 @@ export class ScenarioPlanningComponent implements OnInit {
   if(this.datastream.source=='from_activation'){
     let selectedItems=this.datastream.data[0] || [];
     let Promolist=this.datastream.data[1] || [];
+    this.Ratecardjson=this.datastream.data[2] || [];
+    this.RateCardCount=1;
      let grouped=groupByJson(selectedItems,'product_tpn');
      let grouped_keys=Object.keys(grouped);
      this.dataSource.data.forEach((row:any) => {
@@ -197,6 +200,7 @@ export class ScenarioPlanningComponent implements OnInit {
      });
     }
   }
+  Notiflix.Loading.remove();
   });
 }
 changePeroidList(event:any){
@@ -251,10 +255,7 @@ optimizeScenario(){
 }
 simulateScenario(){
 
-  //scenatio_planner_simulate
-  //rateCardInfoData financialsData
-  //this.activePeroid
-
+  console.log(this.Ratecardjson['RateCard'],"ratecard");
   let code='';
   let mandatory=false;
   if(this.activePeroid==''){
@@ -265,7 +266,7 @@ simulateScenario(){
     mandatory=true;
     code='records';
   }
-  if(this.rateCardInfoData==undefined || this.rateCardInfoData==''){
+  if(this.RateCardCount==0){
     mandatory=true;
     code='ratecard';
   }
@@ -292,23 +293,23 @@ simulateScenario(){
     console.log(payload,"payload")
 
 
-      //   this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
-      //  console.log(res,"response");
-      //  if(res.status=='success'){
-      //   this.response_data=res.data;
-      //   Notiflix.Loading.remove();
-      //   this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
-      //     this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
+        this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
+       console.log(res,"response");
+       if(res.status=='success'){
+        this.response_data=res.data;
+        Notiflix.Loading.remove();
+        this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+          this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
 
-      //  }else if(res.status=='databricks_error'){
-      //   Notiflix.Loading.remove();
-      //   Notiflix.Notify.failure('Failed to process with inputs')
-      //  }
-      // });
-       Notiflix.Loading.remove();
-       this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
-        this.selection.selected,this.PROMOCODE_LIST,this.response_data,
-      this.Ratecardjson]}});
+       }else if(res.status=='databricks_error'){
+        Notiflix.Loading.remove();
+        Notiflix.Notify.failure('Failed to process with inputs')
+       }
+      });
+      //  Notiflix.Loading.remove();
+      //  this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+      //   this.selection.selected,this.PROMOCODE_LIST,this.response_data,
+      // this.Ratecardjson]}});
 
   }else{
     if(code=='records'){
@@ -583,7 +584,6 @@ doFilter(){
         return initial;
       }, {});
        const dataString = JSON.stringify(jsonData);
-       console.log(dataString,"dataString");
        resolve(jsonData);
        return jsonData
     }
@@ -639,7 +639,7 @@ doFilter(){
 
     console.log(this.Ratecardjson['RateCard'],"this.Ratecardjson")
   }else{
-    Notiflix.Notify.info('Please upload the rate card template');
+    Notiflix.Notify.info('Please upload the rate card');
   }
   }
   async onFinancialsSelected() {
