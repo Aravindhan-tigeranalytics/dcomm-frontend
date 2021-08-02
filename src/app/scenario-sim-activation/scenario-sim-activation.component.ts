@@ -1,9 +1,9 @@
-import { ConstraintObject } from './../scenario-planning/scenario-planning.component';
+import { ConstraintObject } from '../simulator/scenario-planning/scenario-planning.component';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { groupByJson } from '../scenario-planning/scenario-planning.component';
+import { groupByJson } from '../simulator/scenario-planning/scenario-planning.component';
 import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
@@ -90,7 +90,7 @@ export class ScenarioSimActivationComponent implements OnInit {
         this.response_data=this.datastream.data[3] || [];
         this.Ratecardjson=this.datastream.data[4] || [];
 
-        //console.log(this.response_data,"response_data");
+        console.log(this.response_data,"response_data act planner");
         let jsonObject=groupByJson(this.selectedData,'pack_type');
 
       this.ELEMENT_DATA_CONSTRAINTS=[];

@@ -2,6 +2,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 import {MatTableDataSource} from '@angular/material/table';
+import { MaterialModule } from '../../material.module';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FormControl} from '@angular/forms';
 import { Options } from "@angular-slider/ngx-slider";
@@ -10,7 +11,7 @@ import { PageEvent } from '@angular/material/paginator';
 import {MatPaginator} from '@angular/material/paginator';
 import * as Notiflix from 'notiflix';
 import {Sort} from '@angular/material/sort';
-import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+import { ScenarioPlannerService } from 'src/app/backend-services/scenario-planner.service';
 
 export interface ScenarioPlanner {
   position: number;

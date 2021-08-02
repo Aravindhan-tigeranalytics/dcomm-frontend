@@ -1,4 +1,4 @@
-import { DataControllerService } from './../data-controller/data-controller.service';
+import { DataControllerService } from '../../data-controller/data-controller.service';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as Notiflix from 'notiflix';
 import { HtmlTagDefinition } from '@angular/compiler';
-import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -93,9 +93,9 @@ export class ScenarioPlanningComponent implements OnInit {
     private dataservice:DataControllerService,
     private http: HttpClient
     ) {
-      this.getJSON().subscribe(data => {
-        this.response_data=data;
-       });
+      // this.getJSON().subscribe(data => {
+      //   this.response_data=data;
+      //  });
       this.currencySymbol=environment.currencySymbol;
     let input=this.routes.getCurrentNavigation()?.extras.state;
     if(input){
