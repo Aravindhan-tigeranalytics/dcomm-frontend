@@ -9,7 +9,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import { MatPaginator } from '@angular/material/paginator';
-import { ConstraintObject, groupByJson } from '../simulator/scenario-planning/scenario-planning.component';
+import { ConstraintObject, groupByJson } from '../planner/scenario-planning/scenario-planning.component';
 import { Input } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
@@ -179,7 +179,7 @@ export class ScenarioOutputComponent implements OnInit {
 
 
     }else{
-      this.routes.navigate(['/']);
+      this.routes.navigate(['/planner']);
     }
   }
   });
@@ -430,7 +430,7 @@ if(this.SOURCE=='from_opt_activation'){
   this.routes.navigate(['/optimizer'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,this.Ratecardjson]}});
 
 }else{
-  this.routes.navigate(['/plan-activation'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,this.Ratecardjson]}});
+  this.routes.navigate(['/simulator'],{ state: {'source':'from_output','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,this.Ratecardjson]}});
 
 }
 

@@ -1,9 +1,9 @@
-import { ConstraintObject } from '../scenario-planning/scenario-planning.component';
+import { ConstraintObject } from '../../planner/scenario-planning/scenario-planning.component';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { groupByJson } from '../scenario-planning/scenario-planning.component';
+import { groupByJson } from '../../planner/scenario-planning/scenario-planning.component';
 import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
@@ -140,7 +140,7 @@ export class ScenarioSimActivationComponent implements OnInit {
       //   this.ELEMENT_DATA_CONSTRAINTS.push(object);
       //   this.dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
       // }
-this.routes.navigate(['/']);
+this.routes.navigate(['/planner']);
     }
     this.setActivation();
   });
@@ -250,7 +250,7 @@ removeKey(key:any){
     let that=this;
     Notiflix.Confirm.show('Exit Simulation','Are you sure?','Yes','No',
     ()=>{
-      that.routes.navigate(['/'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST,this.Ratecardjson]} });
+      that.routes.navigate(['/planner'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST,this.Ratecardjson]} });
     });
 
     }

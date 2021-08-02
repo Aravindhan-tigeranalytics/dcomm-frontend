@@ -291,14 +291,12 @@ simulateScenario(){
 
     // },1000)
     console.log(payload,"payload")
-
-
       //   this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
       //  console.log(res,"response");
       //  if(res.status=='success'){
       //   this.response_data=res.data;
       //   Notiflix.Loading.remove();
-      //   this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+      //   this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
       //     this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
 
       //  }else if(res.status=='databricks_error'){
@@ -307,7 +305,7 @@ simulateScenario(){
       //  }
       // });
        Notiflix.Loading.remove();
-       this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+       this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
         this.selection.selected,this.PROMOCODE_LIST,this.response_data,
       this.Ratecardjson]}});
 

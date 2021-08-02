@@ -16,7 +16,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatIconModule } from '@angular/material/icon';
 import {MatSortModule} from '@angular/material/sort';
-import { ScenarioPlanningComponent } from './simulator/scenario-planning/scenario-planning.component';
+import { ScenarioPlanningComponent } from './planner/scenario-planning/scenario-planning.component';
 import { ScenarioOutputComponent } from './scenario-output/scenario-output.component';
 import { ScenarioBarchartComponent } from './scenario-output/scenario-barchart/scenario-barchart.component';
 import { ChartsModule } from 'ng2-charts';

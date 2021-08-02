@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
       if(res.token){
         localStorage.setItem('token',res.token);
         setTimeout(()=>{
-          this.router.navigate(['/']);
+          this.router.navigate(['/planner']);
           this.dataservice.LoginState(true);
           Notiflix.Loading.remove();
         },50);

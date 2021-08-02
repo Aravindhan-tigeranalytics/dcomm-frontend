@@ -4,7 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import * as Notiflix from 'notiflix';
 import { ScenarioPlannerService } from 'src/app/backend-services/scenario-planner.service';
-import { ConstraintObject, groupByJson } from 'src/app/simulator/scenario-planning/scenario-planning.component';
+import { ConstraintObject, groupByJson } from 'src/app/planner/scenario-planning/scenario-planning.component';
 import { environment } from 'src/environments/environment';
 export interface ScenarioPlanner {
   pack_type: string;
@@ -228,7 +228,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
     let that=this;
     Notiflix.Confirm.show('Exit Optimizer','Are you sure?','Yes','No',
     function(){
-      that.routes.navigate(['/'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST]} });
+      that.routes.navigate(['/planner'],{ state: {'source':'from_activation','data':[that.selectedData,that.PROMOCODE_LIST]} });
     });
     }
     selectAll(){
