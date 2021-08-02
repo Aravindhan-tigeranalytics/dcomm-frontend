@@ -1,3 +1,4 @@
+import { PlannerModule } from './planner/planner.module';
 import { OutputModule } from './output/output.module';
 import { ScenarioPlanningComponent } from './planner/scenario-planning/scenario-planning.component';
 import { NgModule } from '@angular/core';
@@ -9,7 +10,7 @@ import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'planner', loadChildren: () => import('./planner/planner.module').then(m => m.PlannerModule) },
+  { path: 'planner', component: ScenarioPlanningComponent},
   { path: 'simulator', loadChildren: () => import('./simulator/simulator.module').then(m => m.SimulatorModule) },
   { path: 'optimizer', loadChildren: () => import('./optimizer/optimizer.module').then(m => m.OptimizerModule) },
   { path: 'scenarioresult', loadChildren: () => import('./output/output.module').then(m => m.OutputModule) },

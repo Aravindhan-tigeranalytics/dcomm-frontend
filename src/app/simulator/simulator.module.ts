@@ -23,7 +23,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MaterialModule,
     MatIconModule,
     MatCheckboxModule,
-    NgxSliderModule,
+   // NgxSliderModule,
     MatSelectModule,
     ReactiveFormsModule
 

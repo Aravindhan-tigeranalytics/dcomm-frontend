@@ -65,14 +65,7 @@ export interface ScenarioPlannerConstraint {
               "bpp":this.bpp}
     }
 }
-Notiflix.Notify.init({
-  width:'300px',
-  timeout: 5000,
-  position:'left-top',
-  cssAnimationStyle: 'from-bottom',
-  distance:'20px',
-  opacity: 1,
-});
+
 @Component({
   selector: 'app-scenario-planning',
   templateUrl: './scenario-planning.component.html',
@@ -80,6 +73,7 @@ Notiflix.Notify.init({
 })
 
 export class ScenarioPlanningComponent implements OnInit {
+
   RateCardCount: number=0;
   rateCardInfoData: any;
   financialsData: any;
@@ -93,9 +87,10 @@ export class ScenarioPlanningComponent implements OnInit {
     private dataservice:DataControllerService,
     private http: HttpClient
     ) {
-      this.getJSON().subscribe(data => {
-        this.response_data=data;
-       });
+
+      // this.getJSON().subscribe(data => {
+      //   this.response_data=data;
+      //  });
       this.currencySymbol=environment.currencySymbol;
     let input=this.routes.getCurrentNavigation()?.extras.state;
     if(input){
@@ -152,6 +147,12 @@ export class ScenarioPlanningComponent implements OnInit {
 
   }
   ngOnInit(): void {
+    Notiflix.Notify.init({
+      width:'300px',
+      timeout: 3000,
+      distance:'20px',
+      opacity: 0.5,
+    });
    this.setDefaultMonth();
     this.apiServices.getPlannerData().subscribe((res:any)=>{
       Notiflix.Loading.dots('Loading...');
@@ -255,7 +256,6 @@ optimizeScenario(){
 }
 simulateScenario(){
 
-  console.log(this.Ratecardjson['RateCard'],"ratecard");
   let code='';
   let mandatory=false;
   if(this.activePeroid==''){
@@ -280,6 +280,12 @@ simulateScenario(){
   'products':this.selection.selected,
   'planner_type':'simulation'};
     Notiflix.Loading.dots('Loading...');
+    Notiflix.Loading.merge({
+      clickToClose:true, // close the Loading's when they were clicked
+    });
+    setTimeout(()=>{
+      Notiflix.Loading.remove();
+    },20000)
     let start=0;
     // let timer=setInterval(()=>{
     //   start=start+5;
@@ -291,23 +297,23 @@ simulateScenario(){
 
     // },1000)
     console.log(payload,"payload")
-      //   this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
-      //  console.log(res,"response");
-      //  if(res.status=='success'){
-      //   this.response_data=res.data;
-      //   Notiflix.Loading.remove();
-      //   this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
-      //     this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
+        this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
+       console.log(res,"response");
+       if(res.status=='success'){
+        this.response_data=res.data;
+        Notiflix.Loading.remove();
+        this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+          this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
 
-      //  }else if(res.status=='databricks_error'){
-      //   Notiflix.Loading.remove();
-      //   Notiflix.Notify.failure('Failed to process with inputs')
-      //  }
-      // });
-       Notiflix.Loading.remove();
-       this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
-        this.selection.selected,this.PROMOCODE_LIST,this.response_data,
-      this.Ratecardjson]}});
+       }else if(res.status=='databricks_error'){
+        Notiflix.Loading.remove();
+        Notiflix.Notify.failure('Failed to process with inputs')
+       }
+      });
+      //  Notiflix.Loading.remove();
+      //  this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+      //   this.selection.selected,this.PROMOCODE_LIST,this.response_data,
+      // this.Ratecardjson]}});
 
   }else{
     if(code=='records'){

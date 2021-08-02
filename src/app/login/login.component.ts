@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   username='';
   password='';
   ngOnInit(): void {
-
+    this.dataservice.LoginState(false);
   }
 
   login(){

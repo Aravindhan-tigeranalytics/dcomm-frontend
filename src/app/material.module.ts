@@ -97,7 +97,7 @@
 import { NgModule } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+//import { DragDropModule } from '@angular/cdk/drag-drop';
 import { PortalModule } from '@angular/cdk/portal';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CdkStepperModule } from '@angular/cdk/stepper';
@@ -138,58 +138,59 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { OverlayModule } from '@angular/cdk/overlay';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
 // import { DropDownComponent } from './component/drop-down/drop-down.component';
 
-
+//
 
 @NgModule({
   exports: [
     A11yModule,
-    ClipboardModule,
-    CdkStepperModule,
-    CdkTableModule,
-    CdkTreeModule,
-    DragDropModule,
-    MatAutocompleteModule,
-    MatBadgeModule,
-    MatBottomSheetModule,
+  //  ClipboardModule,
+  //  CdkStepperModule,
+  //  CdkTableModule,
+ //   CdkTreeModule,
+  //  DragDropModule,
+  //  MatAutocompleteModule,
+   // MatBadgeModule,
+  //  MatBottomSheetModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatFormFieldModule,
     MatCardModule,
     MatCheckboxModule,
-    MatChipsModule,
-    MatStepperModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatExpansionModule,
-    MatGridListModule,
+   // MatChipsModule,
+  //  MatStepperModule,
+   // MatDatepickerModule,
+  //  MatDialogModule,
+ //   MatDividerModule,
+ //   MatExpansionModule,
+ //   MatGridListModule,
     MatIconModule,
     MatInputModule,
-    MatListModule,
+ //   MatListModule,
     MatMenuModule,
-    MatNativeDateModule,
+  //  MatNativeDateModule,
     MatPaginatorModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
+//    MatProgressBarModule,
+  //  MatProgressSpinnerModule,
     MatRadioModule,
     MatRippleModule,
     MatSelectModule,
-    MatSidenavModule,
-    MatSliderModule,
+ //   MatSidenavModule,
+ //   MatSliderModule,
     MatSlideToggleModule,
-    MatSnackBarModule,
+ //   MatSnackBarModule,
     MatSortModule,
     MatTableModule,
     MatTabsModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatTreeModule,
+   MatToolbarModule,
+  //  MatTooltipModule,
+//    MatTreeModule,
     OverlayModule,
-    PortalModule,
-    ScrollingModule,
-    
+  //  PortalModule,
+  //  ScrollingModule,
+
   ],
   declarations: [],
 })

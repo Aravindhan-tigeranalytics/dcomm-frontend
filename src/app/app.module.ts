@@ -47,12 +47,8 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
     ReactiveFormsModule,
     HttpClientModule,
     MaterialModule,
-    NgxSliderModule,
     NgbModule,
-    MatSortModule,
     ChartsModule,
-    MatIconModule,
-    MatMenuModule,
 
   ],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }},
