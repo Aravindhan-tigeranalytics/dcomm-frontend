@@ -1,8 +1,7 @@
-import { DataControllerService } from './../data-controller/data-controller.service';
+import { DataControllerService } from '../data-controller/data-controller.service';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../backend-services/auth.services';
-import { Subscription } from 'rxjs';
+import { AuthService } from '../../backend-services/auth.services';
 import Notiflix from 'notiflix';
 
 @Component({

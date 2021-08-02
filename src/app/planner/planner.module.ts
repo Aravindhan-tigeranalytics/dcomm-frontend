@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MaterialModule } from '../material.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import {MatSelectModule} from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 

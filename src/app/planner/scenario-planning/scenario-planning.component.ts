@@ -1,4 +1,4 @@
-import { DataControllerService } from '../../data-controller/data-controller.service';
+import { DataControllerService } from '../../base/data-controller/data-controller.service';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
@@ -9,11 +9,9 @@ import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as Notiflix from 'notiflix';
-import { HtmlTagDefinition } from '@angular/compiler';
 import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 export interface ScenarioPlanner {
   pack_type: string;
   pack_sub_type:string;
@@ -101,9 +99,9 @@ export class ScenarioPlanningComponent implements OnInit {
   }
   this.dataservice.LoginState(true);
   }
-  public getJSON(): Observable<any> {
-    return this.http.get(this._jsonURL);
-  }
+  // public getJSON(): Observable<any> {
+  //   return this.http.get(this._jsonURL);
+  // }
   ELEMENT_DATA: ScenarioPlanner[] = [];
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //'fsi', 'fai','search', 'sot', 'bpp'

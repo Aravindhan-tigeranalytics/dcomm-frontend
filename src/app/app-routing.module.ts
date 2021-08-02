@@ -1,15 +1,10 @@
-import { PlannerModule } from './planner/planner.module';
-import { OutputModule } from './output/output.module';
 import { ScenarioPlanningComponent } from './planner/scenario-planning/scenario-planning.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ScenarioOutputComponent } from './output/scenario-output/scenario-output.component';
-import { ScenarioSimActivationComponent } from './simulator/scenario-sim-activation/scenario-sim-activation.component';
-import { LoginComponent } from './login/login.component';
 
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'login', loadChildren: () => import('./base/base.module').then(m => m.BaseModule) },
   { path: 'planner', component: ScenarioPlanningComponent},
   { path: 'simulator', loadChildren: () => import('./simulator/simulator.module').then(m => m.SimulatorModule) },
   { path: 'optimizer', loadChildren: () => import('./optimizer/optimizer.module').then(m => m.OptimizerModule) },
