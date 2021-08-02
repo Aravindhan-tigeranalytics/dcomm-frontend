@@ -9,10 +9,10 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import {ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import { MatPaginator } from '@angular/material/paginator';
-import { ConstraintObject, groupByJson } from '../planner/scenario-planning/scenario-planning.component';
+import { ConstraintObject, groupByJson } from '../../planner/scenario-planning/scenario-planning.component';
 import { Input } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
-import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
 
