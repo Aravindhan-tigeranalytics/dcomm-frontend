@@ -21,7 +21,7 @@ import { ScenarioOutputComponent } from './scenario-output/scenario-output.compo
 import { ScenarioBarchartComponent } from './scenario-output/scenario-barchart/scenario-barchart.component';
 import { ChartsModule } from 'ng2-charts';
 import {MatMenuModule} from '@angular/material/menu';
-import { ScenarioSimActivationComponent } from './scenario-sim-activation/scenario-sim-activation.component';
+import { ScenarioSimActivationComponent } from './simulator/scenario-sim-activation/scenario-sim-activation.component';
 import { LoginComponent } from './login/login.component';
 import { ShortNumberPipe } from './pipes/short-number.pipe';
 // import { MatToolbarModule } from '@angular/material/toolbar';

@@ -1,10 +1,10 @@
-import { ConstraintObject } from '../simulator/scenario-planning/scenario-planning.component';
+import { ConstraintObject } from '../scenario-planning/scenario-planning.component';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { groupByJson } from '../simulator/scenario-planning/scenario-planning.component';
-import { ScenarioPlannerService } from '../backend-services/scenario-planner.service';
+import { groupByJson } from '../scenario-planning/scenario-planning.component';
+import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
 export interface ScenarioPlanner {

@@ -93,9 +93,9 @@ export class ScenarioPlanningComponent implements OnInit {
     private dataservice:DataControllerService,
     private http: HttpClient
     ) {
-      // this.getJSON().subscribe(data => {
-      //   this.response_data=data;
-      //  });
+      this.getJSON().subscribe(data => {
+        this.response_data=data;
+       });
       this.currencySymbol=environment.currencySymbol;
     let input=this.routes.getCurrentNavigation()?.extras.state;
     if(input){
@@ -293,23 +293,23 @@ simulateScenario(){
     console.log(payload,"payload")
 
 
-        this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
-       console.log(res,"response");
-       if(res.status=='success'){
-        this.response_data=res.data;
-        Notiflix.Loading.remove();
-        this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
-          this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
+      //   this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
+      //  console.log(res,"response");
+      //  if(res.status=='success'){
+      //   this.response_data=res.data;
+      //   Notiflix.Loading.remove();
+      //   this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+      //     this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
 
-       }else if(res.status=='databricks_error'){
-        Notiflix.Loading.remove();
-        Notiflix.Notify.failure('Failed to process with inputs')
-       }
-      });
-      //  Notiflix.Loading.remove();
-      //  this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
-      //   this.selection.selected,this.PROMOCODE_LIST,this.response_data,
-      // this.Ratecardjson]}});
+      //  }else if(res.status=='databricks_error'){
+      //   Notiflix.Loading.remove();
+      //   Notiflix.Notify.failure('Failed to process with inputs')
+      //  }
+      // });
+       Notiflix.Loading.remove();
+       this.routes.navigate(['/plan-activation'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
+        this.selection.selected,this.PROMOCODE_LIST,this.response_data,
+      this.Ratecardjson]}});
 
   }else{
     if(code=='records'){
