@@ -110,6 +110,12 @@
             ],
             "scripts": []
           }
+        },
+        "analyze": {
+          "builder": "@ngx-builders/analyze:analyze",
+          "options": {
+            "outputPath": "D:/Azure/Dcomm-simulator-frontend/"
+          }
         }
       }
     }

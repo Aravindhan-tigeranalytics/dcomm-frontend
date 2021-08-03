@@ -4,7 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import * as Notiflix from 'notiflix';
 import { ScenarioPlannerService } from 'src/app/backend-services/scenario-planner.service';
-import { ConstraintObject, groupByJson } from 'src/app/planner/scenario-planning/scenario-planning.component';
+import { groupByJson } from 'src/app/planner/scenario-planning/scenario-planning.component';
 import { environment } from 'src/environments/environment';
 export interface ScenarioPlanner {
   pack_type: string;
@@ -124,7 +124,6 @@ export class ScenarioOptActivationComponent  implements OnInit {
       this.ELEMENT_DATA_CONSTRAINTS=[];
       for (const [key, value] of Object.entries(jsonObject)) {
         console.log("key",key);
-        let MuliPlex = new ConstraintObject(key);
         let object:any={'pack_type':key};
         this.DynActivationColumns.forEach((element:any) => {
           object[element.value]=false;
@@ -148,7 +147,6 @@ export class ScenarioOptActivationComponent  implements OnInit {
     //  this.selectedData=JSON.parse(localStorage.getItem('defaultActivations')|| '');
       let jsonObject=groupByJson(this.selectedData,'pack_type');
       for (const [key, value] of Object.entries(jsonObject)) {
-        let MuliPlex = new ConstraintObject(key);
         let object:any={'pack_type':key};
         this.DynActivationColumns.forEach((element:any) => {
           object[element.value]=false;

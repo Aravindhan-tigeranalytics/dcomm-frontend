@@ -12,14 +12,7 @@ import * as Notiflix from 'notiflix';
 
 export class InterceptorService implements HttpInterceptor {
   constructor(private routes:Router){
-    Notiflix.Notify.init({
-      width:'300px',
-      timeout: 5000,
-      position:'right-top',
-      cssAnimationStyle: 'from-bottom',
-      distance:'20px',
-      opacity: 1,
-    });
+
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

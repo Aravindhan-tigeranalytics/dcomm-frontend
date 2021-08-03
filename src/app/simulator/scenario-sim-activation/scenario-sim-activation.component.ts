@@ -1,4 +1,3 @@
-import { ConstraintObject } from '../../planner/scenario-planning/scenario-planning.component';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
@@ -96,7 +95,6 @@ export class ScenarioSimActivationComponent implements OnInit {
       this.ELEMENT_DATA_CONSTRAINTS=[];
       for (const [key, value] of Object.entries(jsonObject)) {
         //console.log("key",key);
-        let MuliPlex = new ConstraintObject(key);
         let object:any={'pack_type':key};
         this.DynActivationColumns.forEach((element:any) => {
           object[element.value]=false;

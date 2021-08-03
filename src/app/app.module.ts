@@ -19,7 +19,8 @@ import { ScenarioBarchartComponent } from './output/scenario-output/scenario-bar
 import { ChartsModule } from 'ng2-charts';
 import { ScenarioSimActivationComponent } from './simulator/scenario-sim-activation/scenario-sim-activation.component';
 import { LoginComponent } from './base/login/login.component';
-import { ShortNumberPipe } from './base/pipes/short-number.pipe';
+import { BaseModule } from './base/base.module';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -29,9 +30,7 @@ import { ShortNumberPipe } from './base/pipes/short-number.pipe';
     ScenarioOutputComponent,
     ScenarioBarchartComponent,
     ScenarioSimActivationComponent,
-    LoginComponent,
-    ShortNumberPipe,
-
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -43,10 +42,12 @@ import { ShortNumberPipe } from './base/pipes/short-number.pipe';
     MaterialModule,
     NgbModule,
     ChartsModule,
-
+    BaseModule,
+    MatIconModule
   ],
+  exports: [],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }},
-  { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
+  { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

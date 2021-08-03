@@ -6,20 +6,26 @@ import { OptimizerRoutingModule } from './optimizer-routing.module';
 import { OptimizerComponent } from './optimizer.component';
 import { ScenarioOptActivationComponent } from './scenario-opt-activation/scenario-opt-activation.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { FormsModule } from '@angular/forms';
-
+import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import {MatSelectModule} from '@angular/material/select';
+import { OptimizerOutputComponent } from './optimizer-output/optimizer-output.component';
+import { BaseModule } from '../base/base.module';
 @NgModule({
   declarations: [
     OptimizerComponent,
-    ScenarioOptActivationComponent
+    ScenarioOptActivationComponent,
+    OptimizerOutputComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     OptimizerRoutingModule,
     MaterialModule,
     MatIconModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSelectModule,
+    BaseModule
   ]
 })
 export class OptimizerModule { }

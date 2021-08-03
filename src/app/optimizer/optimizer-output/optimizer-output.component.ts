@@ -14,6 +14,7 @@ import { ScenarioPlannerService } from '../../backend-services/scenario-planner.
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
 
+
 export interface ScenarioPlanner {
   product_tpn: number;
   incr_sales: string;
@@ -35,12 +36,12 @@ Notiflix.Notify.init({
   position:'right-bottom',
 })
 @Component({
-  selector: 'app-scenario-output',
-  templateUrl: './scenario-output.component.html',
-  styleUrls: ['./scenario-output.component.scss']
+  selector: 'app-optimizer-output',
+  templateUrl: './optimizer-output.component.html',
+  styleUrls: ['./optimizer-output.component.scss']
 })
 
-export class ScenarioOutputComponent implements OnInit {
+export class OptimizerOutputComponent implements OnInit {
 
   response_data:any;
   SOURCE: any;

@@ -12,6 +12,7 @@ import * as Notiflix from 'notiflix';
 import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+
 export interface ScenarioPlanner {
   pack_type: string;
   pack_sub_type:string;
@@ -36,33 +37,7 @@ export interface ScenarioPlannerConstraint {
   bpp: boolean;
 }
 
- export class ConstraintObject implements ScenarioPlannerConstraint {
-  pack_type:string
-  fsi: boolean;
-  fai: boolean;
-  search: boolean;
-  sot: boolean;
-  bpp: boolean;
 
-  constructor(pack_type: string) {
-    this.pack_type=pack_type;
-    this.fsi=false;
-    this.fai=false;
-    this.search=false;
-    this.sot=false;
-    this.bpp=false;
-
-
-         }
-    getConstraint(){
-      return {"pack_type":this.pack_type,
-              "fsi":this.fsi,
-              "fai":this.fai,
-              "search":this.search,
-              "sot":this.sot,
-              "bpp":this.bpp}
-    }
-}
 
 @Component({
   selector: 'app-scenario-planning',
@@ -85,10 +60,15 @@ export class ScenarioPlanningComponent implements OnInit {
     private dataservice:DataControllerService,
     private http: HttpClient
     ) {
+      Notiflix.Notify.init({
+        width:'300px',
+        timeout: 3000,
+        distance:'20px',
+        closeButton:true,
+        opacity: 1,
+        position:'right-bottom',
+      });
 
-      // this.getJSON().subscribe(data => {
-      //   this.response_data=data;
-      //  });
       this.currencySymbol=environment.currencySymbol;
     let input=this.routes.getCurrentNavigation()?.extras.state;
     if(input){
@@ -145,12 +125,7 @@ export class ScenarioPlanningComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    Notiflix.Notify.init({
-      width:'300px',
-      timeout: 3000,
-      distance:'20px',
-      opacity: 0.5,
-    });
+
    this.setDefaultMonth();
     this.apiServices.getPlannerData().subscribe((res:any)=>{
       Notiflix.Loading.dots('Loading...');
@@ -281,9 +256,9 @@ simulateScenario(){
     Notiflix.Loading.merge({
       clickToClose:true, // close the Loading's when they were clicked
     });
-    setTimeout(()=>{
-      Notiflix.Loading.remove();
-    },20000)
+    // setTimeout(()=>{
+    //   Notiflix.Loading.remove();
+    // },20000)
     let start=0;
     // let timer=setInterval(()=>{
     //   start=start+5;
@@ -327,6 +302,9 @@ simulateScenario(){
 
 
 testData(){
+
+}
+ngAfterViewInit(){
 
 }
 downloadRateCardTemplate(){
@@ -579,7 +557,7 @@ doFilter(){
     return new Promise((resolve, reject) => {
     reader.onload = (event) => {
       const data = reader.result;
-      workBook = XLSX.read(data, { type: 'binary' });
+      workBook =XLSX.read(data, { type: 'binary' });
       jsonData = workBook.SheetNames.reduce((initial:any, name:any) => {
         const sheet = workBook.Sheets[name];
         initial[name] = XLSX.utils.sheet_to_json(sheet);
@@ -596,8 +574,6 @@ doFilter(){
     let jsonObject=groupByJson(this.ELEMENT_DATA_CONSTRAINTS,'pack_type');
     let availList:any=Object.keys(jsonObject);
     if(!availList.includes(row.pack_type)){
-      let MuliPlex = new ConstraintObject(row.pack_type);
-      console.log(MuliPlex.getConstraint(),"constraint");
       let object:any={'pack_type':row.pack_type};
       this.DynActivationColumns.forEach((element:any) => {
         object[element.value]=false;
