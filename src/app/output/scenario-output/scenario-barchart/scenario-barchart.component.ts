@@ -22,51 +22,94 @@ export class ScenarioBarchartComponent implements OnInit {
   barChartType: ChartType = 'bar';
   barChartLegend = true;
   barChartPlugins = [pluginDataLabels];
-  barChartOptions: ChartOptions = {
-    responsive: true,
-    legend: { position: 'top',  },
-    layout: {
-      padding: 20
-  },
-    scales: { xAxes: [{
-      gridLines: {
-        drawOnChartArea: false
-    }
-    }], yAxes: [{
-        ticks: {
-            callback: (label, index, labels)=> {
-                return label+' '+this.currencySymbol;
-            }
-        },
-        gridLines: {
-          drawOnChartArea: false
-      }
-    },
-  ] },
-    plugins: {
-      datalabels: {
-        anchor: 'end',
-        align: 'end',
-        font: {
-          size: 10
-        },
-        formatter: (value:any, ctx:any) => {
-          var perc = value+" "+ this.currencySymbol;
-          return perc;
-         },
-      }
-    }
-  };
 
+  barChartOptions: ChartOptions={}
 
   public barChartColors: Color[] = [
-    { backgroundColor: 'rgb(255, 99, 132)' },
+    {  },
   ]
   barChartData: ChartDataSets[] = [];
   ngOnInit(): void {
     this.barChartLabels = this.dataSetLabel;
     this.barChartData = [this.dataSet];
-    console.log("INIT");
+    console.log(this.dataSet,"this.dataSet");
+    let yaxisConfig={};
+    let pluginConf={};
+    if(this.dataSet.label=='Incremental Revenue by Placement'){
+      yaxisConfig={
+        ticks: {
+            callback: (label:any, index:any, labels:any)=> {
+
+                return  numberWithCommas(label.toFixed())+' '+this.currencySymbol;
+            }
+        },
+        gridLines: {
+          drawOnChartArea: false
+      }
+    }
+    pluginConf={
+      datalabels: {
+          anchor: 'end',
+          align: 'end',
+          font: {
+            size: 10
+          },
+          formatter: (value:any, ctx:any) => {
+            value=value.replace(/^0+/, '')
+            var perc = numberWithCommas(value)+" "+ this.currencySymbol;
+            return perc;
+           },
+        },
+
+    }
+    }else{
+      yaxisConfig={
+        ticks: {
+          stepSize: 5,
+          callback: (label:any, index:any, labels:any)=> {
+              return label+' '+'%';
+
+          }
+
+      },
+        gridLines: {
+          drawOnChartArea: false
+      }
+    }
+    pluginConf={
+      datalabels: {
+          anchor: 'end',
+          align: 'end',
+          font: {
+            size: 10
+          },
+          formatter: (value:any, ctx:any) => {
+            var perc = value+" %";
+            return perc;
+           },
+        },
+    }
+    }
+    this.barChartOptions = {
+      responsive: true,
+      legend: { display:false  },
+      layout: {
+        padding: 20
+    },
+
+      scales: { xAxes: [{
+        gridLines: {
+          drawOnChartArea: false
+      }
+      }], yAxes: [yaxisConfig] },
+      plugins: pluginConf
+    };
+
   }
 
+}
+
+
+function numberWithCommas(x:number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

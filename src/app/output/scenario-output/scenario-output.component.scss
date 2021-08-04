@@ -301,3 +301,12 @@ button .break-line{
 .planner_table tbody tr td{
   font-size: 13px;
 }
+
+.custom_legend{
+  display: flex;
+    justify-content: center;
+    color: #001e61;
+    padding: 5px;
+    text-transform: uppercase;
+    background-color: #001e6126;
+}

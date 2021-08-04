@@ -22,6 +22,7 @@ export interface ScenarioPlanner {
   product_name:string;
   activation_type:string;
   lift: number;
+  csv_roas:number
 }
 export interface ScenarioPlannerConstraint {
   pack_type:string
@@ -54,6 +55,7 @@ export class ScenarioOutputComponent implements OnInit {
   currencySymbol: any;
   incremantalCSV: number=0;
   totalActivationCost:number=0;
+  totalscvROAS:number=0;
   Ratecardjson: any;
   constructor(private modalService: NgbModal,
     private routes:Router,private apiServices:ScenarioPlannerService) {
@@ -88,14 +90,17 @@ export class ScenarioOutputComponent implements OnInit {
   @Input() dataSet:any={ data: [0, 0, 0, 0, 0],
     title: {
       text: 'Incremental Revenue by Placements',
-      display: true
+      display: false
     } };
   dataSetLabel1:any=[];
   saveList:any=[{'name':'SELECT','id':0},
   {'name':'Load1','id':1}]
   selectedplacementTypes='';
-  dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
-  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','cost','incr_sales','lift',];
+  dataSet1:any={ data: [] ,title: {
+    text: 'Expected Lift by Pack type',
+    display: false
+  }};
+  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','cost','incr_sales', 'csv_roas','lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -223,6 +228,7 @@ export class ScenarioOutputComponent implements OnInit {
   LoadSaveList(){
     this.incremantalCSV=0;
     this.totalActivationCost=0;
+    this.totalscvROAS=0;
     if(this.valueSelected!=0){
       //load data
       Notiflix.Loading.dots('Loading...');
@@ -438,6 +444,7 @@ doFilter(){
     filterData.forEach((element:any)=>{
       this.incremantalCSV+=element.incr_sales;
       this.totalActivationCost+=element.cost;
+      this.totalscvROAS+=element.incr_sales/element.cost;
     });
      for(let [key,value] of Object.entries(this.activationLIB)){
       filterData.forEach((element:any)=>{

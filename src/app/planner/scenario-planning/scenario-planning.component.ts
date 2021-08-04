@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { DataControllerService } from '../../base/data-controller/data-controller.service';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
@@ -53,7 +54,7 @@ export class ScenarioPlanningComponent implements OnInit {
   currencySymbol:string='';
   financialsCount: number=0;
   response_data=[];
-  private _jsonURL = '../../assets/json_data/response_1.json';
+  private _jsonURL = '../../assets/json_data/json_data.json';
   constructor(private modalService: NgbModal,
     private routes:Router,
     private apiServices:ScenarioPlannerService,
@@ -68,7 +69,10 @@ export class ScenarioPlanningComponent implements OnInit {
         opacity: 1,
         position:'right-bottom',
       });
-
+      // this.getJSON().subscribe(data => {
+      //   this.response_data=data;
+      //   console.log(this.response_data,"this.response_data")
+      //  });
       this.currencySymbol=environment.currencySymbol;
     let input=this.routes.getCurrentNavigation()?.extras.state;
     if(input){
@@ -79,9 +83,9 @@ export class ScenarioPlanningComponent implements OnInit {
   }
   this.dataservice.LoginState(true);
   }
-  // public getJSON(): Observable<any> {
-  //   return this.http.get(this._jsonURL);
-  // }
+  public getJSON(): Observable<any> {
+    return this.http.get(this._jsonURL);
+  }
   ELEMENT_DATA: ScenarioPlanner[] = [];
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //'fsi', 'fai','search', 'sot', 'bpp'
