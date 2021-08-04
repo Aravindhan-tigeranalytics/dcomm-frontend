@@ -100,7 +100,7 @@ export class ScenarioOutputComponent implements OnInit {
     text: 'Expected Lift by Pack type',
     display: false
   }};
-  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','cost','incr_sales', 'csv_roas','lift',];
+  displayedColumns: string[] = [ 'pack_type','pack_sub_type','activation_type','cost','incr_sales', 'csv_roas','processed_lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -436,46 +436,65 @@ doFilter(){
   }
   chartInit(filterData:any){
      this.TATS={};
+
      this.DynActivationColumns.forEach((element:any) => {
       this.TATS[element.value]=0;
-      this.Chartpoints_pla_rev[element.value]=0;
+      //this.Chartpoints_pla_rev[element.value]=0;
       //this.incremantalCSV+=element.incr_sales;
+    });
+    let gbActivity=groupByJson(filterData,'activation_type');
+    console.log(gbActivity,"gbActivity")
+    let gbActivityList=Object.keys(gbActivity);
+    gbActivityList.forEach((item)=>{
+      this.Chartpoints_pla_rev[item]=0;
     });
     filterData.forEach((element:any)=>{
       this.incremantalCSV+=element.incr_sales;
       this.totalActivationCost+=element.cost;
       this.totalscvROAS+=element.incr_sales/element.cost;
     });
+
+    gbActivityList.forEach((item)=>{
+      filterData.forEach((element:any)=>{
+        if(element.activation_type.includes(item)){
+          this.Chartpoints_pla_rev[item]+=element.incr_sales
+        }
+
+   });
+    });
      for(let [key,value] of Object.entries(this.activationLIB)){
       filterData.forEach((element:any)=>{
           if(element.activation_type.includes(value)){
             this.TATS[key]+=1;
-            this.Chartpoints_pla_rev[key]+=element.incr_sales.toFixed(2);
+            //this.Chartpoints_pla_rev[key]+=element.incr_sales.toFixed(2);
 
           }
 
      });
     }
-    console.log(this.Chartpoints_pla_rev,"1");
+    console.log(this.Chartpoints_pla_rev,"===");
 
   let byPacktype=groupByJson(filterData,'pack_type');
   console.log(filterData,byPacktype,"1");
-  this.chartRender(this.Chartpoints_pla_rev);
+  this.chartRender(this.Chartpoints_pla_rev,filterData);
   this.chartExpLift(filterData,byPacktype);
   this.getpackTypeList(filterData,byPacktype);
   }
-  chartRender(data:any){
+  chartRender(data:any,filterData:any){
     this.reload=false;
     let data_points:any=[];
     this.dataSetLabel=[];
-    for(let [key,value] of Object.entries(this.activationLIB)){
-      console.log(key,value,"value_key",data[key]);
-      if(data[key]!=0){
-        this.dataSetLabel.push(value);
-        data_points.push(data[key]);
+    console.log(data,"data")
+    let gbActivity=groupByJson(filterData,'activation_type');
+     console.log(gbActivity,"gbActivity")
+     let gbActivityList=Object.keys(gbActivity);
+     gbActivityList.forEach((item)=>{
+      if(data[item]!=0){
+        this.dataSetLabel.push(item);
+        data_points.push(data[item].toFixed(2));
       }
-
-    }
+      console.log( this.dataSetLabel," this.dataSetLabel",data_points);
+    });
     this.dataSet={ data: data_points,
       label: 'Incremental Revenue by Placement' ,backgroundColor:[
       'rgb(156, 39, 176)',
@@ -486,6 +505,7 @@ doFilter(){
       'rgb(233, 30, 99 )',
       'rgb(103, 58, 183 )',
      ]};
+     console.log(this.dataSet,"this.dataSet");
     setTimeout(()=>{
       this.reload=true;
     },200);
