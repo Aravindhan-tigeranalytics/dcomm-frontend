@@ -22,7 +22,7 @@ export interface ScenarioPlanner {
 }
 Notiflix.Notify.init({
   width:'300px',
-  timeout: 5000,
+  timeout: 3000,
   position:'right-top',
   cssAnimationStyle: 'from-bottom',
   distance:'20px',

@@ -13,7 +13,13 @@ import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
-
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from "@angular/animations";
 export interface ScenarioPlanner {
   product_tpn: number;
   incr_sales: string;
@@ -22,7 +28,8 @@ export interface ScenarioPlanner {
   product_name:string;
   activation_type:string;
   lift: number;
-  csv_roas:number
+  csv_roas:number;
+  processed_lift:number;
 }
 export interface ScenarioPlannerConstraint {
   pack_type:string
@@ -34,11 +41,74 @@ export interface ScenarioPlannerConstraint {
 }
 Notiflix.Notify.init({
   position:'right-bottom',
+  timeout:3000
 })
 @Component({
   selector: 'app-scenario-output',
   templateUrl: './scenario-output.component.html',
-  styleUrls: ['./scenario-output.component.scss']
+  styleUrls: ['./scenario-output.component.scss'],
+  animations: [
+    trigger("changeDivSize", [
+      state(
+        "initial",
+        style({
+          backgroundColor: "green",
+          width: "100px",
+          height: "100px"
+        })
+      ),
+      state(
+        "final",
+        style({
+          backgroundColor: "red",
+          width: "200px",
+          height: "200px"
+        })
+      ),
+      transition("initial=>final", animate("1500ms")),
+      transition("final=>initial", animate("1000ms"))
+    ]),
+
+    trigger("balloonEffect", [
+      state(
+        "initial",
+        style({
+          backgroundColor: "green",
+          transform: "scale(1)"
+        })
+      ),
+      state(
+        "final",
+        style({
+          backgroundColor: "red",
+          transform: "scale(1.5)"
+        })
+      ),
+      transition("final=>initial", animate("1000ms")),
+      transition("initial=>final", animate("1500ms"))
+    ]),
+
+    trigger("fadeInOut", [
+      state(
+        "void",
+        style({
+          opacity: 0
+        })
+      ),
+      transition("void <=> *", animate(1000))
+    ]),
+
+    trigger("EnterLeave", [
+      state("flyIn", style({ transform: "translateX(0)" })),
+      transition(":enter", [
+        style({ transform: "translateX(-100%)" }),
+        animate("0.5s 300ms ease-in")
+      ]),
+      transition(":leave", [
+        animate("0.3s ease-out", style({ transform: "translateX(100%)" }))
+      ])
+    ])
+  ]
 })
 
 export class ScenarioOutputComponent implements OnInit {
@@ -436,7 +506,9 @@ doFilter(){
   }
   chartInit(filterData:any){
      this.TATS={};
-
+    this.incremantalCSV=0;
+    this.totalActivationCost=0;
+    this.totalscvROAS=0;
      this.DynActivationColumns.forEach((element:any) => {
       this.TATS[element.value]=0;
       //this.Chartpoints_pla_rev[element.value]=0;
@@ -520,7 +592,7 @@ doFilter(){
       let items:any=value;
       let tssum=0;
       items.map((item:any)=>{
-        tssum+=parseInt(item.lift);
+        tssum+=parseInt(item.processed_lift);
       });
       console.log(tssum.toFixed(2),"tssum");
       data_points1.push(tssum);

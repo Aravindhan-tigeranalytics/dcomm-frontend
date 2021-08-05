@@ -121,7 +121,7 @@
 
                   </thead>
                   <tbody>
-                     <tr *ngFor="let row of ELEMENT_DATA_CONSTRAINTS" class="mat-row">
+                     <tr [@fadeInOut] *ngFor="let row of ELEMENT_DATA_CONSTRAINTS" class="mat-row">
                        <ng-container *ngFor="let el of displayedColumnsConstraints;let i = index">
                         <td *ngIf="i!=0" class="mat-cell header_bg">
                           <mat-checkbox color="primary"  [(ngModel)]="row[el]" (change)="selectedActivation(el,$event)">
@@ -150,97 +150,6 @@
                     </td>
                    </tr>
                 </table>
-
-                <!-- <table
-                mat-table [dataSource]="dataSourceConstraints"
-                class=" planner_table table_constraint"> -->
-
-                <!-- <ng-container matColumnDef="pack_type">
-                  <th mat-header-cell *matHeaderCellDef>
-                    Activations / Pack Type
-                  </th>
-                  <td class="header_bg" mat-cell *matCellDef="let element" width="25%"> {{element.pack_type}} </td>
-                </ng-container> -->
-
-
-<!--
-                <ng-container matColumnDef="pack_type">
-                  <th mat-header-cell *matHeaderCellDef>
-                    Activations / Pack Type
-                  </th>
-                  <td class="header_bg" mat-cell *matCellDef="let element" width="25%"> {{element.pack_type}} </td>
-                </ng-container> -->
-                 <!-- FSI Column -->
-                  <!-- <ng-container  matColumnDef="fsi">
-                   <th mat-header-cell *matHeaderCellDef>
-                    FSI
-                   </th>
-                   <td mat-cell *matCellDef="let element"  width="15%">
-                     <mat-checkbox color="primary"  [(ngModel)]="element.fsi">
-                     </mat-checkbox>
-                   </td>
-                 </ng-container> -->
-
-                 <!--FAI Column -->
-                <!-- <ng-container matColumnDef="fai">
-                  <th mat-header-cell *matHeaderCellDef>
-                   FAI
-                  </th>
-                  <td mat-cell *matCellDef="let element" width="15%">
-                    <mat-checkbox color="primary" [(ngModel)]="element.fai">
-                    </mat-checkbox>
-                  </td>
-                </ng-container> -->
-                 <!--SEARCH Column -->
-                  <!-- <ng-container matColumnDef="search">
-                  <th mat-header-cell *matHeaderCellDef>
-                   SEARCH
-                  </th>
-                  <td mat-cell *matCellDef="let element" width="15%">
-                    <mat-checkbox color="primary" [(ngModel)]="element.search">
-                    </mat-checkbox>
-                  </td>
-                </ng-container> -->
-                  <!--SOT Column -->
-                   <!-- <ng-container matColumnDef="sot">
-                    <th mat-header-cell *matHeaderCellDef>
-                     SOT
-                    </th>
-                    <td mat-cell *matCellDef="let element" width="15%">
-                      <mat-checkbox color="primary"  [(ngModel)]="element.sot">
-                      </mat-checkbox>
-                    </td>
-                  </ng-container> -->
-                   <!--bbp Column -->
-                   <!-- <ng-container matColumnDef="bbp">
-                    <th mat-header-cell *matHeaderCellDef width="15%">
-                     BBP
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                      <mat-checkbox color="primary"  [(ngModel)]="element.bbp">
-                      </mat-checkbox>
-                    </td>
-                  </ng-container> -->
-
-
-
-                 <!-- <tr mat-header-row *matHeaderRowDef="displayedColumnsConstraints"></tr>
-                 <tr mat-row *matRowDef="let row; columns: displayedColumnsConstraints;">
-                 </tr>
-                 <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell" colspan="6">
-                    <div  class="row col-md-12">
-                      <div class="col-md-4"></div>
-                      <div class="col-md-4 dflex center_all ffc filter_no">
-                        <img height="200px" src="assets/svg/undraw_void.svg"/>
-                        <div class="filter_no">No Records Selected</div>
-                      </div>
-                      <div class="col-md-4"></div>
-                    </div>
-
-                  </td>
-                 </tr>
-               </table> -->
 
               </div>
 

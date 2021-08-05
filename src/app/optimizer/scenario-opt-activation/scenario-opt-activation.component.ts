@@ -49,6 +49,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
   Placements=['FSI','FAI','SEARCH','SOT','BBP'];
   //PackTypes=['Mulipack','Baked','Pack'];
   totalActivations=0;
+  MatrixConstraintsTable1:any=[];
   MatrixConstraintsTable:any={
     'fsi_fsi':false,
     'fsi_fai':false,
@@ -86,6 +87,8 @@ export class ScenarioOptActivationComponent  implements OnInit {
     'tpb_tbp':false,
 
   };
+  MatrixConstraintsTableSingles:any={}
+
   totalProducts=0;
   sumProducts:string='0';
   displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
@@ -93,6 +96,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
   dataSourceConstraintsMatrix = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS_MATRIX);
   currencySymbol: any;
   totalBudget: number=0;
+  MatrixConstraintsTableres: any={};
   constructor(private routes:Router,private apiServices:ScenarioPlannerService,) {
     this.datastream=this.routes.getCurrentNavigation()?.extras.state;
     this.currencySymbol=environment.currencySymbol;
@@ -100,6 +104,12 @@ export class ScenarioOptActivationComponent  implements OnInit {
 
   ngOnInit(): void {
 
+
+   this.MatrixConstraintsTableres={};
+    let order:any={};
+    let arr:any=[];
+
+    console.log(this.MatrixConstraintsTable1,"this.MatrixConstraintsTable1")
     this.displayedColumnsConstraints= ['pack_type'];
     this.apiServices.getActivationList().subscribe((res:any)=>{
       console.log(res,"RES")
@@ -108,8 +118,45 @@ export class ScenarioOptActivationComponent  implements OnInit {
         for(let [key,value] of Object.entries(this.DynActivationColumns)){
           let values:any=value;
           this.activationLIB[values.value]=values.name;
+          arr.push(values.value);
           this.displayedColumnsConstraints.push(values.value)
         }
+        for(let i=0;i<arr.length;i++){
+          for(let j=i;j<arr.length;j++){
+            this.MatrixConstraintsTableres[(arr[i]+'_'+arr[j]).trim()]=false;
+            if(order[arr[i]]){
+              order[arr[i]]+=(arr[i]+'_'+arr[j]).trim()+","
+            }else{
+              order[arr[i]]=(arr[i]+'_'+arr[j]).trim()+","
+            }
+
+          }
+        }
+        let order1:any={};
+        let el:any=[];;
+        arr.forEach((element:any,index:any)=>{
+          el=[];
+          for(let j=0;j<index;j++){
+            if(order1[element]){
+              order1[element]+=arr[j]+'_'+element+","
+            }else{
+              order1[element]=arr[j]+'_'+element+","
+            }
+
+          }
+          let arr1=[];
+          if(order1[element]){
+            arr1=order1[element].split(',');
+          }
+          var filtered1 = arr1.filter(function (el:any) {
+            return el !="";
+          });
+          var filtered2 = order[element].split(',').filter(function (el:any) {
+            return el !="";
+          });
+          this.MatrixConstraintsTable1.push(filtered1.concat(filtered2));
+
+        });
       }
     if(this.datastream){
       if(this.datastream.source=='from_planning'){
@@ -241,10 +288,10 @@ export class ScenarioOptActivationComponent  implements OnInit {
     selectAllConstraint(){
       console.log("constaint")
 
-        for(let [key,value] of Object.entries(this.MatrixConstraintsTable)){
-          this.MatrixConstraintsTable[key]=true;
+        for(let [key,value] of Object.entries(this.MatrixConstraintsTableres)){
+          this.MatrixConstraintsTableres[key]=true;
         }
-        console.log(this.MatrixConstraintsTable)
+        console.log(this.MatrixConstraintsTableres)
     }
     ResetAll(){
       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
@@ -256,8 +303,8 @@ export class ScenarioOptActivationComponent  implements OnInit {
       });
     }
     ResetAllConstraint(){
-      for(let [key,value] of Object.entries(this.MatrixConstraintsTable)){
-        this.MatrixConstraintsTable[key]=false;
+      for(let [key,value] of Object.entries(this.MatrixConstraintsTableres)){
+        this.MatrixConstraintsTableres[key]=false;
        }
     }
 }

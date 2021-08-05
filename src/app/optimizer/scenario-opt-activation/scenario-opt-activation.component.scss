@@ -27,9 +27,11 @@ $color-blue-1: #0000a0;
 .matrix thead th {
   color: white;
   padding: 15px;
+  font-size: 10px;
 }
 .matrix tbody td {
   padding: 15px;
+  font-size: 10px;
 }
 .ffc{
   flex-flow: column;
@@ -350,7 +352,10 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .planner_table_bg th {
-  color:white
+  color:white;
+}
+.planner_table tr th{
+  font-size: 10px;
 }
 .view_table{
   width: 100%;

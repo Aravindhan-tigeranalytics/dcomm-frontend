@@ -129,7 +129,7 @@
 
             <div class="heading-2" *ngIf="SOURCE=='from_opt_activation'"> Recommended Plan</div>
 
-            <div class="header-fixed custom_scroll p_zero">
+            <div class="header-fixed custom_scroll p_zero" >
             <table  matSort (matSortChange)="sortData($event)"
              mat-table [dataSource]="dataSource"
              matSortActive="lift" matSortDirection="asc"
@@ -137,7 +137,7 @@
              class="planner_table ">
 
               <!-- Checkbox Column -->
-              <ng-container matColumnDef="select">
+              <ng-container matColumnDef="select"  >
                 <th mat-header-cell *matHeaderCellDef>
                   <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                                 [checked]="selection.hasValue() && isAllSelected()"
@@ -178,7 +178,11 @@
                 <th width="15%" mat-sort-header="product_name" mat-header-cell *matHeaderCellDef> Product Name</th>
                 <td width="15%" mat-cell *matCellDef="let element"> {{element.product_name}} </td>
               </ng-container>
-
+            <!-- Expect Lift Column -->
+            <ng-container matColumnDef="pack_sub_type">
+              <th width="15%" mat-sort-header="product_nampack_sub_typee" mat-header-cell *matHeaderCellDef> Product Sub Type</th>
+              <td width="15%" mat-cell *matCellDef="let element"> {{element.pack_sub_type}} </td>
+            </ng-container>
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="activation_type">
                 <th width="18%" mat-sort-header="activation_type" mat-header-cell *matHeaderCellDef> Activity </th>
@@ -189,13 +193,17 @@
               <ng-container matColumnDef="lift">
                 <th width="15%" mat-sort-header="lift" mat-header-cell *matHeaderCellDef> Expected Lift  </th>
                 <td width="15%" style="color:green;" class="right-align" mat-cell *matCellDef="let element"> {{element.lift | number : '1.2-2' }} %</td>
-              </ng-container>`
+              </ng-container>
+              <ng-container matColumnDef="processed_lift">
+                <th width="15%" mat-sort-header="processed_lift" mat-header-cell *matHeaderCellDef> Expected Lift  </th>
+                <td width="15%" style="color:green;background-color: #0080003b;" class="right-align" mat-cell *matCellDef="let element"> {{element.processed_lift | number : '1.2-2' }} %</td>
+              </ng-container>
               <ng-container matColumnDef="csv_roas">
-                <th width="15%" mat-sort-header="csv_roas" mat-header-cell *matHeaderCellDef> CSV ROAS  </th>
-                <td width="15%" mat-cell *matCellDef="let element"> {{(element.incr_sales/element.cost )| percent }} </td>
+                <th width="10%" mat-sort-header="csv_roas" mat-header-cell *matHeaderCellDef> CSV ROAS  </th>
+                <td width="10%" mat-cell *matCellDef="let element"> {{(element.incr_sales/element.cost )| percent }} </td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              <tr [@EnterLeave]="'flyIn'"  mat-row *matRowDef="let row; columns: displayedColumns;"
                   (click)="checkbox_row(row)">
               </tr>
               <tr class="mat-row" *matNoDataRow>

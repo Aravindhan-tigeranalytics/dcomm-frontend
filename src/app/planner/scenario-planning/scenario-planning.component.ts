@@ -13,7 +13,13 @@ import * as Notiflix from 'notiflix';
 import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from "@angular/animations";
 export interface ScenarioPlanner {
   pack_type: string;
   pack_sub_type:string;
@@ -43,7 +49,69 @@ export interface ScenarioPlannerConstraint {
 @Component({
   selector: 'app-scenario-planning',
   templateUrl: './scenario-planning.component.html',
-  styleUrls: ['./scenario-planning.component.scss']
+  styleUrls: ['./scenario-planning.component.scss'],
+  animations: [
+    trigger("changeDivSize", [
+      state(
+        "initial",
+        style({
+          backgroundColor: "green",
+          width: "100px",
+          height: "100px"
+        })
+      ),
+      state(
+        "final",
+        style({
+          backgroundColor: "red",
+          width: "200px",
+          height: "200px"
+        })
+      ),
+      transition("initial=>final", animate("1500ms")),
+      transition("final=>initial", animate("1000ms"))
+    ]),
+
+    trigger("balloonEffect", [
+      state(
+        "initial",
+        style({
+          backgroundColor: "green",
+          transform: "scale(1)"
+        })
+      ),
+      state(
+        "final",
+        style({
+          backgroundColor: "red",
+          transform: "scale(1.5)"
+        })
+      ),
+      transition("final=>initial", animate("1000ms")),
+      transition("initial=>final", animate("1500ms"))
+    ]),
+
+    trigger("fadeInOut", [
+      state(
+        "void",
+        style({
+          opacity: 0
+        })
+      ),
+      transition("void <=> *", animate(1000))
+    ]),
+
+    trigger("EnterLeave", [
+      state("flyIn", style({ transform: "translateX(0)" })),
+      transition(":enter", [
+        style({ transform: "translateX(-100%)" }),
+        animate("0.5s 300ms ease-in")
+      ]),
+      transition(":leave", [
+        animate("0.3s ease-out", style({ transform: "translateX(100%)" }))
+      ])
+    ])
+  ]
 })
 
 export class ScenarioPlanningComponent implements OnInit {
@@ -64,9 +132,6 @@ export class ScenarioPlanningComponent implements OnInit {
       Notiflix.Notify.init({
         width:'300px',
         timeout: 3000,
-        distance:'20px',
-        closeButton:true,
-        opacity: 1,
         position:'right-bottom',
       });
       // this.getJSON().subscribe(data => {
@@ -257,9 +322,6 @@ simulateScenario(){
   'products':this.selection.selected,
   'planner_type':'simulation'};
     Notiflix.Loading.dots('Loading...');
-    Notiflix.Loading.merge({
-      clickToClose:true, // close the Loading's when they were clicked
-    });
     // setTimeout(()=>{
     //   Notiflix.Loading.remove();
     // },20000)
@@ -317,7 +379,7 @@ downloadRateCardTemplate(){
     const a = document.createElement('a')
     const objectUrl = URL.createObjectURL(blob)
     a.href = objectUrl
-    a.download = 'Rate Card Template.xls';
+    a.download = 'Rate Card Template.xlsx';
     a.click();
     URL.revokeObjectURL(objectUrl);
     });
@@ -328,7 +390,7 @@ downloadFinTemplate(){
     const a = document.createElement('a')
     const objectUrl = URL.createObjectURL(blob)
     a.href = objectUrl
-    a.download = 'Financials Template.xls';
+    a.download = 'Financials Template.xlsx';
     a.click();
     URL.revokeObjectURL(objectUrl);
     });
@@ -339,7 +401,7 @@ downloadPromotionTemplate(){
     const a = document.createElement('a')
     const objectUrl = URL.createObjectURL(blob)
     a.href = objectUrl
-    a.download = 'Promotion Template.xls';
+    a.download = 'Promotion Template.xlsx';
     a.click();
     URL.revokeObjectURL(objectUrl);
     });
