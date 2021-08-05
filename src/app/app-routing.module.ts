@@ -10,7 +10,7 @@ const routes: Routes = [
    component: ScenarioPlanningComponent},
   { path: 'simulator', loadChildren: () => import('./simulator/simulator.module').then(m => m.SimulatorModule) },
   { path: 'optimizer', loadChildren: () => import('./optimizer/optimizer.module').then(m => m.OptimizerModule) },
-  { path: 'scenarioresult', loadChildren: () => import('./output/output.module').then(m => m.OutputModule) },
+  { path: 'result', loadChildren: () => import('./output/output.module').then(m => m.OutputModule) },
  // otherwise redirect to home
   { path: '**', redirectTo: 'planner' }
 ];

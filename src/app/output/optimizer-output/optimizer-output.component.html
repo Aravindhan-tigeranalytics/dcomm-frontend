@@ -330,16 +330,18 @@
               </div>
             </div>
           <div class="row m-5px p_zero">
-            <div class="col-md-6">
-              <!-- <app-optimizer-barchart
-              [(dataSetLabel)]="dataSetLabel"
-              [(dataSet)]="dataSet"
+            <div class="col-md-6 white">
+              <label class="custom_legend">Incremental Revenue By Placements</label>
+              <app-optimizer-barchart
+              [dataSetLabel]="dataSetLabel"
+              [dataSet]="dataSet"
               *ngIf="reload"
-              ></app-optimizer-optimizer>
+              ></app-optimizer-barchart>
             </div>
-            <div class="col-md-6">
-              <app-optimizer-optimizer *ngIf="reload1" [(dataSetLabel)]="dataSetLabel1" [(dataSet)]="dataSet1"></app-optimizer-optimizer>
-            </div> -->
+            <div class="col-md-6 white">
+              <label class="custom_legend">Expected Lift By Pack Type</label>
+              <app-optimizer-barchart *ngIf="reload1" [dataSetLabel]="dataSetLabel1" [dataSet]="dataSet1"></app-optimizer-barchart>
+            </div>
           </div>
         <div>
        </div>

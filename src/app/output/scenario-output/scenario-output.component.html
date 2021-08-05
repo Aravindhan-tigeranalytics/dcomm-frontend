@@ -345,14 +345,14 @@
             <div class="col-md-6 white">
               <label class="custom_legend">Incremental Revenue By Placements</label>
               <app-scenario-barchart
-              [(dataSetLabel)]="dataSetLabel"
-              [(dataSet)]="dataSet"
+              [dataSetLabel]="dataSetLabel"
+              [dataSet]="dataSet"
               *ngIf="reload"
               ></app-scenario-barchart>
             </div>
             <div class="col-md-6 white">
               <label class="custom_legend">Expected Lift By Pack Type</label>
-              <app-scenario-barchart *ngIf="reload1" [(dataSetLabel)]="dataSetLabel1" [(dataSet)]="dataSet1"></app-scenario-barchart>
+              <app-scenario-barchart *ngIf="reload1" [dataSetLabel]="dataSetLabel1" [dataSet]="dataSet1"></app-scenario-barchart>
             </div>
           </div>
         <div>

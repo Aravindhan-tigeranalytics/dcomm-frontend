@@ -1,6 +1,5 @@
-
+import { OutputModule } from './output/output.module';
 import { InterceptorService } from './base/intercept/interceptor.service';
-
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -15,6 +14,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ScenarioPlanningComponent } from './planner/scenario-planning/scenario-planning.component';
 import { ScenarioOutputComponent } from './output/scenario-output/scenario-output.component';
+
 import { ScenarioBarchartComponent } from './output/scenario-output/scenario-barchart/scenario-barchart.component';
 import { ChartsModule } from 'ng2-charts';
 import { ScenarioSimActivationComponent } from './simulator/scenario-sim-activation/scenario-sim-activation.component';
@@ -30,7 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
     ScenarioOutputComponent,
     ScenarioBarchartComponent,
     ScenarioSimActivationComponent,
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,7 +43,8 @@ import { MatIconModule } from '@angular/material/icon';
     NgbModule,
     ChartsModule,
     BaseModule,
-    MatIconModule
+    MatIconModule,
+    OutputModule
   ],
   exports: [],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }},

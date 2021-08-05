@@ -41,7 +41,6 @@ Notiflix.Notify.init({
   templateUrl: './optimizer-output.component.html',
   styleUrls: ['./optimizer-output.component.scss']
 })
-
 export class OptimizerOutputComponent implements OnInit {
 
   response_data:any;

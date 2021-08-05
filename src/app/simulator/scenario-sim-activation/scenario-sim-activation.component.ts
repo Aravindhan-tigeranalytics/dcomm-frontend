@@ -304,7 +304,7 @@ removeKey(key:any){
       Notiflix.Loading.remove();
       //console.log(res.data,"resdata");
       if(res.code==200 && res.status=='success'){
-        this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,
+        this.routes.navigate(['/result'],{ state: {'source':'from_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,
           this.selectedData,this.response_data,res.data,this.Ratecardjson]} });
       }
 

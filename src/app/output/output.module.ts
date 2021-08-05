@@ -8,8 +8,13 @@ import { MaterialModule } from '../material.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {MatSelectModule} from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ChartsModule } from 'ng2-charts';
+
 @NgModule({
-  declarations: [],
+
+  declarations: [
+
+  ],
   imports: [
     CommonModule,
     OutputRoutingModule,
@@ -19,7 +24,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatCheckboxModule,
     MatSelectModule,
     ReactiveFormsModule,
-    BaseModule
-  ]
+    BaseModule,
+    ChartsModule
+  ],
+  exports:[]
+
 })
 export class OutputModule { }

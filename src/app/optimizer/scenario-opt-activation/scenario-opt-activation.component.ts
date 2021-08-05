@@ -267,7 +267,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
     };
 
     accumulateFilter=accumulateFilter.flat();
-    this.routes.navigate(['/scenarioresult'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
+    this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
     }
   go_back(){
     let that=this;
