@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ScenarioPlanningComponent } from './scenario-planning.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ScenarioPlanningComponent', () => {
   let component: ScenarioPlanningComponent;
@@ -11,6 +12,7 @@ describe('ScenarioPlanningComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
+        BrowserAnimationsModule,
         RouterTestingModule.withRoutes([]),
       ],
       declarations: [ ScenarioPlanningComponent ]

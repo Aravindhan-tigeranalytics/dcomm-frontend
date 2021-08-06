@@ -33,7 +33,7 @@ export interface ScenarioPlanner {
   discount: number;
   edlp: string;
   selling_price: number;
-  month: string;
+  period: string;
 }
 export interface ScenarioPlannerConstraint {
   pack_type:string
@@ -190,12 +190,14 @@ export class ScenarioPlanningComponent implements OnInit {
   willDownload = false;
   setDefaultMonth(){
     const d = new Date();
-    this.activePeroid=this.monthNames[d.getMonth()];
+    console.log(this.PeroidList,"==",d.getMonth());
+    console.log(this.PeroidList[d.getMonth()],"data")
+    this.activePeroid=this.PeroidList[d.getMonth()].value;
 
   }
   ngOnInit(): void {
 
-   this.setDefaultMonth();
+
     this.apiServices.getPlannerData().subscribe((res:any)=>{
       Notiflix.Loading.dots('Loading...');
       if((res['code']=='200') && (res.status=='success')){
@@ -206,6 +208,7 @@ export class ScenarioPlanningComponent implements OnInit {
         this.ELEMENT_DATA.push(element);
       });
       this.PeroidList=res.misc.peroid_list;
+      this.setDefaultMonth();
       this.DynActivationColumns=res.misc.activation_list;
       console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA");
       this.activityType = [...new Map(this.ELEMENT_DATA.map(item => [item["pack_type"], item])).values()];
@@ -249,7 +252,7 @@ export class ScenarioPlanningComponent implements OnInit {
 changePeroidList(event:any){
  // console.log(this.activePeroid,"PEROID");
   this.ELEMENT_DATA.forEach((ele)=>{
-    ele.month=this.activePeroid;
+    ele.period=this.activePeroid;
   });
 }
 optimizeScenario(){
@@ -269,7 +272,7 @@ optimizeScenario(){
   }
   if(!mandatory){
     this.selection.selected.forEach((ele)=>{
-      ele.month=this.activePeroid;
+      ele.period=this.activePeroid;
     });
     Notiflix.Loading.dots('Loading...');
     let start=0;
@@ -314,7 +317,7 @@ simulateScenario(){
   }
   if(!mandatory){
     this.selection.selected.forEach((ele)=>{
-      ele.month=this.activePeroid;
+      ele.period=this.activePeroid;
     });
 
   let payload={ 'rate_card':this.Ratecardjson['RateCard'],

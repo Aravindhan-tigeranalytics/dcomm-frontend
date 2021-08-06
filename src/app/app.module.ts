@@ -21,6 +21,7 @@ import { ScenarioSimActivationComponent } from './simulator/scenario-sim-activat
 import { LoginComponent } from './base/login/login.component';
 import { BaseModule } from './base/base.module';
 import { MatIconModule } from '@angular/material/icon';
+import { ShortNumberPipe } from './base/pipes/short-number.pipe';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
     OutputModule
   ],
-  exports: [],
+  exports: [ShortNumberPipe],
   providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' }},
   { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },],
   bootstrap: [AppComponent]
