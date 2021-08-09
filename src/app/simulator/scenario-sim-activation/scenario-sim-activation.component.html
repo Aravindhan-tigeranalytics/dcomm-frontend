@@ -115,7 +115,7 @@
                 <table  class=" planner_table table_constraint">
                   <thead>
                     <tr class="mat-header-row">
-                      <th width="25%">Activations / Pack Type</th>
+                      <th width="25%">Activations / Pack Sub Type</th>
                       <th width="15%" *ngFor="let element of DynActivationColumns">{{element.name}}</th>
                     </tr>
 
@@ -128,7 +128,7 @@
                           </mat-checkbox>
                          </td>
                          <td *ngIf="i==0" class="mat-cell header_bg">
-                           {{row.pack_type}}
+                           {{row.pack_sub_type}}
                          </td>
                        </ng-container>
 

@@ -46,4 +46,10 @@ scenario_planner_listdelete(payload:number) {
 get_processed_data(payload:any) {
   return this.http.post(this.serviceURL+'/scenario_planner/groupped_planner_data',payload );
 }
+
+//simulate scenario  scenario_planner/transaction_simulate_scenario
+
+get_trans_scenatio_planner_simulate(payload:any) {
+  return this.http.post(this.serviceURL+'/scenario_planner/transaction_simulate_scenario',{ params: payload } );
+}
 }

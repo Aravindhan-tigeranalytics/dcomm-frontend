@@ -27,7 +27,7 @@ export interface ScenarioPlanner {
   edlp_conversion: number;
 }
 export interface ScenarioPlannerConstraint {
-  pack_type:string
+  pack_sub_type:string
   fsi: boolean;
   fai: boolean;
   search: boolean;
@@ -135,7 +135,7 @@ export class ScenarioSimActivationComponent implements OnInit {
 }
 
   ngOnInit(): void {
-    this.displayedColumnsConstraints= ['pack_type'];
+    this.displayedColumnsConstraints= ['pack_sub_type'];
     Notiflix.Loading.dots('Loading...');
     this.apiServices.getActivationList().subscribe((res:any)=>{
       //console.log(res,"RES")
@@ -160,12 +160,12 @@ export class ScenarioSimActivationComponent implements OnInit {
         this.Ratecardjson=this.datastream.data[4] || [];
 
         console.log(this.response_data,"response_data act planner");
-        let jsonObject=groupByJson(this.selectedData,'pack_type');
+        let jsonObject=groupByJson(this.selectedData,'pack_sub_type');
 
       this.ELEMENT_DATA_CONSTRAINTS=[];
       for (const [key, value] of Object.entries(jsonObject)) {
         //console.log("key",key);
-        let object:any={'pack_type':key};
+        let object:any={'pack_sub_type':key};
         this.DynActivationColumns.forEach((element:any) => {
           object[element.value]=false;
         });
@@ -187,7 +187,7 @@ export class ScenarioSimActivationComponent implements OnInit {
       //console.log(this.selectedData,"this.selectedData");
       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
         for(let [key,value] of Object.entries(element) ){
-            if(key!='pack_type'){
+            if(key!='pack_sub_type'){
               if(value){
                 this.actselected+=1;
               }
@@ -245,7 +245,7 @@ removeKey(key:any){
 
   }
   simulateScenario(){
-    let jsonObject=groupByJson(this.response_data,'pack_type');
+    let jsonObject=groupByJson(this.response_data,'pack_sub_type');
     let keys=Object.keys(jsonObject);
     //console.log(keys,"keys");
     let validPacktype:any[]=[];
@@ -254,15 +254,15 @@ removeKey(key:any){
     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
       let push=false;
         for(let [key,value] of Object.entries(element)){
-            if((key!='pack_type') && (value==true)){
+            if((key!='pack_sub_type') && (value==true)){
               push=true;
               NoneSelected=true;
-              let values=to_filterOb[element.pack_type] || [];
+              let values=to_filterOb[element.pack_sub_type] || [];
               values.push(this.activationLIB[key]);
-              to_filterOb[element.pack_type]=values;
+              to_filterOb[element.pack_sub_type]=values;
             }
         }
-        if(push){validPacktype.push(element.pack_type);
+        if(push){validPacktype.push(element.pack_sub_type);
         }
     });
     //console.log(NoneSelected,"NoneSelected");
@@ -272,7 +272,7 @@ removeKey(key:any){
 
     for(let [key,value] of Object.entries(to_filterOb)){
       //console.log(key,"key")
-      filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
+      filterData = this.response_data.filter((data:any) => key.includes(data["pack_sub_type"]));
       //console.log(filterData,"level",key);
       let PackList:any=value;
       ////console.log(PackList.join(' '),"PackList");
@@ -281,7 +281,7 @@ removeKey(key:any){
       //console.log(filterData,"level");
       if(filterData.length==0){
         PackList.forEach((element:any) => {
-          filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
+          filterData = this.response_data.filter((data:any) => key.includes(data["pack_sub_type"]));
           filterData=filterData.filter((data:any) => data["activation_type"].trim()==element.trim());
           accumulateFilter.push(filterData);
         });
@@ -325,7 +325,7 @@ removeKey(key:any){
     selectAll(){
     this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
       for(let [key,value] of Object.entries(element)){
-        if(key!='pack_type'){
+        if(key!='pack_sub_type'){
           element[key]=true;
         }
       }
@@ -334,7 +334,7 @@ removeKey(key:any){
     ResetAll(){
       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any)=>{
         for(let [key,value] of Object.entries(element)){
-          if(key!='pack_type'){
+          if(key!='pack_sub_type'){
           element[key]=false;
         }
         }

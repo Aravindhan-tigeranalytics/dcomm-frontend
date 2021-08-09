@@ -176,7 +176,6 @@ export class ScenarioPlanningComponent implements OnInit {
   activePeroid:string='';
   activityLift:any = '';
   DynActivationColumns:any={};
-
   activityROI:any = '';
   closeModal: any;
   search_tag:string='';
@@ -202,6 +201,7 @@ export class ScenarioPlanningComponent implements OnInit {
       Notiflix.Loading.dots('Loading...');
       if((res['code']=='200') && (res.status=='success')){
       console.log(res.data,"response");
+      this.ELEMENT_DATA=[];
       res.data.forEach((element:any) => {
         element.promotion_list=[];
         element.promotion_type_list=[];
@@ -324,6 +324,10 @@ simulateScenario(){
   'financials':this.financialsData,
   'products':this.selection.selected,
   'planner_type':'simulation'};
+  let payload1={ 'rate_card':this.Ratecardjson['RateCard'],
+  'products':this.selection.selected,
+  'planner_type':'simulation',
+'job_token':localStorage.getItem('token')};
     Notiflix.Loading.dots('Loading...');
     // setTimeout(()=>{
     //   Notiflix.Loading.remove();
@@ -338,7 +342,10 @@ simulateScenario(){
     //   }
 
     // },1000)
-    console.log(payload,"payload")
+    console.log(payload,"payload");
+    // this.apiServices.get_trans_scenatio_planner_simulate(payload1).subscribe((res:any)=>{
+    //   console.log(res,"res");
+    // });
         this.apiServices.scenatio_planner_simulate(payload).subscribe((res:any)=>{
        console.log(res,"response");
        if(res.status=='success'){
@@ -352,6 +359,8 @@ simulateScenario(){
         Notiflix.Notify.failure('Failed to process with inputs')
        }
       });
+
+
       //  Notiflix.Loading.remove();
       //  this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
       //   this.selection.selected,this.PROMOCODE_LIST,this.response_data,
@@ -376,6 +385,7 @@ testData(){
 ngAfterViewInit(){
 
 }
+
 downloadRateCardTemplate(){
   let payload={'download_code':'rate_card_template'};
   this.apiServices.download_excel(payload).subscribe((blob)=>{
@@ -413,7 +423,7 @@ decrementRange(value:any){
   if(value.discount<=5){
     value.discount=0;
   }else{
-    value.discount=value.discount-5;
+    value.discount=parseInt(value.discount)-5;
   }
   this.setSellingPrice(value);
   return value.discount
@@ -422,7 +432,7 @@ incrementRange(value:any){
   if(value.discount>=95){
     value.discount=100;
   }else{
-    value.discount=value.discount+5;
+    value.discount=parseInt(value.discount)+5;
 
   }
   this.setSellingPrice(value);
@@ -441,8 +451,15 @@ doFilter(){
     this.doFilter();
   }
   resetFilter(){
-    this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
-    this.typeSelected =this.activityType.map(item => item["pack_type"]);
+    // this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+    // this.typeSelected =this.activityType.map(item => item["pack_type"]);
+    this.ngOnInit();
+    let inputNode: any = document.querySelector('#ratefile');
+    if(this.RateCardCount>0){
+      inputNode.value='';
+      this.Ratecardjson = '';
+      this.RateCardCount=0;
+    }
   }
 
   // Datatable Sort  Unused
@@ -573,7 +590,7 @@ doFilter(){
       element.selling_price=element.list_price;
   }
   if(element.promotion_type!='SELECT' && element.edlp=='No'){
-      let calculated_price=element.list_price-((element.discount/100)*(element.list_price));
+      let calculated_price=(element.discount/100)*(element.list_price);
       if(calculated_price){
         element.selling_price=parseFloat(calculated_price.toFixed(2));
       }else{
@@ -581,9 +598,9 @@ doFilter(){
       }
 
   }
-  let toChange=element.pack_type;
+  let toChange=element.pack_sub_type;
   this.ELEMENT_DATA.forEach((item)=>{
-    if(item.pack_type==toChange){
+    if(item.pack_sub_type==toChange){
       //gbl_selling_price
         item.selling_price=element.selling_price;
 
@@ -593,7 +610,7 @@ doFilter(){
         item.edlp=element.edlp;
         item.promotion_list=element.promotion_list;
         if(element.discount){
-          item.discount=element.discount;
+          item.discount=(element.discount).toFixed();
         }else{
           item.discount=0;
         }
@@ -612,8 +629,15 @@ doFilter(){
   }
   updateDiscount_price(event:any,row:any){
     if(row.promotion!='No'){
+
       let discounted=((row.promotion/event.target.value)*100).toFixed(2);
-      row.discount=discounted;
+      if(discounted!='NaN'){
+        row.discount=discounted;
+        console.log(discounted,"discounted")
+      }else{
+        row.discount=0;
+      }
+
     }
     this.setSellingPrice(row);
   }
@@ -640,10 +664,10 @@ doFilter(){
     });
       }
   changeConstraint(row:any){
-    let jsonObject=groupByJson(this.ELEMENT_DATA_CONSTRAINTS,'pack_type');
+    let jsonObject=groupByJson(this.ELEMENT_DATA_CONSTRAINTS,'pack_sub_type');
     let availList:any=Object.keys(jsonObject);
-    if(!availList.includes(row.pack_type)){
-      let object:any={'pack_type':row.pack_type};
+    if(!availList.includes(row.pack_sub_type)){
+      let object:any={'pack_sub_type':row.pack_sub_type};
       this.DynActivationColumns.forEach((element:any) => {
         object[element.value]=false;
       });
@@ -654,9 +678,9 @@ doFilter(){
       this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
      }
      else{
-      if(jsonObject[row.pack_type].length==3){
+      if(jsonObject[row.pack_sub_type].length==3){
         this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any,index:number)=>{
-          if(element.pack_type==row.pack_type){
+          if(element.pack_sub_type==row.pack_sub_type){
             this.ELEMENT_DATA_CONSTRAINTS.splice(index,1);
             this.dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
           }
