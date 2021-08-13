@@ -317,7 +317,7 @@ removeKey(key:any){
           this.selectedData,this.response_data,res.data,this.Ratecardjson]} });
       }
 
-    })
+    });
 
    }else{
      Notiflix.Notify.info('Please select the activations');

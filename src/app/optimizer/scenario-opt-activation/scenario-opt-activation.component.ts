@@ -325,7 +325,6 @@ export class ScenarioOptActivationComponent  implements OnInit {
     this.dataservice.setBudgetConstraint({'min':this.minBudget,'total':this.totalBudget});
     let jsonObject=groupByJson(this.response_data,'pack_type');
     let keys=Object.keys(jsonObject);
-    console.log(keys,"keys");
     let validPacktype:any[]=[];
     let to_filterOb:any={};
     let push=false;
@@ -337,19 +336,14 @@ export class ScenarioOptActivationComponent  implements OnInit {
               values.push(this.activationLIB[key]);
               to_filterOb[element.pack_type]=values;
             }
-
         }
         if(push){validPacktype.push(element.pack_type);
         }
     });
-    console.log(validPacktype,"validPacktype",to_filterOb);
     let temp_totalBudget:any=0;
     if(this.totalBudget){
       temp_totalBudget=parseFloat(this.totalBudget.replace(/,/g, ''));
     }
-
-    console.log(this.minBudget,temp_totalBudget);
-    debugger;
     if(this.totalBudget<=0){
       this.errorCode='budget';
       noError=true;
@@ -366,30 +360,49 @@ export class ScenarioOptActivationComponent  implements OnInit {
     if(!noError){
       let filterData:any=[];
       filterData = this.response_data;
-      let accumulateFilter:any=[];
-      for(let [key,value] of Object.entries(to_filterOb)){
-        filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
-      //  console.log(filterData,"level");
-        let PackList:any=value;
-        //console.log(PackList.join(' '),"PackList");
-          filterData=filterData.filter((data:any) =>  data["activation_type"]==PackList.join(' '));
-        //console.log(filterData,"filterData");
-        if(filterData.length==0){
-         // console.log(PackList,"PackList");
-          PackList.forEach((element:any) => {
-            filterData=this.response_data.filter((data:any) => data["activation_type"].trim()==element.trim());
-            accumulateFilter.push(filterData);
-          });
+      // let accumulateFilter:any=[];
+      // for(let [key,value] of Object.entries(to_filterOb)){
+      //   filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
+      // //  console.log(filterData,"level");
+      //   let PackList:any=value;
+      //   //console.log(PackList.join(' '),"PackList");
+      //     filterData=filterData.filter((data:any) =>  data["activation_type"]==PackList.join(' '));
+      //   //console.log(filterData,"filterData");
+      //   if(filterData.length==0){
+      //    // console.log(PackList,"PackList");
+      //     PackList.forEach((element:any) => {
+      //       filterData=this.response_data.filter((data:any) => data["activation_type"].trim()==element.trim());
+      //       accumulateFilter.push(filterData);
+      //     });
 
-        }else{
-          accumulateFilter.push(filterData);
-        }
-        //console.log(filterData,"AfterFilter");
+      //   }else{
+      //     accumulateFilter.push(filterData);
+      //   }
+      //   //console.log(filterData,"AfterFilter");
 
-      };
+      // };
+      Notiflix.Loading.dots('Loading...');
+      let budgetNumber=parseFloat(this.totalBudget.replace(/,/g, ''));
+      let payload={
+                    'activations':this.ELEMENT_DATA_CONSTRAINTS,
+                    'activation_constraints':this.MatrixConstraintsTableres,
+                    'budget':budgetNumber,
+                    'products':this.selectedData,
+                    'rate_card':this.ratejsonObject,
+                    'planner_type':'optimizer',
+                    'job_token':'JWT '+localStorage.getItem('token')
+                  };
+      this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,filterData]}});
 
-      accumulateFilter=accumulateFilter.flat();
-      this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,accumulateFilter]} });
+      // this.apiServices.get_trans_scenatio_planner_optimizer(payload).subscribe((res:any)=>{
+      //   Notiflix.Loading.remove();
+      //   if(res.code==200 && res.status=='success'){
+      //     this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,filterData];
+      //   }
+      //   });
+      //   }
+
+      // });
 
     }else{
       if(this.errorCode=='budget'){

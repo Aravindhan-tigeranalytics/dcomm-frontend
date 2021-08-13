@@ -52,4 +52,8 @@ get_processed_data(payload:any) {
 get_trans_scenatio_planner_simulate(payload:any) {
   return this.http.post(this.serviceURL+'/scenario_planner/transaction_simulate_scenario',{ params: payload } );
 }
+
+get_trans_scenatio_planner_optimizer(payload:any) {
+  return this.http.post(this.serviceURL+'/scenario_planner/transaction_optimizer_scenario',{ params: payload } );
+}
 }

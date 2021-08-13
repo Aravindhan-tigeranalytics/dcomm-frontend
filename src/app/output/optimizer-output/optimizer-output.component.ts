@@ -13,6 +13,7 @@ import { Angular5Csv } from 'angular5-csv/dist/Angular5-csv';
 import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
+import { DataControllerService } from 'src/app/base/data-controller/data-controller.service';
 
 
 export interface ScenarioPlanner {
@@ -56,7 +57,10 @@ export class OptimizerOutputComponent implements OnInit {
   incremantalCSV: number=0;
   totalActivationCost:number=0;
   Ratecardjson: any;
+  budgetConstraintSubscribe: any;
+  totalBudget: any=0;
   constructor(private modalService: NgbModal,
+    private dataservice:DataControllerService,
     private routes:Router,private apiServices:ScenarioPlannerService) {
    // console.log(this.route.getCurrentNavigation()?.extras.state);
     this.datastream=this.routes.getCurrentNavigation()?.extras.state;
@@ -120,6 +124,13 @@ export class OptimizerOutputComponent implements OnInit {
   constraint_list=[]
   ngOnInit(): void {
     Notiflix.Loading.dots('Loading...');
+    this.budgetConstraintSubscribe = this.dataservice.BudgetConstraintOb.subscribe((constraint:any) => {
+      if(constraint){
+        this.totalBudget=constraint['total'];
+      }
+      console.log(constraint,"constraintz");
+      console.log(this.totalBudget,"totalbudget")
+    });
     this.apiServices.getActivationList().subscribe((res:any)=>{
       console.log(res,"RES");
       Notiflix.Loading.remove();
