@@ -110,7 +110,7 @@
                   <thead>
                     <tr class="mat-header-row">
                       <th width="20%">Activations /
-                        <br> Pack Type</th>
+                        <br> Pack Sub Type</th>
                       <th width="14.2%" *ngFor="let element of DynActivationColumns">{{element.name}}</th>
                     </tr>
 
@@ -119,11 +119,11 @@
                      <tr *ngFor="let row of ELEMENT_DATA_CONSTRAINTS" class="mat-row">
                        <ng-container *ngFor="let el of displayedColumnsConstraints;let i = index">
                         <td *ngIf="i!=0" class="mat-cell header_bg">
-                          <mat-checkbox color="primary"  [(ngModel)]="row[el]">
+                          <mat-checkbox color="primary" (change)="actBudgetCalc(el,row.pack_sub_type,$event,row)" [(ngModel)]="row[el]">
                           </mat-checkbox>
                          </td>
                          <td *ngIf="i==0" class="mat-cell header_bg">
-                           {{row.pack_type}}
+                           {{row.pack_sub_type}}
                          </td>
                        </ng-container>
 
@@ -153,15 +153,16 @@
                       </div>
                       </button>
                       <hr>
+                      <mat-label class="custom_label_1 dflex-jc" >Min-Budget: </mat-label><small>{{this.currencySymbol}} {{minBudget | number : '1.2-2' }}</small>
+                    <hr>
                       <mat-label class="custom_label_1 dflex-jc">Total Budget</mat-label>
-                      <div class="budget_input">
-
+                        <div class="budget_input">
                           <div>
                             <div  class="budget-nos">
                              <span class="curr">
                               {{this.currencySymbol}}
                              </span>
-                              <input type="number"   [(ngModel)]="totalBudget" placeholder="" />
+                              <input type="text"  [(ngModel)]="totalBudget" (keyup)="updateBudget()" placeholder="" />
                             </div>
 
                             <button mat-raised-button color="primary" class="m-10">

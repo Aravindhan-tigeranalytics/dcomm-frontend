@@ -13,6 +13,7 @@ import {
   animate,
   transition
 } from "@angular/animations";
+import { DataControllerService } from 'src/app/base/data-controller/data-controller.service';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
@@ -129,7 +130,10 @@ export class ScenarioSimActivationComponent implements OnInit {
   dataSourceConstraints = new MatTableDataSource(this.ELEMENT_DATA_CONSTRAINTS);
   currencySymbol: any;
   actselected: number=0;
-  constructor(private routes:Router,private apiServices:ScenarioPlannerService,) {
+  ratecardSubscribe:any;
+  constructor(private routes:Router,
+    private apiServices:ScenarioPlannerService,
+    private dataservice:DataControllerService,) {
     this.datastream=this.routes.getCurrentNavigation()?.extras.state;
     this.currencySymbol=environment.currencySymbol;
 }
@@ -137,6 +141,7 @@ export class ScenarioSimActivationComponent implements OnInit {
   ngOnInit(): void {
     this.displayedColumnsConstraints= ['pack_sub_type'];
     Notiflix.Loading.dots('Loading...');
+
     this.apiServices.getActivationList().subscribe((res:any)=>{
       //console.log(res,"RES")
       Notiflix.Loading.remove();
@@ -228,6 +233,9 @@ this.routes.navigate(['/planner']);
   console.log(this.actselected,"this.actselected");
 
 }
+ngOnDestroy(): void {
+ // this.ratecardSubscribe.unsubscribe();
+}
 removeKey(key:any){
   if(this.PackCost[key]==0){
     delete this.PackCost[key];
@@ -245,6 +253,7 @@ removeKey(key:any){
 
   }
   simulateScenario(){
+
     let jsonObject=groupByJson(this.response_data,'pack_sub_type');
     let keys=Object.keys(jsonObject);
     //console.log(keys,"keys");

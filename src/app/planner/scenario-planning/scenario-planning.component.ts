@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { DataControllerService } from '../../base/data-controller/data-controller.service';
 import { Sort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
@@ -123,11 +123,13 @@ export class ScenarioPlanningComponent implements OnInit {
   financialsCount: number=0;
   response_data=[];
   private _jsonURL = '../../assets/json_data/json_data.json';
+  promocodeSubscriber: any;
+  ratecardSubscribe: any;
   constructor(private modalService: NgbModal,
     private routes:Router,
     private apiServices:ScenarioPlannerService,
     private dataservice:DataControllerService,
-    private http: HttpClient
+    private http: HttpClient,
     ) {
       Notiflix.Notify.init({
         width:'300px',
@@ -148,9 +150,9 @@ export class ScenarioPlanningComponent implements OnInit {
   }
   this.dataservice.LoginState(true);
   }
-  public getJSON(): Observable<any> {
-    return this.http.get(this._jsonURL);
-  }
+  // public getJSON(): Observable<any> {
+  //   return this.http.get(this._jsonURL);
+  // }
   ELEMENT_DATA: ScenarioPlanner[] = [];
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //'fsi', 'fai','search', 'sot', 'bpp'
@@ -185,6 +187,7 @@ export class ScenarioPlanningComponent implements OnInit {
   skuSelected:any = [1235,1243,1246];
   types = new FormControl();
   typeSelected:any = [];
+  plannerSubscriber:any;
   name = 'This is XLSX TO JSON CONVERTER';
   willDownload = false;
   setDefaultMonth(){
@@ -194,10 +197,28 @@ export class ScenarioPlanningComponent implements OnInit {
     this.activePeroid=this.PeroidList[d.getMonth()].value;
 
   }
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.plannerSubscriber.unsubscribe();
+    this.promocodeSubscriber.unsubscribe();
+  }
   ngOnInit(): void {
-
-
-    this.apiServices.getPlannerData().subscribe((res:any)=>{
+    this.promocodeSubscriber = this.dataservice.PromoCodeOb.subscribe((message:any) => {
+      if(message){
+        this.PROMOCODE_LIST = message;
+        this.dataservice.setPromoCode(this.PROMOCODE_LIST);
+        Object.keys(this.PROMOCODE_LIST).forEach(element => {
+          this.promoCodeList=[];
+          this.promoCodeList.push({'id':element,'name':element});
+        });
+      }
+      this.ELEMENT_DATA.forEach((element)=>{
+        element.promotion_type_list=this.promoCodeList;
+      });
+    });
+    console.log(this.PROMOCODE_LIST,"this.PROMOCODE_LIST");
+    this.plannerSubscriber=this.apiServices.getPlannerData().subscribe((res:any)=>{
       Notiflix.Loading.dots('Loading...');
       if((res['code']=='200') && (res.status=='success')){
       console.log(res.data,"response");
@@ -216,6 +237,13 @@ export class ScenarioPlanningComponent implements OnInit {
       console.log(this.typeSelected);
       this.setDefaultSellingPrice();
       this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
+      this.ratecardSubscribe = this.dataservice.RatecardOb.subscribe((ratecard:any) => {
+        if(ratecard){
+          console.log(ratecard,"ratecard");
+          this.Ratecardjson=ratecard;
+          this.RateCardCount=1;
+        }
+      });
   }
   if(this.datastream){
 
@@ -223,7 +251,6 @@ export class ScenarioPlanningComponent implements OnInit {
     let selectedItems=this.datastream.data[0] || [];
     let Promolist=this.datastream.data[1] || [];
     this.Ratecardjson=this.datastream.data[2] || [];
-    this.RateCardCount=1;
      let grouped=groupByJson(selectedItems,'product_tpn');
      let grouped_keys=Object.keys(grouped);
      this.dataSource.data.forEach((row:any) => {
@@ -239,12 +266,38 @@ export class ScenarioPlanningComponent implements OnInit {
          row.promotion_type_list= grouped[row.product_tpn][0].promotion_type_list;
          this.selection.select(row);
        }else{
-          row.promotion_type_list= grouped[grouped_keys[0]][0].promotion_type_list;
-          this.PROMOCODE_LIST=grouped[grouped_keys[0]][0].promotion_type_list;
+          //row.promotion_type_list= grouped[grouped_keys[0]][0].promotion_type_list;
+          //this.PROMOCODE_LIST=grouped[grouped_keys[0]][0].promotion_type_list;
        }
-       this.PROMOCODE_LIST=Promolist;
+       //this.PROMOCODE_LIST=Promolist;
      });
     }
+
+
+    if(this.datastream.source=='from_opt_activation'){
+      let selectedItems=this.datastream.data[0] || [];
+      let Promolist=this.datastream.data[1] || [];
+       let grouped=groupByJson(selectedItems,'product_tpn');
+       let grouped_keys=Object.keys(grouped);
+       this.dataSource.data.forEach((row:any) => {
+         if (grouped_keys.includes(row.product_tpn))
+         {
+           row.list_price=grouped[row.product_tpn][0].list_price;
+           row.promotion_type=grouped[row.product_tpn][0].promotion_type;
+           row.promotion_list=grouped[row.product_tpn][0].promotion_list;
+           row.promotion=grouped[row.product_tpn][0].promotion;
+           row.discount=grouped[row.product_tpn][0].discount;
+           row.edlp=grouped[row.product_tpn][0].edlp;
+           row.selling_price= grouped[row.product_tpn][0].selling_price;
+           row.promotion_type_list= grouped[row.product_tpn][0].promotion_type_list;
+           this.selection.select(row);
+         }else{
+            //row.promotion_type_list= grouped[grouped_keys[0]][0].promotion_type_list;
+            //this.PROMOCODE_LIST=grouped[grouped_keys[0]][0].promotion_type_list;
+         }
+         //this.PROMOCODE_LIST=Promolist;
+       });
+      }
   }
   Notiflix.Loading.remove();
   });
@@ -319,13 +372,17 @@ simulateScenario(){
     this.selection.selected.forEach((ele)=>{
       ele.period=this.activePeroid;
     });
-
+  let purged_list=JSON.parse(JSON.stringify(this.selection.selected));
+  purged_list.forEach((item:any)=>{
+    item.promotion_list=[];
+    item.promotion_type_list=[];
+  });
   let payload={ 'rate_card':this.Ratecardjson['RateCard'],
   'financials':this.financialsData,
-  'products':this.selection.selected,
+  'products':purged_list,
   'planner_type':'simulation'};
   let payload1={ 'rate_card':this.Ratecardjson['RateCard'],
-  'products':this.selection.selected,
+  'products':purged_list,
   'planner_type':'simulation',
 'job_token':localStorage.getItem('token')};
     Notiflix.Loading.dots('Loading...');
@@ -535,10 +592,12 @@ doFilter(){
     try{
       let groupedPCode=groupByJson(promoList['Promotion Code List'],'Promotion_Type');
       this.PROMOCODE_LIST=groupedPCode;
+      this.dataservice.setPromoCode(this.PROMOCODE_LIST);
       console.log(this.PROMOCODE_LIST,"Promolist");
       Object.keys(groupedPCode).forEach(element => {
         this.promoCodeList.push({'id':element,'name':element});
       });
+
       this.ELEMENT_DATA.forEach((element)=>{
         element.promotion_type_list=this.promoCodeList;
       });
@@ -550,6 +609,7 @@ doFilter(){
   // Updation the promo desc dropdown for the based on the selected promocode
     setPromoDesc(selected:any,element:any){
       if(selected!='SELECT'){
+        console.log(this.PROMOCODE_LIST,"PROMOCODE_LIST")
         this.promoCodeDesc=this.PROMOCODE_LIST[selected];
         element.promotion_list=this.PROMOCODE_LIST[selected];
         element.edlp='No';
@@ -590,7 +650,7 @@ doFilter(){
       element.selling_price=element.list_price;
   }
   if(element.promotion_type!='SELECT' && element.edlp=='No'){
-      let calculated_price=(element.discount/100)*(element.list_price);
+      let calculated_price=element.list_price-((element.discount/100)*(element.list_price));
       if(calculated_price){
         element.selling_price=parseFloat(calculated_price.toFixed(2));
       }else{
@@ -610,7 +670,7 @@ doFilter(){
         item.edlp=element.edlp;
         item.promotion_list=element.promotion_list;
         if(element.discount){
-          item.discount=(element.discount).toFixed();
+          item.discount=element.discount;
         }else{
           item.discount=0;
         }
@@ -623,7 +683,7 @@ doFilter(){
   updateDiscount(event:any,row:any){
     let discounted=((event.value/row.list_price)*100).toFixed(2);
     if(discounted){
-      row.discount=discounted;
+      row.discount=100-parseInt(discounted);
     }
     this.setSellingPrice(row);
   }
@@ -632,7 +692,7 @@ doFilter(){
 
       let discounted=((row.promotion/event.target.value)*100).toFixed(2);
       if(discounted!='NaN'){
-        row.discount=discounted;
+        row.discount=100-parseInt(discounted);
         console.log(discounted,"discounted")
       }else{
         row.discount=0;
@@ -691,6 +751,7 @@ doFilter(){
   async onRateFileSelected(event:any) {
     const inputNode: any = document.querySelector('#ratefile');
     this.Ratecardjson=await this.onFileChange(event);
+
     if(this.Ratecardjson.hasOwnProperty('RateCard')){
 
     this.rateCardInfoData = inputNode.files[0]
@@ -700,6 +761,7 @@ doFilter(){
       this.RateCardCount=1;
       Notiflix.Notify.success('RateCard Added Successfully!');
       this.rateCardInfoData['data']= await this.get_filebase64('ratefile');
+      this.dataservice.setRatecard(this.Ratecardjson);
     }
     else{
       Notiflix.Notify.info('Invalid File Format');

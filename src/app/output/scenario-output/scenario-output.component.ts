@@ -256,15 +256,20 @@ export class ScenarioOutputComponent implements OnInit {
     }
   }
   });
+
+
    }
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
-     console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA__");
      this.ELEMENT_DATA=this.ELEMENT_DATA.sort((a:any, b:any) => b.lift - a.lift);
+     this.ELEMENT_DATA.forEach((element:any) => {
+      element['csv_roas']=((element.incr_sales/element.cost)*100).toFixed()
+    });
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
     this.dataSource.connect().subscribe(d => {
       this.renderedData = d});
+      console.log(this.dataSource,"this.dataSource");
   }
 // File Reader ( EXCEL OR CSV) to JSON Format
 
@@ -433,17 +438,20 @@ export class ScenarioOutputComponent implements OnInit {
       title: filename,
       useBom: true,
       noDownload: false,
-      headers: ['Product TPN','Pack Type', 'Product Name', 'Incremental Sales', 'Activity','Expected Lift'],
+      headers: ['Pack Type', 'Product Sub Type', 'Activity','Cost','Incremental Sales','Expected Lift','CSV ROAS'],
       nullToEmptyString: true,
     };
     this.renderedData.map((item:any)=>
     {
       for(let [key,value] of Object.entries(item)){
         if(!this.displayedColumns.includes(key)){
-            delete item[key];
+              delete item[key];
+
         }
       }
+
     });
+    console.log(this.renderedData,"rendered data");
     new Angular5Csv(this.renderedData, filename, options);
   }
   test_filter(){
