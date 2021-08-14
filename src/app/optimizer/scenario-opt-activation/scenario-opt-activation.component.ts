@@ -383,26 +383,43 @@ export class ScenarioOptActivationComponent  implements OnInit {
       // };
       Notiflix.Loading.dots('Loading...');
       let budgetNumber=parseFloat(this.totalBudget.replace(/,/g, ''));
+      let parsed_ac:any = {};
+      for(let [key,value] of Object.entries(this.MatrixConstraintsTableres)){
+        let values:any=value;
+        parsed_ac[key]=values.toString();
+      }
+     // console.log(this.ELEMENT_DATA_CONSTRAINTS,"this.ELEMENT_DATA_CONSTRAINTS")
+      let parsed_act:any=[];
+      this.ELEMENT_DATA_CONSTRAINTS.forEach((row:any) => {
+        let el_rows:any={};
+        for(let [key,value] of Object.entries(row)){
+          let values:any=value;
+          el_rows[key]=values.toString();
+        }
+        parsed_act.push(el_rows);
+      });
       let payload={
-                    'activations':this.ELEMENT_DATA_CONSTRAINTS,
-                    'activation_constraints':this.MatrixConstraintsTableres,
+                    'activations':parsed_act,
+                    'activation_constraints':[parsed_ac],
                     'budget':budgetNumber,
                     'products':this.selectedData,
-                    'rate_card':this.ratejsonObject,
+                    'rate_card':this.Ratecardjson['RateCard'],
                     'planner_type':'optimizer',
                     'job_token':'JWT '+localStorage.getItem('token')
                   };
-      this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,filterData]}});
 
-      // this.apiServices.get_trans_scenatio_planner_optimizer(payload).subscribe((res:any)=>{
-      //   Notiflix.Loading.remove();
-      //   if(res.code==200 && res.status=='success'){
-      //     this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,filterData];
-      //   }
-      //   });
-      //   }
+      // console.log(payload,"payload");
+      // this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,filterData]}});
 
-      // });
+      this.apiServices.get_trans_scenatio_planner_optimizer(payload).subscribe((res:any)=>{
+        Notiflix.Loading.remove();
+        if(res.code==200 && res.status=='success'){
+          this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,res.data,res.data]
+        }
+        });
+        }
+
+      });
 
     }else{
       if(this.errorCode=='budget'){

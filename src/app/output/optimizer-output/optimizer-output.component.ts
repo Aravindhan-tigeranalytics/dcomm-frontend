@@ -14,16 +14,22 @@ import { ScenarioPlannerService } from '../../backend-services/scenario-planner.
 import * as Notiflix from 'notiflix';
 import { environment } from 'src/environments/environment';
 import { DataControllerService } from 'src/app/base/data-controller/data-controller.service';
-
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from "@angular/animations";
 
 export interface ScenarioPlanner {
   product_tpn: number;
-  incr_sales: string;
-  cost:number;
+  total_incremental_sales: string;
+  total_activation_cost:number;
   pack_type: string;
   product_name:string;
   activation_type:string;
-  lift: number;
+  final_lift: number;
 }
 export interface ScenarioPlannerConstraint {
   pack_type:string
@@ -40,7 +46,69 @@ Notiflix.Notify.init({
 @Component({
   selector: 'app-optimizer-output',
   templateUrl: './optimizer-output.component.html',
-  styleUrls: ['./optimizer-output.component.scss']
+  styleUrls: ['./optimizer-output.component.scss'],
+  animations: [
+    trigger("changeDivSize", [
+      state(
+        "initial",
+        style({
+          backgroundColor: "green",
+          width: "100px",
+          height: "100px"
+        })
+      ),
+      state(
+        "final",
+        style({
+          backgroundColor: "red",
+          width: "200px",
+          height: "200px"
+        })
+      ),
+      transition("initial=>final", animate("1500ms")),
+      transition("final=>initial", animate("1000ms"))
+    ]),
+
+    trigger("balloonEffect", [
+      state(
+        "initial",
+        style({
+          backgroundColor: "green",
+          transform: "scale(1)"
+        })
+      ),
+      state(
+        "final",
+        style({
+          backgroundColor: "red",
+          transform: "scale(1.5)"
+        })
+      ),
+      transition("final=>initial", animate("1000ms")),
+      transition("initial=>final", animate("1500ms"))
+    ]),
+
+    trigger("fadeInOut", [
+      state(
+        "void",
+        style({
+          opacity: 0
+        })
+      ),
+      transition("void <=> *", animate(1000))
+    ]),
+
+    trigger("EnterLeave", [
+      state("flyIn", style({ transform: "translateX(0)" })),
+      transition(":enter", [
+        style({ transform: "translateX(-100%)" }),
+        animate("0.5s 300ms ease-in")
+      ]),
+      transition(":leave", [
+        animate("0.3s ease-out", style({ transform: "translateX(100%)" }))
+      ])
+    ])
+  ]
 })
 export class OptimizerOutputComponent implements OnInit {
 
@@ -55,6 +123,7 @@ export class OptimizerOutputComponent implements OnInit {
   TATSPack_ARRAY: any=[];
   currencySymbol: any;
   incremantalCSV: number=0;
+  totalscvROAS:number=0;
   totalActivationCost:number=0;
   Ratecardjson: any;
   budgetConstraintSubscribe: any;
@@ -87,7 +156,7 @@ export class OptimizerOutputComponent implements OnInit {
   reload:boolean=true;
   ELEMENT_DATA_CONSTRAINTS:any=[];
   //displayedColumnsConstraints: string[] = ['pack_type','fsi', 'fai','search', 'sot', 'bpp'];
-  dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
+  //dataSourceConstraints = new MatTableDataSource<ScenarioPlannerConstraint>(this.ELEMENT_DATA_CONSTRAINTS);
   PlacementLabel:any=[];
   @Input() dataSetLabel:any=[ 'FAI', 'FSI', 'SOT', 'BBP','Search'];
   @Input() dataSet:any={ data: [0, 0, 0, 0, 0],
@@ -100,7 +169,8 @@ export class OptimizerOutputComponent implements OnInit {
   {'name':'Load1','id':1}]
   selectedplacementTypes='';
   dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
-  displayedColumns: string[] = [ 'product_tpn','pack_type', 'product_name' ,'activation_type','cost','incr_sales','lift',];
+  //'total_activation_cost','total_incremental_sales','final_lift'
+  displayedColumns: string[] = [ 'product_tpn','pack_sub_type','pack_type', 'product_name' ,'activation_type','total_activation_cost','total_incremental_sales','final_lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -197,7 +267,7 @@ export class OptimizerOutputComponent implements OnInit {
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
      console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA__");
-     this.ELEMENT_DATA=this.ELEMENT_DATA.sort((a:any, b:any) => b.lift - a.lift);
+     this.ELEMENT_DATA=this.ELEMENT_DATA.sort((a:any, b:any) => b.final_lift - a.final_lift);
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
     this.dataSource.connect().subscribe(d => {
@@ -235,6 +305,7 @@ export class OptimizerOutputComponent implements OnInit {
   LoadSaveList(){
     this.incremantalCSV=0;
     this.totalActivationCost=0;
+    this.totalscvROAS=0;
     if(this.valueSelected!=0){
       //load data
       Notiflix.Loading.dots('Loading...');
@@ -258,7 +329,7 @@ export class OptimizerOutputComponent implements OnInit {
           }
 
 
-          filterData=filterData.sort((a:any, b:any) => b.lift - a.lift);
+          filterData=filterData.sort((a:any, b:any) => b.final_lift - a.final_lift);
           console.log(filterData,"filterData");
           this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
          this.dataSource.paginator = this.paginator;
@@ -428,6 +499,7 @@ resetFilter(){
     this.chartInit(this.ELEMENT_DATA);
 }
 doFilter(){
+  this.incremantalCSV=0;
   console.log(this.selectedSegmentList,"Segmentedlist")
     let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
     if(this.selectedplacementTypes.length!=0){
@@ -441,46 +513,68 @@ doFilter(){
     this.chartInit(filterData);
   }
   chartInit(filterData:any){
-     this.TATS={};
-     this.DynActivationColumns.forEach((element:any) => {
-      this.TATS[element.value]=0;
-      this.Chartpoints_pla_rev[element.value]=0;
-      //this.incremantalCSV+=element.incr_sales;
+    this.TATS={};
+   this.incremantalCSV=0;
+   this.totalActivationCost=0;
+   this.totalscvROAS=0;
+    this.DynActivationColumns.forEach((element:any) => {
+     this.TATS[element.value]=0;
+     //this.Chartpoints_pla_rev[element.value]=0;
+     //this.incremantalCSV+=element.total_incremental_sales;
+   });
+   let gbActivity=groupByJson(filterData,'activation_type');
+   console.log(gbActivity,"gbActivity")
+   let gbActivityList=Object.keys(gbActivity);
+   gbActivityList.forEach((item)=>{
+     this.Chartpoints_pla_rev[item]=0;
+   });
+   filterData.forEach((element:any)=>{
+     this.incremantalCSV+=element.total_incremental_sales;
+     this.totalActivationCost+=element.total_activation_cost;
+     this.totalscvROAS+=element.total_incremental_sales/element.total_activation_cost;
+   });
+
+   gbActivityList.forEach((item)=>{
+     filterData.forEach((element:any)=>{
+       if(element.activation_type.includes(item)){
+         this.Chartpoints_pla_rev[item]+=element.total_incremental_sales
+       }
+
+  });
+   });
+    for(let [key,value] of Object.entries(this.activationLIB)){
+     filterData.forEach((element:any)=>{
+         if(element.activation_type.includes(value)){
+           this.TATS[key]+=1;
+           //this.Chartpoints_pla_rev[key]+=element.total_incremental_sales.toFixed(2);
+
+         }
+
     });
-    filterData.forEach((element:any)=>{
-      this.incremantalCSV+=element.incr_sales;
-      this.totalActivationCost+=element.cost;
-    });
-     for(let [key,value] of Object.entries(this.activationLIB)){
-      filterData.forEach((element:any)=>{
-          if(element.activation_type.includes(value)){
-            this.TATS[key]+=1;
-            this.Chartpoints_pla_rev[key]+=element.incr_sales.toFixed(2);
+   }
+   console.log(this.Chartpoints_pla_rev,"===");
 
-          }
-
-     });
-    }
-    console.log(this.Chartpoints_pla_rev,"1");
-
-  let byPacktype=groupByJson(filterData,'pack_type');
-  console.log(filterData,byPacktype,"1");
-  this.chartRender(this.Chartpoints_pla_rev);
-  this.chartExpLift(filterData,byPacktype);
-  this.getpackTypeList(filterData,byPacktype);
+ let byPacktype=groupByJson(filterData,'pack_type');
+ console.log(filterData,byPacktype,"1");
+ this.chartRender(this.Chartpoints_pla_rev,filterData);
+ this.chartExpLift(filterData,byPacktype);
+ this.getpackTypeList(filterData,byPacktype);
   }
-  chartRender(data:any){
+  chartRender(data:any,filterData:any){
     this.reload=false;
     let data_points:any=[];
     this.dataSetLabel=[];
-    for(let [key,value] of Object.entries(this.activationLIB)){
-      console.log(key,value,"value_key",data[key]);
-      if(data[key]!=0){
-        this.dataSetLabel.push(value);
-        data_points.push(data[key]);
+    console.log(data,"data")
+    let gbActivity=groupByJson(filterData,'activation_type');
+     console.log(gbActivity,"gbActivity")
+     let gbActivityList=Object.keys(gbActivity);
+     gbActivityList.forEach((item)=>{
+      if(data[item]!=0){
+        this.dataSetLabel.push(item);
+        data_points.push(data[item].toFixed(2));
       }
-
-    }
+      console.log( this.dataSetLabel," this.dataSetLabel",data_points);
+    });
     this.dataSet={ data: data_points,
       label: 'Incremental Revenue by Placement' ,backgroundColor:[
       'rgb(156, 39, 176)',
@@ -505,7 +599,7 @@ doFilter(){
       let items:any=value;
       let tssum=0;
       items.map((item:any)=>{
-        tssum+=parseInt(item.lift);
+        tssum+=parseInt(item.final_lift);
       });
       console.log(tssum.toFixed(2),"tssum");
       data_points1.push(tssum);
@@ -550,9 +644,9 @@ doFilter(){
     this.sortedData = data.sort((a:any, b:any) => {
       const isAsc = sort.direction === 'desc';
       switch (sort.active) {
-        case 'lift': return compare(a.lift, b.lift, isAsc);
-        case 'cost': return compare(a.cost, b.cost, isAsc);
-        case 'incr_sales': return compare(a.incr_sales, b.incr_sales, isAsc);
+        case 'final_lift': return compare(a.final_lift, b.final_lift, isAsc);
+        case 'total_activation_cost': return compare(a.total_activation_total_activation_cost, b.total_activation_total_activation_cost, isAsc);
+        case 'total_incremental_sales': return compare(a.total_incremental_sales, b.total_incremental_sales, isAsc);
         default: return 0;
       }
     });

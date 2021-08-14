@@ -132,7 +132,7 @@
             <div class="header-fixed custom_scroll p_zero">
             <table  matSort (matSortChange)="sortData($event)"
              mat-table [dataSource]="dataSource"
-             matSortActive="lift" matSortDirection="asc"
+             matSortActive="final_lift" matSortDirection="asc"
              matSortDisableClear
              class="planner_table ">
 
@@ -158,14 +158,14 @@
                 <td width="15%" mat-cell *matCellDef="let element"> {{element.pack_type}} </td>
               </ng-container>
               <!-- SKU Date -->
-              <ng-container matColumnDef="incr_sales">
-                <th width="20%" mat-sort-header="incr_sales" mat-header-cell *matHeaderCellDef> Incremental Sales  </th>
-                <td width="20%" mat-cell *matCellDef="let element">({{this.currencySymbol}}) {{element.incr_sales | number : '1.2-2' }} </td>
+              <ng-container matColumnDef="total_incremental_sales">
+                <th width="20%" mat-sort-header="total_incremental_sales" mat-header-cell *matHeaderCellDef> Incremental Sales  </th>
+                <td width="20%" mat-cell *matCellDef="let element">({{this.currencySymbol}}) {{element.total_incremental_sales | number : '1.2-2' }} </td>
               </ng-container>
                <!-- Cost -->
-               <ng-container matColumnDef="cost">
-                <th width="20%" mat-sort-header="cost" mat-header-cell *matHeaderCellDef> Cost </th>
-                <td width="20%"  mat-cell *matCellDef="let element">({{this.currencySymbol}})  {{element.cost | number : '1.2-2' }} </td>
+               <ng-container matColumnDef="total_activation_cost">
+                <th width="20%" mat-sort-header="total_activation_cost" mat-header-cell *matHeaderCellDef> Cost </th>
+                <td width="20%"  mat-cell *matCellDef="let element">({{this.currencySymbol}})  {{element.total_activation_cost | number : '1.2-2' }} </td>
               </ng-container>
               <!-- Activation Type Column -->
               <ng-container matColumnDef="product_tpn">
@@ -178,7 +178,10 @@
                 <th width="15%" mat-sort-header="product_name" mat-header-cell *matHeaderCellDef> Product Name</th>
                 <td width="15%" mat-cell *matCellDef="let element"> {{element.product_name}} </td>
               </ng-container>
-
+              <ng-container matColumnDef="pack_sub_type">
+                <th width="15%" mat-sort-header="product_nampack_sub_typee" mat-header-cell *matHeaderCellDef> Product Sub Type</th>
+                <td width="15%" mat-cell *matCellDef="let element"> {{element.pack_sub_type}} </td>
+              </ng-container>
               <!-- Expected ROI Column -->
               <ng-container matColumnDef="activation_type">
                 <th width="18%" mat-sort-header="activation_type" mat-header-cell *matHeaderCellDef> Activity </th>
@@ -186,12 +189,12 @@
               </ng-container>
 
               <!-- Expected ROI Column -->
-              <ng-container matColumnDef="lift">
-                <th width="15%" mat-sort-header="lift" mat-header-cell *matHeaderCellDef> Expected Lift  </th>
-                <td width="15%" style="color:green;" class="right-align" mat-cell *matCellDef="let element"> {{element.lift | number : '1.2-2' }} %</td>
+              <ng-container matColumnDef="final_lift">
+                <th width="15%" mat-sort-header="final_lift" mat-header-cell *matHeaderCellDef> Expected Lift  </th>
+                <td width="15%" style="color:green;" class="right-align" mat-cell *matCellDef="let element"> {{element.final_lift | number : '1.2-2' }} %</td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              <tr [@EnterLeave]="'flyIn'" mat-row *matRowDef="let row; columns: displayedColumns;"
                   (click)="checkbox_row(row)">
               </tr>
               <tr class="mat-row" *matNoDataRow>
@@ -230,10 +233,10 @@
                    </div>
                     <div class="row table_bar_row center_items row_items">
                       <div class="col-md-2 cs_font_size br_1_black">{{incremantalCSV | shortNumber : '1.2-2' || 0 }}</div>
-                      <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{totalActivationCost}}</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{totalActivationCost  | number : '1.2-2'}}</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
-                      <div class="col-md-1 cs_font_size br_1_black">-</div>
+                      <div class="col-md-1 cs_font_size br_1_black">{{totalscvROAS | percent }}</div>
                       <div class="col-md-1 cs_font_size br_1_black">-</div>
                       <div class="col-md-2 cs_font_size ">-</div>
                     </div>
@@ -256,9 +259,9 @@
                    </div>
                     <div class="row table_bar_row center_items row_items">
                       <div class="col-md-2 cs_font_size br_1_black">{{incremantalCSV | shortNumber : '1.2-2' || 0 }}</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{totalActivationCost}}</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
-                      <div class="col-md-2 cs_font_size br_1_black">-</div>
-                      <div class="col-md-2 cs_font_size br_1_black">-</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{totalscvROAS | percent }}</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
                       <div class="col-md-2 cs_font_size ">-</div>
                     </div>

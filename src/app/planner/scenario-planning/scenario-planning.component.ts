@@ -338,21 +338,6 @@ optimizeScenario(){
     this.selection.selected.forEach((ele)=>{
       ele.period=this.activePeroid;
     });
-    // Notiflix.Loading.dots('Loading...');
-    // let start=0;
-    // let timer=setInterval(()=>{
-    //   start=start+5;
-    //   Notiflix.Loading.change('Loading... '+start+'%');
-    //   if(start==95){
-    //     Notiflix.Loading.change('Processing....');
-    //     clearTimeout(timer);
-    //   }
-    // },1000)
-   // console.log(payload,"payload")
-      // this.apiServices.get_trans_scenatio_planner_simulate(payload).subscribe((res:any)=>{
-      //  console.log(res,"response");
-      //  this.response_data=res.data;
-      // Notiflix.Loading.remove();
       this.routes.navigate(['/optimizer'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
     //  });
   }else{
