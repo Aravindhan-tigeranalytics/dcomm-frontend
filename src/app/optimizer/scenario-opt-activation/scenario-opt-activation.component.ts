@@ -1,4 +1,4 @@
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
@@ -8,6 +8,7 @@ import { ScenarioPlannerService } from 'src/app/backend-services/scenario-planne
 import { DataControllerService } from 'src/app/base/data-controller/data-controller.service';
 import { groupByJson } from 'src/app/planner/scenario-planning/scenario-planning.component';
 import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
 export interface ScenarioPlanner {
   pack_type: string;
   product_tpn: string;
@@ -106,14 +107,18 @@ export class ScenarioOptActivationComponent  implements OnInit {
   ratecardSubscribe: any;
   Ratecardjson: any;
   ratejsonObject: any;
+  private _jsonURL = '../../assets/json_data/optimizer.json';
   budgetConstraintSubscribe: any;
   constructor(private routes:Router,
+    private http: HttpClient,
     private apiServices:ScenarioPlannerService,
     private dataservice:DataControllerService,) {
     this.datastream=this.routes.getCurrentNavigation()?.extras.state;
     this.currencySymbol=environment.currencySymbol;
 }
-
+public getJSON(): Observable<any> {
+    return this.http.get(this._jsonURL);
+  }
   ngOnInit(): void {
     this.MatrixConstraintsTableres={};
     let order:any={};
@@ -131,7 +136,6 @@ export class ScenarioOptActivationComponent  implements OnInit {
         this.minBudget=constraint['min'];
         this.totalBudget=constraint['total'];
       }
-      console.log(constraint,"constraint");
     });
     this.apiServices.getActivationList().subscribe((res:any)=>{
      // console.log(res,"RES")
@@ -147,7 +151,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
         }
         for(let i=0;i<arr.length;i++){
           for(let j=i;j<arr.length;j++){
-            this.MatrixConstraintsTableres[(arr[i]+'_'+arr[j]).trim()]=false;
+            this.MatrixConstraintsTableres[(arr[i]+'_'+arr[j]).trim()]=true;
             if(i==j){
               this.MatrixConstraintsTableres[(arr[i]+'_'+arr[j]).trim()]=true;
             }
@@ -255,6 +259,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
   actBudgetCalc(item:any,sub_type:any,event:any,checkbox:any){
     let activationType=this.activationLIB[item];
     let ItemFound=false;
+    console.log(this.ratejsonObject,"ratejsonObject");
    this.ratejsonObject[sub_type].forEach((element:any) => {
     if(element.activation_type==activationType){
       ItemFound=true;
@@ -263,10 +268,21 @@ export class ScenarioOptActivationComponent  implements OnInit {
       }else{
         delete this.ElementCost[sub_type][item];
       }
-
     }
-
    });
+   //check for the All category
+   if(!ItemFound){
+    this.ratejsonObject['All'].forEach((element:any) => {
+      if(element.activation_type==activationType){
+        ItemFound=true;
+        if(event.checked){
+          this.ElementCost[sub_type][item]=element;
+        }else{
+          delete this.ElementCost[sub_type][item];
+        }
+      }
+     });
+   }
    if(checkbox){
     if(!ItemFound){
       console.warn(activationType,"Not found")
@@ -275,9 +291,6 @@ export class ScenarioOptActivationComponent  implements OnInit {
         console.log(element,sub_type,"false")
         if(element.pack_sub_type==sub_type){
           element[item]=false;
-          // console.log(this.displayedColumnsConstraints)
-          // console.log("item",element,item);
-
         }
 
       });
@@ -411,9 +424,19 @@ export class ScenarioOptActivationComponent  implements OnInit {
       // console.log(payload,"payload");
       // this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,this.response_data,filterData]}});
 
+      // this.getJSON().subscribe(data => {
+      //   this.response_data=data;
+      //   Notiflix.Loading.remove();
+      //   console.log(this.response_data,"this.response_data")
+      //   let maxRecords=this.groupByPacktype(this.response_data);
+      //   this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,maxRecords,maxRecords]
+      //   }
+      //   });
+      //  });
       this.apiServices.get_trans_scenatio_planner_optimizer(payload).subscribe((res:any)=>{
         Notiflix.Loading.remove();
         if(res.code==200 && res.status=='success'){
+          //let maxRecords=this.groupByPacktype(res.data);
           this.routes.navigate(['/result/optimizer'],{ state: {'source':'from_opt_activation','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selectedData,res.data,res.data]
         }
         });
@@ -431,6 +454,23 @@ export class ScenarioOptActivationComponent  implements OnInit {
       }
 
     }
+     }
+
+     groupByPacktype(data:any){
+       let toFilter=data;
+       let groupedData=groupByJson(toFilter,'pack_sub_type');
+       console.log(groupedData,"groupedData");
+       let result=[];
+       for(let [key,value] of Object.entries(groupedData)){
+        let values:any=value;
+        var res = Math.max.apply(Math,values.map(function(o:any){return o.final_lift;}));
+        var max_record = values.find(function(o:any){ return o.final_lift == res; });
+        values.map(function(o:any){
+          max_record.total_incremental_sales+=o.total_incremental_sales;
+        });
+        result.push(max_record);
+       }
+       return result;
      }
   go_back(){
     let that=this;
@@ -480,7 +520,7 @@ export class ScenarioOptActivationComponent  implements OnInit {
        }
        for(let i=0;i<arr.length;i++){
         for(let j=i;j<arr.length;j++){
-          this.MatrixConstraintsTableres[(arr[i]+'_'+arr[j]).trim()]=false;
+          this.MatrixConstraintsTableres[(arr[i]+'_'+arr[j]).trim()]=true;
           if(i==j){
             this.MatrixConstraintsTableres[(arr[i]+'_'+arr[j]).trim()]=true;
           }

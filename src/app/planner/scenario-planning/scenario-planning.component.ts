@@ -641,6 +641,7 @@ doFilter(){
     }
     if(element.promotion_type=='SELECT' && element.edlp=='Yes'){
       element.selling_price=element.list_price;
+      element.discount=0;
   }
   if(element.promotion_type!='SELECT' && element.edlp=='No'){
       let calculated_price=element.list_price-((element.discount/100)*(element.list_price));
@@ -656,7 +657,6 @@ doFilter(){
     if(item.pack_sub_type==toChange){
       //gbl_selling_price
         item.selling_price=element.selling_price;
-
         item.promotion_type=element.promotion_type;
         item.promotion=element.promotion;
         item.list_price=element.list_price;

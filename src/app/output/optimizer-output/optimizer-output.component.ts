@@ -122,6 +122,8 @@ export class OptimizerOutputComponent implements OnInit {
   reload1: boolean=true;
   TATSPack_ARRAY: any=[];
   currencySymbol: any;
+  optimizedLift:any=0;
+  totalLift:any=0;
   incremantalCSV: number=0;
   totalscvROAS:number=0;
   totalActivationCost:number=0;
@@ -170,7 +172,7 @@ export class OptimizerOutputComponent implements OnInit {
   selectedplacementTypes='';
   dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
   //'total_activation_cost','total_incremental_sales','final_lift'
-  displayedColumns: string[] = [ 'product_tpn','pack_sub_type','pack_type', 'product_name' ,'activation_type','total_activation_cost','total_incremental_sales','final_lift',];
+  displayedColumns: string[] = ['pack_sub_type','pack_type','activation_type','total_activation_cost','total_incremental_sales','csv_roas','final_lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -213,25 +215,7 @@ export class OptimizerOutputComponent implements OnInit {
         }
     if(this.datastream){
       this.SOURCE=this.datastream.source
-     if(this.datastream.source=='from_activation'){
-      this.ELEMENT_DATA_CONSTRAINTS=this.datastream.data[0] || [];
-      this.selectedData=this.datastream.data[1] || [];
-      this.response_data=this.datastream.data[2] || [];
-      this.filterData=this.datastream.data[3] || [];
-      this.defaultData=this.datastream.data[3] || [];
-      this.Ratecardjson=this.datastream.data[4] || [];
-       this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
-         let itemlist=[];
-        for( const [key,value] of Object.entries(element)){
-          if((value) && (this.activationLIB[key]!=undefined)){
-            itemlist.push(this.activationLIB[key]);
-          }
-        }
-         this.activationLIBSelected[element.pack_type]=itemlist;
-       });
-
-     }else if(this.datastream.source=='from_opt_activation'){
-
+      if(this.datastream.source=='from_opt_activation'){
       this.ELEMENT_DATA_CONSTRAINTS=this.datastream.data[0] || [];
       this.selectedData=this.datastream.data[1] || [];
       this.response_data=this.datastream.data[2] || [];
@@ -268,6 +252,9 @@ export class OptimizerOutputComponent implements OnInit {
    ngAfterViewInit() {
      console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA__");
      this.ELEMENT_DATA=this.ELEMENT_DATA.sort((a:any, b:any) => b.final_lift - a.final_lift);
+     this.ELEMENT_DATA.forEach((element:any) => {
+      element['csv_roas']=((element.total_incremental_sales/element.total_activation_cost)*100).toFixed()
+    });
     this.dataSource= new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
     this.dataSource.connect().subscribe(d => {
@@ -344,9 +331,7 @@ export class OptimizerOutputComponent implements OnInit {
       let filterData:any = this.defaultData.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
       if(this.selectedplacementTypes.length!=0){
         let to_find:any=[...this.selectedplacementTypes];
-        console.log(to_find,"to_find");
         filterData=recursiveFind(filterData,to_find);
-        console.log(to_find,"to_find")
       }
       this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
       this.dataSource.paginator = this.paginator;
@@ -400,9 +385,7 @@ export class OptimizerOutputComponent implements OnInit {
            this.saveList=[{'name':'Default','id':0}];
            this.saveList.push(...res.data['simulation']);
           }
-
         }
-
         console.log(this.saveList,"saveList");
       });
   }
@@ -411,23 +394,17 @@ export class OptimizerOutputComponent implements OnInit {
     for(let [key,value] of Object.entries(this.activationLIB)){
       this.TATS_ARRAY.push({'name':value,'value':this.TATS[key]})
     }
-
         this.TATSPack_ARRAY=[];
-        console.log(this.TATS,"TATS");
         if(this.packTypeList){
           for(let [key,value] of Object.entries(this.packTypeList)){
             let values:any=value;
             this.TATSPack_ARRAY.push({'name':values.name,'value':this.TATS[key]})
           }
-          console.log(this.TATSPack_ARRAY,"TATSPack_ARRAY");
           for(let [key,value] of Object.entries(byPacktype)){
             let lvalue:any=value;
             this.TATS_BY_PACK[key.toLowerCase()]=lvalue.length;
             }
         }
-
-
-
   }
   downloadProducts(){
     let filename="Scenario-Planner"
@@ -504,9 +481,7 @@ doFilter(){
     let filterData:any = this.ELEMENT_DATA.filter((data:any) => this.selectedSegmentList.includes(data["pack_type"]));
     if(this.selectedplacementTypes.length!=0){
       let to_find:any=[...this.selectedplacementTypes];
-      console.log(to_find,"to_find");
       filterData=recursiveFind(filterData,to_find);
-      console.log(to_find,"to_find")
     }
     this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
     this.dataSource.paginator = this.paginator;
@@ -517,6 +492,8 @@ doFilter(){
    this.incremantalCSV=0;
    this.totalActivationCost=0;
    this.totalscvROAS=0;
+   this.optimizedLift=0;
+   this.totalLift=0;
     this.DynActivationColumns.forEach((element:any) => {
      this.TATS[element.value]=0;
      //this.Chartpoints_pla_rev[element.value]=0;
@@ -532,8 +509,9 @@ doFilter(){
      this.incremantalCSV+=element.total_incremental_sales;
      this.totalActivationCost+=element.total_activation_cost;
      this.totalscvROAS+=element.total_incremental_sales/element.total_activation_cost;
+     this.optimizedLift+=element.total_activation_cost;
+     this.totalLift+=element.final_lift;
    });
-
    gbActivityList.forEach((item)=>{
      filterData.forEach((element:any)=>{
        if(element.activation_type.includes(item)){
