@@ -515,7 +515,7 @@ doFilter(){
    gbActivityList.forEach((item)=>{
      filterData.forEach((element:any)=>{
        if(element.activation_type.includes(item)){
-         this.Chartpoints_pla_rev[item]+=element.total_incremental_sales
+         this.Chartpoints_pla_rev[item]=element.total_incremental_sales
        }
 
   });

@@ -116,7 +116,7 @@
                   </div>
                   <div class="col-md-4 d-center space-around">
                     <mat-label class="custom_label_1 dflex-jc">Optimized Budget</mat-label>
-                    <input type="text" disabled  class="budget-nos" [value]= "this.currencySymbol +optimizedLift.toFixed(2)" />
+                    <input type="text" disabled  class="budget-nos" [value]= "this.currencySymbol +optimizedLift.toFixed()" />
                   </div>
                   <div class="col-md-4 d-center space-around">
                     <mat-label class="custom_label_1 dflex-jc">Total Lift</mat-label>
@@ -225,18 +225,18 @@
                   <div class="col-md-12 bg_white mat-elevation-z2 ">
                    <div class="bg_black_color table_bar_cs row center_items">
                       <div class="col-md-2 cs_font_size br_1">Incremental CSV</div>
-                      <div class="col-md-2 cs_font_size br_1">Spend & % CSV Lift </div>
-                      <div class="col-md-2 cs_font_size br_1">Incremental NSV</div>
+                      <div class="col-md-2 cs_font_size br_1">Activation Cost</div>
                       <div class="col-md-2 cs_font_size br_1">CSV ROAS</div>
                       <div class="col-md-2 cs_font_size br_1">Incremental MAC</div>
+                      <div class="col-md-2 cs_font_size br_1">Incremental NSV</div>
                       <div class="col-md-1 cs_font_size br_1"> NSV ROAS</div>
                       <div class="col-md-1 cs_font_size">  MAC ROAS</div>
                    </div>
                     <div class="row table_bar_row center_items row_items">
-                      <div class="col-md-2 cs_font_size br_1_black">{{incremantalCSV | shortNumber : '1.2-2' || 0 }}</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{incremantalCSV | number : '1.2-2' || 0 }}</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{totalActivationCost | number : '1.2-2' || 0 }}</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{incremantalCSV/totalActivationCost | percent }}</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
-                      <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{totalActivationCost | shortNumber : '1.2-2' || 0 }}</div>
-                      <div class="col-md-2 cs_font_size br_1_black">{{totalscvROAS | percent }}</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
                       <div class="col-md-1 cs_font_size br_1_black">-</div>
                       <div class="col-md-1 cs_font_size ">-</div>

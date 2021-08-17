@@ -108,23 +108,7 @@
 
           <div class="row m-5px table_style_1" >
             <div class="mat-elevation-z2 p_zero white" *ngIf="SOURCE=='from_opt_activation'">
-              <div class="m-10px">
-                <div class="row">
-                  <div class="col-md-4 d-center space-around">
-                    <mat-label class="custom_label_1 dflex-jc">Planned Budget</mat-label>
-                    <input type="number" disabled  class="budget-nos"/>
-                  </div>
-                  <div class="col-md-4 d-center space-around">
-                    <mat-label class="custom_label_1 dflex-jc">Optimized Budget</mat-label>
-                    <input type="number" disabled  class="budget-nos"/>
-                  </div>
-                  <div class="col-md-4 d-center space-around">
-                    <mat-label class="custom_label_1 dflex-jc">Total Lift</mat-label>
-                    <input type="number" disabled class="budget-nos"/>
-                  </div>
-                </div>
 
-              </div>
             </div>
 
             <div class="heading-2" *ngIf="SOURCE=='from_opt_activation'"> Recommended Plan</div>
@@ -242,8 +226,8 @@
                    </div>
                     <div class="row table_bar_row center_items row_items">
                       <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{totalActivationCost | number : '1.2-2' }}</div>
-                      <div class="col-md-2 cs_font_size br_1_black">{{incremantalCSV | shortNumber : '1.2-2' || 0 }}</div>
-                      <div class="col-md-1 cs_font_size br_1_black">{{totalscvROAS | percent }}</div>
+                      <div class="col-md-2 cs_font_size br_1_black">{{this.currencySymbol}} {{incremantalCSV | number : '1.2-2' || 0 }}</div>
+                      <div class="col-md-1 cs_font_size br_1_black">{{ incremantalCSV/totalActivationCost | percent }}</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
                       <div class="col-md-2 cs_font_size br_1_black">-</div>
 
