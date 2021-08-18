@@ -250,7 +250,6 @@ export class ScenarioPlanningComponent implements OnInit {
   if(this.datastream.source=='from_activation'){
     let selectedItems=this.datastream.data[0] || [];
     let Promolist=this.datastream.data[1] || [];
-    this.Ratecardjson=this.datastream.data[2] || [];
      let grouped=groupByJson(selectedItems,'product_tpn');
      let grouped_keys=Object.keys(grouped);
      this.dataSource.data.forEach((row:any) => {
@@ -310,20 +309,6 @@ changePeroidList(event:any){
   });
 }
 optimizeScenario(){
-  // let payload={ 'rate_card':this.Ratecardjson['RateCard'],
-  //               'financials':this.financialsData,
-  //               'products':this.selection.selected,
-  //               'planner_type':'simulation'};
-  let purged_list=JSON.parse(JSON.stringify(this.selection.selected));
-  purged_list.forEach((item:any)=>{
-    item.promotion_list=[];
-    item.promotion_type_list=[];
-  });
-
-  let payload={'rate_card':this.Ratecardjson['RateCard'],
-  'products':purged_list,
-  'planner_type':'optimizer',
-  'job_token':'JWT '+localStorage.getItem('token')};
   let code='';
   let mandatory=false;
   if(this.activePeroid==''){
@@ -334,17 +319,28 @@ optimizeScenario(){
     mandatory=true;
     code='records';
   }
+  if(this.RateCardCount==0){
+    mandatory=true;
+    code='ratecard';
+  }
+  let purged_list=JSON.parse(JSON.stringify(this.selection.selected));
+  purged_list.forEach((item:any)=>{
+    item.promotion_list=[];
+    item.promotion_type_list=[];
+  });
   if(!mandatory){
     this.selection.selected.forEach((ele)=>{
       ele.period=this.activePeroid;
     });
-      this.routes.navigate(['/optimizer'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data]}});
+      this.routes.navigate(['/optimizer'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,this.selection.selected,this.PROMOCODE_LIST,this.response_data,this.Ratecardjson]}});
     //  });
   }else{
     if(code=='records'){
       Notiflix.Notify.info('Please select the records');
     }else if(code=='peroid'){
       Notiflix.Notify.info('Please select the peroid');
+    }else if(code=='ratecard'){
+      Notiflix.Notify.info('Please upload the ratecard');
     }
   }
 }
@@ -373,34 +369,17 @@ simulateScenario(){
     item.promotion_list=[];
     item.promotion_type_list=[];
   });
-  let payload={ 'rate_card':this.Ratecardjson['RateCard'],
-  'financials':this.financialsData,
-  'products':purged_list,
-  'planner_type':'simulation'};
   let payload1={ 'rate_card':this.Ratecardjson['RateCard'],
   'products':purged_list,
   'planner_type':'simulation',
 'job_token':'JWT '+localStorage.getItem('token')};
     Notiflix.Loading.dots('Loading...');
-    // setTimeout(()=>{
-    //   Notiflix.Loading.remove();
-    // },20000)
-    let start=0;
-    // let timer=setInterval(()=>{
-    //   start=start+5;
-    //   Notiflix.Loading.change('Loading... '+start+'%');
-    //   if(start==95){
-    //     Notiflix.Loading.change('Processing....');
-    //     clearTimeout(timer);
-    //   }
-
-    // },1000)
-    console.log(payload,"payload");
         this.apiServices.get_trans_scenatio_planner_simulate(payload1).subscribe((res:any)=>{
        console.log(res,"response");
        if(res.status=='success'){
         this.response_data=res.data;
         Notiflix.Loading.remove();
+
           this.routes.navigate(['/simulator'],{ state: {'source':'from_planning','data':[this.ELEMENT_DATA_CONSTRAINTS,
           this.selection.selected,this.PROMOCODE_LIST,this.response_data, this.Ratecardjson]}});
 

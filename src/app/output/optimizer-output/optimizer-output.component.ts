@@ -407,7 +407,7 @@ export class OptimizerOutputComponent implements OnInit {
         }
   }
   downloadProducts(){
-    let filename="Scenario-Planner"
+    let filename="Scenario-Planner - OPTIMIZER"
     var options = {
       fieldSeparator: ',',
       quoteStrings: '"',
@@ -417,40 +417,37 @@ export class OptimizerOutputComponent implements OnInit {
       title: filename,
       useBom: true,
       noDownload: false,
-      headers: ['Product TPN','Pack Type', 'Product Name', 'Incremental Sales', 'Activity','Expected Lift'],
+      headers: ['Pack Type', 'Product Sub Type', 'Activity','Cost','Incremental Sales','Expected Lift','CSV ROAS'],
       nullToEmptyString: true,
     };
     this.renderedData.map((item:any)=>
     {
       for(let [key,value] of Object.entries(item)){
+        let values:any=value;
+
         if(!this.displayedColumns.includes(key)){
             delete item[key];
+        }else{
+          if(key=='final_lift'){
+            item[key]=values.toFixed(2)+"%";
+          }
+          else if(key=='csv_roas'){
+            item[key]=values+"%";
+          }
+          else if(key=='total_activation_cost'){
+            item[key]=values.toFixed(2);
+          }
+          else if(key=='total_incremental_sales'){
+            item[key]=values.toFixed(2);
+          }
+          //'total_activation_cost','total_incremental_sales'
         }
       }
     });
     new Angular5Csv(this.renderedData, filename, options);
   }
   test_filter(){
-    // let SearchObject=this.activationLIBSelected;
-    // let allFilter=[];
-    // let filterData:any=groupByJson(this.dataSource.data,'tpn_category');
-    // for(const [key,value] of Object.entries(SearchObject)){
-    //   let temp=[];
-    //   let search_key:any=value;
-    //   if(search_key.length>0){
-    //     for(let i=0;i<search_key.length;i++){
-    //       let to_find:string=search_key[i];
-    //       temp.push(filterData[key].filter((data:any) => new RegExp('\\b' + to_find + '\\b').test( data["activation_type"])));
-    //      }
-    //   }
-    //   allFilter.push(...temp)
-    // }
 
-    // var merged = [].concat.apply([], allFilter);
-    // this.ELEMENT_DATA=merged;
-
-    // this.dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
-    // this.ngAfterViewInit();
   }
 decrementRange(value:any){
     value.discount=value.discount-5;
@@ -511,7 +508,10 @@ doFilter(){
      this.totalscvROAS+=element.total_incremental_sales/element.total_activation_cost;
      this.optimizedLift+=element.total_activation_cost;
      this.totalLift+=element.final_lift;
+
    });
+   this.optimizedLift.toFixed()
+   this.optimizedLift= numberWithCommas(this.optimizedLift);
    gbActivityList.forEach((item)=>{
      filterData.forEach((element:any)=>{
        if(element.activation_type.includes(item)){
@@ -717,4 +717,7 @@ if(find.length==0){
      find.shift();
   return recursiveFind(inputArr,find)
 }
+}
+function numberWithCommas(x:any) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
