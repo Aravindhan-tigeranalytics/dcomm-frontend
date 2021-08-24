@@ -1,0 +1,78 @@
+<div class="landing-container">
+
+
+<div class="container">
+  <div class="col-md-12 row mtop-10">
+    <div class="col-md-12">
+      <h1 class="theme-text">Scenario Planner and Optimizer
+      </h1>
+    </div>
+    <div class="col-md-4 white-bg mr-20">
+      <div class="mat-elevation-z4 planner_table_bg equalizer">
+        <div class="header-contrast">Logged In As</div>
+        <div class="center equalizer-20">{{username}}</div>
+      </div>
+      <div class="mat-elevation-z4 planner_table_bg equalizer">
+        <h2 class="theme-text center heading_bottom">KPI Details</h2>
+
+          <div class="border_box equalizer equalizer-outer">
+            <b class="bold-family">Incremental Sales:</b>
+           <span class="text-warm">
+            Additional sales on running the media activations on selected SKUs
+           </span>
+          </div>
+          <div class="border_box equalizer equalizer-outer">
+            <b class="bold-family">Cost:</b>
+            <span class="text-warm">
+              Amount spend on selected
+              media activations
+            </span>
+
+          </div>
+          <div class="border_box equalizer equalizer-outer">
+            <b class="bold-family">ROAS:</b>
+            <span class="text-warm">
+              Return on Ad Spend =
+              Incremental Sales/Cost
+            </span>
+          </div>
+      </div>
+    </div>
+    <div class="col-md-7 mat-elevation-z4 planner_table_bg equalizer white-bg" >
+        <div class="desc-box">
+          <h2 class="theme-text center bottom-5px heading_bottom">Objective</h2>
+          <div class="text-warm">
+            Scenario Planner and Optimizer is an integrated platform which will enable the user to test and measure the impact of investing in different digital media activations on the selected SKUs. It will also enable the user to select the best media activation plan within the available budget which maximizes the overall lift for selected SKUs.
+           </div>
+        </div>
+        <div class="desc-box mtop-10">
+          <h2 class="theme-text center bottom-5px heading_bottom">Retailers</h2>
+          <div class="col-md-12 row">
+            <ng-container *ngFor="let item of RetailerList">
+              <div class="col-md-6 padding_left_bottom">
+                <mat-checkbox color="primary" (change)="selectedRetailers($event,item)">
+                  <span class="text-warm">
+                      {{item.name}}
+                    </span>
+                </mat-checkbox>
+              </div>
+            </ng-container>
+
+          </div>
+
+        </div>
+        <div class="mtop-10 flex-end">
+          <button class="button-wt" mat-raised-button color="primary" (click)="getSelectedRetailers()">
+            <div class="d-flex center_all">
+                <div class="d-flex">
+                  <mat-icon aria-hidden="false">arrow_forward_ios</mat-icon></div>
+                <div class="break-line">GO</div>
+              </div>
+            </button>
+          </div>
+
+    </div>
+  </div>
+</div>
+<svg class="svg-position" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#0000a0" fill-opacity="1" d="M0,192L48,213.3C96,235,192,277,288,250.7C384,224,480,128,576,106.7C672,85,768,139,864,186.7C960,235,1056,277,1152,245.3C1248,213,1344,107,1392,53.3L1440,0L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
+</div>

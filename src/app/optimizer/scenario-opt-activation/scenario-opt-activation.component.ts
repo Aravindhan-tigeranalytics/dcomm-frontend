@@ -131,12 +131,7 @@ public getJSON(): Observable<any> {
         this.ratejsonObject=groupByJson(this.Ratecardjson['RateCard'],'pack_sub_type');
       }
     });
-    this.budgetConstraintSubscribe = this.dataservice.BudgetConstraintOb.subscribe((constraint:any) => {
-      if(constraint){
-        this.minBudget=constraint['min'];
-        this.totalBudget=constraint['total'];
-      }
-    });
+
     this.apiServices.getActivationList().subscribe((res:any)=>{
      // console.log(res,"RES")
       if(res.code==200){
@@ -213,6 +208,13 @@ public getJSON(): Observable<any> {
         });
       }
     }else if(this.datastream.source=="from_output"){
+      this.budgetConstraintSubscribe = this.dataservice.BudgetConstraintOb.subscribe((constraint:any) => {
+        if(constraint){
+          this.minBudget=constraint['min'];
+          this.totalBudget=constraint['total'];
+        }
+      });
+
       this.ELEMENT_DATA_CONSTRAINTS=[];
       this.ELEMENT_DATA_CONSTRAINTS=this.datastream.data[0] || [];
       this.response_data=this.datastream.data[2] || [];
@@ -327,11 +329,15 @@ public getJSON(): Observable<any> {
   }
   clearBudget(){
     this.totalBudget=0;
-
   }
   ngOnDestroy(): void {
     this.ratecardSubscribe.unsubscribe();
-    this.budgetConstraintSubscribe.unsubscribe();
+    if(this.datastream){
+      if(this.datastream.source=="from_output"){
+        this.budgetConstraintSubscribe.unsubscribe();
+      }
+  }
+
   }
   optimizeScenario(){
     let noError=false;
@@ -353,6 +359,20 @@ public getJSON(): Observable<any> {
         if(push){validPacktype.push(element.pack_type);
         }
     });
+    let MandatorySelect:any={};
+    this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any,index:any) => {
+      let count=0;
+      for(let [key,value] of Object.entries(element)){
+
+        if((key!='pack_sub_type') && (value==true)){
+          count++;
+          MandatorySelect[index]=count;
+        }else{
+          MandatorySelect[index]=count;
+        }
+
+      };
+    });
     let temp_totalBudget:any=0;
     if(this.totalBudget){
       temp_totalBudget=parseFloat(this.totalBudget.replace(/,/g, ''));
@@ -369,31 +389,15 @@ public getJSON(): Observable<any> {
       this.errorCode='budget_min';
       noError=true;
     }
-
+    for(let [key,value] of Object.entries(MandatorySelect)){
+      if(value==0){
+        this.errorCode='packtype_min_act_sel';
+        noError=true;
+      }
+    };
     if(!noError){
       let filterData:any=[];
       filterData = this.response_data;
-      // let accumulateFilter:any=[];
-      // for(let [key,value] of Object.entries(to_filterOb)){
-      //   filterData = this.response_data.filter((data:any) => key.includes(data["pack_type"]));
-      // //  console.log(filterData,"level");
-      //   let PackList:any=value;
-      //   //console.log(PackList.join(' '),"PackList");
-      //     filterData=filterData.filter((data:any) =>  data["activation_type"]==PackList.join(' '));
-      //   //console.log(filterData,"filterData");
-      //   if(filterData.length==0){
-      //    // console.log(PackList,"PackList");
-      //     PackList.forEach((element:any) => {
-      //       filterData=this.response_data.filter((data:any) => data["activation_type"].trim()==element.trim());
-      //       accumulateFilter.push(filterData);
-      //     });
-
-      //   }else{
-      //     accumulateFilter.push(filterData);
-      //   }
-      //   //console.log(filterData,"AfterFilter");
-
-      // };
       Notiflix.Loading.dots('Loading...');
       let budgetNumber=parseFloat(this.totalBudget.replace(/,/g, ''));
       let parsed_ac:any = {};
@@ -451,6 +455,8 @@ public getJSON(): Observable<any> {
         Notiflix.Notify.info('Please select the activations');
       }else if(this.errorCode=='budget_min'){
         Notiflix.Notify.info('Total Budget should be greater than Min Budget');
+      }else if(this.errorCode=='packtype_min_act_sel'){
+        Notiflix.Notify.info('Please select one of the activation in the PACK SUB TYPE ');
       }
 
     }
@@ -487,6 +493,31 @@ public getJSON(): Observable<any> {
           }
         }
       });
+      for(let [key,value] of Object.entries(this.ElementCost)){
+        this.displayedColumnsConstraints.forEach((item:any)=>{
+          if(item!='pack_type'){
+            let ItemFound=false;
+            let activationType=this.activationLIB[item];
+            this.ratejsonObject[key].forEach((element:any) => {
+              if(element.activation_type==activationType){
+                  this.ElementCost[key][item]=element;
+                  ItemFound=true;
+              }
+            });
+            if(!ItemFound){
+              this.ratejsonObject['All'].forEach((element:any) => {
+                if(element.activation_type==activationType){
+                    this.ElementCost[key][item]=element;
+                }
+              });
+            }
+        }
+        });
+
+      }
+
+      console.log(this.ElementCost,"this.ElementCost");
+      this.calcBudget();
     }
     selectAllConstraint(){
       console.log("constaint")
@@ -505,6 +536,10 @@ public getJSON(): Observable<any> {
           }
         }
       });
+      this.ELEMENT_DATA_CONSTRAINTS.forEach((element:any) => {
+        this.ElementCost[element.pack_sub_type]={};
+      });
+      this.calcBudget();
     }
 
     ResetAllConstraint(){

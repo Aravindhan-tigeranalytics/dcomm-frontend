@@ -13,6 +13,7 @@ import * as Notiflix from 'notiflix';
 import { ScenarioPlannerService } from '../../backend-services/scenario-planner.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   trigger,
   state,

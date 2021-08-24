@@ -132,7 +132,7 @@
             <div class="header-fixed custom_scroll p_zero">
             <table  matSort (matSortChange)="sortData($event)"
              mat-table [dataSource]="dataSource"
-             matSortActive="final_lift" matSortDirection="asc"
+             matSortActive="processed_lift" matSortDirection="asc"
              matSortDisableClear
              class="planner_table ">
 
@@ -192,9 +192,9 @@
                 <td width="10%" mat-cell *matCellDef="let element"> {{(element.total_incremental_sales/element.total_activation_cost )| percent }} </td>
               </ng-container>
               <!-- Expected ROI Column -->
-              <ng-container matColumnDef="final_lift">
-                <th width="15%" mat-sort-header="final_lift" mat-header-cell *matHeaderCellDef> Expected Lift  </th>
-                <td width="15%" style="color:green;" class="right-align" mat-cell *matCellDef="let element"> {{element.final_lift | number : '1.2-2' }} %</td>
+              <ng-container matColumnDef="processed_lift">
+                <th width="15%" mat-sort-header="processed_lift" mat-header-cell *matHeaderCellDef> Expected Lift  </th>
+                <td width="15%" style="color:green;" class="right-align" mat-cell *matCellDef="let element"> {{element.processed_lift | number : '1.2-2' }} %</td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr [@EnterLeave]="'flyIn'" mat-row *matRowDef="let row; columns: displayedColumns;"

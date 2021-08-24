@@ -29,7 +29,7 @@ export interface ScenarioPlanner {
   pack_type: string;
   product_name:string;
   activation_type:string;
-  final_lift: number;
+  processed_lift: number;
 }
 export interface ScenarioPlannerConstraint {
   pack_type:string
@@ -171,8 +171,8 @@ export class OptimizerOutputComponent implements OnInit {
   {'name':'Load1','id':1}]
   selectedplacementTypes='';
   dataSet1:any={ data: [], label: 'Expected Lift by Pack type' };
-  //'total_activation_cost','total_incremental_sales','final_lift'
-  displayedColumns: string[] = ['pack_sub_type','pack_type','activation_type','total_activation_cost','total_incremental_sales','csv_roas','final_lift',];
+  //'total_activation_cost','total_incremental_sales','processed_lift'
+  displayedColumns: string[] = ['pack_sub_type','pack_type','activation_type','total_activation_cost','total_incremental_sales','csv_roas','processed_lift',];
   dataSource = new MatTableDataSource<ScenarioPlanner>(this.ELEMENT_DATA);
   selection = new SelectionModel<ScenarioPlanner>(true, []);
   sortedData: ScenarioPlanner[]=[];
@@ -251,7 +251,7 @@ export class OptimizerOutputComponent implements OnInit {
    @ViewChild(MatPaginator) paginator: any;
    ngAfterViewInit() {
      console.log(this.ELEMENT_DATA,"this.ELEMENT_DATA__");
-     this.ELEMENT_DATA=this.ELEMENT_DATA.sort((a:any, b:any) => b.final_lift - a.final_lift);
+     this.ELEMENT_DATA=this.ELEMENT_DATA.sort((a:any, b:any) => b.processed_lift - a.processed_lift);
      this.ELEMENT_DATA.forEach((element:any) => {
       element['csv_roas']=((element.total_incremental_sales/element.total_activation_cost)*100).toFixed()
     });
@@ -316,7 +316,7 @@ export class OptimizerOutputComponent implements OnInit {
           }
 
 
-          filterData=filterData.sort((a:any, b:any) => b.final_lift - a.final_lift);
+          filterData=filterData.sort((a:any, b:any) => b.processed_lift - a.processed_lift);
           console.log(filterData,"filterData");
           this.dataSource = new MatTableDataSource<ScenarioPlanner>(filterData);
          this.dataSource.paginator = this.paginator;
@@ -428,7 +428,7 @@ export class OptimizerOutputComponent implements OnInit {
         if(!this.displayedColumns.includes(key)){
             delete item[key];
         }else{
-          if(key=='final_lift'){
+          if(key=='processed_lift'){
             item[key]=values.toFixed(2)+"%";
           }
           else if(key=='csv_roas'){
@@ -502,15 +502,18 @@ doFilter(){
    gbActivityList.forEach((item)=>{
      this.Chartpoints_pla_rev[item]=0;
    });
+   let predictedSales=0;
    filterData.forEach((element:any)=>{
      this.incremantalCSV+=element.total_incremental_sales;
      this.totalActivationCost+=element.total_activation_cost;
      this.totalscvROAS+=element.total_incremental_sales/element.total_activation_cost;
      this.optimizedLift+=element.total_activation_cost;
-     this.totalLift+=element.final_lift;
-
+     //this.totalLift+=element.processed_lift;
+    // calculation = item["total_incremental_sales"] /(item["predicted_sales"] - item["total_incremental_sales"])
+    predictedSales+=element.predicted_sales;
    });
-   this.optimizedLift.toFixed()
+   this.totalLift=this.incremantalCSV/(predictedSales-this.incremantalCSV)*100;
+   this.optimizedLift=this.optimizedLift.toFixed()
    this.optimizedLift= numberWithCommas(this.optimizedLift);
    gbActivityList.forEach((item)=>{
      filterData.forEach((element:any)=>{
@@ -577,7 +580,7 @@ doFilter(){
       let items:any=value;
       let tssum=0;
       items.map((item:any)=>{
-        tssum+=parseInt(item.final_lift);
+        tssum+=parseInt(item.processed_lift);
       });
       console.log(tssum.toFixed(2),"tssum");
       data_points1.push(tssum);
@@ -622,7 +625,7 @@ doFilter(){
     this.sortedData = data.sort((a:any, b:any) => {
       const isAsc = sort.direction === 'desc';
       switch (sort.active) {
-        case 'final_lift': return compare(a.final_lift, b.final_lift, isAsc);
+        case 'processed_lift': return compare(a.processed_lift, b.processed_lift, isAsc);
         case 'total_activation_cost': return compare(a.total_activation_total_activation_cost, b.total_activation_total_activation_cost, isAsc);
         case 'total_incremental_sales': return compare(a.total_incremental_sales, b.total_incremental_sales, isAsc);
         default: return 0;

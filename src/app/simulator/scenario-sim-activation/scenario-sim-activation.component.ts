@@ -38,7 +38,7 @@ export interface ScenarioPlannerConstraint {
 Notiflix.Notify.init({
   position:'right-bottom',
   timeout:3000
-})
+});
 @Component({
   selector: 'app-scenario-sim-activation',
   templateUrl: './scenario-sim-activation.component.html',

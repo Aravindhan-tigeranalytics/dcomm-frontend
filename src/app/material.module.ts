@@ -114,6 +114,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatTooltipModule} from '@angular/material/tooltip'
 // import { DropDownComponent } from './component/drop-down/drop-down.component';
 
 //
@@ -134,6 +135,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatFormFieldModule,
     MatCardModule,
     MatCheckboxModule,
+    MatTooltipModule,
    // MatChipsModule,
   //  MatStepperModule,
    // MatDatepickerModule,

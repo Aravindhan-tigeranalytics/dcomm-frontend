@@ -394,3 +394,15 @@ tr td{
 .mat-row:nth-child(odd){
   background-color: #f1f1f1;
 }
+
+
+.option-select-active{
+  border: 1px solid #69ec52a8;
+  background-color: #00ff1f1f;
+}
+
+
+.option-select-disable{
+  border: 1px solid #b5130b7a;
+    background-color: #ff00001f;
+}

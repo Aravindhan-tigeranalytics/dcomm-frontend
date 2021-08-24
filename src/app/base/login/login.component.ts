@@ -27,11 +27,11 @@ export class LoginComponent implements OnInit {
     formData.append('password', this.password);
     Notiflix.Loading.dots('Loading...');
     this.service.login(formData).subscribe((res:any)=>{
-      console.log(res,"res");
+      //console.log(res,"res");
       if(res.token){
         localStorage.setItem('token',res.token);
         setTimeout(()=>{
-          this.router.navigate(['/planner']);
+          this.router.navigate(['/crossway']);
           this.dataservice.LoginState(true);
           Notiflix.Loading.remove();
         },50);

@@ -444,9 +444,24 @@ export class ScenarioOutputComponent implements OnInit {
     this.renderedData.map((item:any)=>
     {
       for(let [key,value] of Object.entries(item)){
+        let values:any=value;
         if(!this.displayedColumns.includes(key)){
               delete item[key];
+        }else{
 
+          //'cost','incr_sales', 'csv_roas','processed_lift',
+          if(key=='processed_lift'){
+            item[key]=values.toFixed(2)+"%";
+          }
+          else if(key=='csv_roas'){
+            item[key]=values+"%";
+          }
+          else if(key=='cost'){
+            item[key]=values.toFixed(2);
+          }
+          else if(key=='incr_sales'){
+            item[key]=values.toFixed(2);
+          }
         }
       }
 

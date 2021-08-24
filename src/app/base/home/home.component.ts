@@ -22,10 +22,10 @@ export class HomeComponent implements OnInit {
       let token:any=localStorage.getItem('token') ;
       try{
         var decoded:any = jwt_decode(token);
-        console.log(decoded,"decoded");
+        //console.log(decoded,"decoded");
         this.username=decoded.username || '';
       }catch{
-         console.log("ERROR TOKEN");
+         //console.log("ERROR TOKEN");
       }
     });
   }

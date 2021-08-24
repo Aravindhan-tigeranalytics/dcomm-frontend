@@ -69,7 +69,7 @@
                       <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_upload</mat-icon></div>
                        <input hidden accept=".xlsx,.xls,.csv" (change)="onRateFileSelected($event)" #rateFile type="file" id="ratefile">
 
-                      <div  class="break-line"> Rate Card ({{RateCardCount}})
+                      <div  class="break-line">Upload Rate Card ({{RateCardCount}})
                       </div>
                       </div>
                      </button>
@@ -88,7 +88,7 @@
                        <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_upload</mat-icon></div>
                        <input hidden accept=".xlsx,.xls,.csv" (change)="onFinancialsSelected()" #finFile type="file" id="finfile">
 
-                       <div  class="break-line"> Financials ({{financialsCount}}) </div>
+                       <div  class="break-line">Upload Financials ({{financialsCount}}) </div>
                      </div>
                      </button>
                 </div>
@@ -205,7 +205,7 @@
 
               <!--  LIST PRICE Column -->
               <ng-container matColumnDef="list_price">
-                <th width="6%"   mat-header-cell *matHeaderCellDef> LIST PRICE ({{currencySymbol}})</th>
+                <th width="6%"   mat-header-cell *matHeaderCellDef> UNIT PRICE ({{currencySymbol}})</th>
                 <td  width="6%" mat-cell *matCellDef="let element">
                   <input type="number"  [(ngModel)]="element.list_price" (focusout)="updateDiscount_price($event,element)" class="width-text small-textbox" />
                 </td>
@@ -230,10 +230,24 @@
                <!-- <select [(ngModel)]="element.promotion" (change)="updateDiscount($event,element)" class="small_select">
                   <option *ngFor="let c of element.promotion_list" [ngValue]="c.value" [value]="c.Value" >{{c.Description}}</option>
                 </select> -->
-
                  <mat-form-field appearance="fill">
                   <mat-select [(ngModel)]="element.promotion"   (selectionChange)="updateDiscount($event,element)">
-                    <mat-option *ngFor="let c of element.promotion_list"   [value]="c.Final_Price">{{c.Promotion_Text}}</mat-option>
+                    <ng-container *ngFor="let c of element.promotion_list" >
+                      <mat-option
+                      class="option-select-active"
+                       *ngIf="c.Final_Price<=element.list_price else diabledPromotion"
+                       matTooltip="Positive Discount"
+                        matTooltipPosition="right"
+                       [value]="c.Final_Price">{{c.Promotion_Text}}</mat-option>
+                      <ng-template #diabledPromotion>
+                        <mat-option  disabled
+                        class="option-select-disable"
+                        matTooltip="Negative Discount"
+                        matTooltipPosition="right"
+                        [value]="c.Final_Price">{{c.Promotion_Text}}</mat-option>
+                      </ng-template>
+                    </ng-container>
+
                   </mat-select>
                 </mat-form-field>
               </td>
@@ -262,7 +276,7 @@
               </ng-container>
                <!-- Expected EDLP Column -->
               <ng-container matColumnDef="selling_price">
-                <th width="8%" mat-header-cell *matHeaderCellDef> SELLING PRICE ({{currencySymbol}})</th>
+                <th width="8%" mat-header-cell *matHeaderCellDef> FINAL PRICE ({{currencySymbol}})</th>
                 <td class="text-align-c" width="8%" mat-cell *matCellDef="let element">
                   <input type="number" readonly [(ngModel)]="element.selling_price" class="unselectable width-text small-textbox " />
                  </td>

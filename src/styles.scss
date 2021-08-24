@@ -2,7 +2,7 @@
 *{
   font-family: 'Open Sans', sans-serif;
 }
-$theme_color:  #0000a0;;
+$theme_color:  #0000a0;
 $color-pink: #eb2f64;
 $color-pink-light: #ff3366;
 $color-pink-dark: #ba265d;
@@ -201,4 +201,31 @@ tbody tr:hover {
 }
 .mat-sort-header-arrow {
   color: #ffffff;
+}
+
+
+
+.mat-select-panel::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.mat-select-panel::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+.mat-select-panel::-webkit-scrollbar-thumb
+{
+  background-color: #c1c1c1;
+  border: 1px solid #c1c1c1;
+}
+
+.mtop-10{
+margin-top: 20px;
+}
+.theme-text{
+  color:$theme_color;
 }

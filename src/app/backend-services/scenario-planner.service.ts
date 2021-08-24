@@ -56,4 +56,9 @@ get_trans_scenatio_planner_simulate(payload:any) {
 get_trans_scenatio_planner_optimizer(payload:any) {
   return this.http.post(this.serviceURL+'/scenario_planner/transaction_optimizer_scenario',{ params: payload } );
 }
+
+get_retailer_list() {
+  return this.http.get(this.serviceURL+'/scenario_planner/get_retailers' );
+}
+
 }

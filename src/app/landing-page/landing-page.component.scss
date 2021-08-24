@@ -1,0 +1,66 @@
+$theme_color:  #0000a0;
+.border_box{
+  border:1px solid #ccc
+}
+.equalizer{
+  padding: 10px;
+}
+.equalizer-20{
+  padding: 20px;
+}
+.equalizer-outer{
+  margin: 10px;
+}
+.header-contrast{
+  justify-content: center;
+    display: flex;
+    background: black;
+    color: white;
+}
+.center{
+  justify-content: center;
+  display: flex;
+}
+.desc-box{
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 20px;
+
+}
+.bottom-5px{
+  margin-bottom: 10px;
+}
+
+.bold-family{
+  font-family: sans-serif;
+}
+.text-warm{
+  color: #8e8e8e;
+}
+.white-bg{
+  background: white;
+}
+
+.svg-position{
+  position:absolute;
+  bottom:0px;
+  z-index:-5;
+}
+
+.mr-20{
+  margin-right:20px
+}
+.padding_left_bottom{
+  padding-left: 20px;
+    padding-bottom: 20px;
+}
+.heading_bottom{
+  border-bottom: 1px solid $theme_color;
+}
+button{
+  padding: 5px;
+}
+.flex-end{
+  display: flex;
+  justify-content: flex-end;
+}
