@@ -1,0 +1,42 @@
+$table-color-header : whitesmoke;
+$theme_color:  #0000a0;
+$color-pink: #eb2f64;
+$color-pink-light: #ff3366;
+$color-pink-dark: #ba265d;
+
+$color-grey-light-1: #faf9f9;
+$color-grey-light-2: #f4f2f2;
+$color-grey-light-3: #f0eeee;
+$color-grey-light-4: #ccc;
+
+$color-grey-dark-1: #333;
+$color-grey-dark-2: #777;
+$color-grey-dark-3: #999;
+
+$color-amber-1: #ffbf00;
+$color-amber-2: #ff7e00;
+$color-blue-1: #0000a0;
+.home_icon{
+  cursor: pointer;
+}
+.nav_color{
+  background-image: linear-gradient(to right, $theme_color, #3f51b5 100%);
+  color: white;
+  height: 55px;
+}
+.dflex-end{
+  display: flex;
+  justify-content: flex-end;
+}
+.username-design{
+  text-transform: capitalize;
+  text-align: center;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    align-items: center;
+    cursor: pointer;
+}
+.account_icon{
+  margin-left: 3px;
+}

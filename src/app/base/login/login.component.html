@@ -1,0 +1,37 @@
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+</head>
+
+<div class="bg">
+
+  <div class="columns ">
+
+    <div class="login-box">
+      <form>
+        <div class="signin">
+          <h1 class="topline">Login</h1>
+          <br />
+          <div class="input-field">
+            <mat-icon>face</mat-icon> <input [(ngModel)]="username"  type="email" name="email"  placeholder="UserName" />
+
+          </div>
+
+          <div class="input-field">
+           <mat-icon>password</mat-icon>
+            <input [(ngModel)]="password" type="password" name="password"  placeholder="Password" />
+
+          </div>
+
+          <div class="action">
+          </div>
+
+          <div class="login-box-button">
+            <button type="submit" (click)="login()">
+              <i class="fas fa-sign-in-alt"></i>
+              LOG IN
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>

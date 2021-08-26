@@ -1,0 +1,255 @@
+<div class="bg_pale">
+  <div class="row col-md-12 ">
+      <div class="col-md-2 white-bg pr-five border-shadow-mild">
+          <div class="p-10 label-wrapper  mat-elevation-z8">
+            <label> Optimization Activation </label>
+          </div>
+<!-- Filter Section -->
+          <div class="m-5px">
+          </div>
+<!-- Filter Section -->
+<!-- Footer Section -->
+           <div class="footer m-5px">
+                <div class="footer-actions">
+                  <div class="dflex-footer_img">
+                    <img src="assets/svg/undraw_filter.svg" height="150px" width="150px"/>
+                  </div>
+
+
+                </div>
+                <div class="footer-logo ">
+
+
+                </div>
+              </div>
+  <!-- Footer Section -->
+       </div>
+       <div class="col-md-10 pr_zero">
+         <!-- Button Action Section -->
+        <div class="col-md-12 row action_center">
+            <div class="col-md-3">
+              <div class="custom_search">
+
+              </div>
+
+            </div>
+                <div class="col-md-9  button_actions">
+                  <div class="col-md-12 row button_actions">
+                  <div class="col-md-5  action_btn_container">
+                    <div class="col-md-4 action_btn_container ">
+
+
+                    </div>
+                  <div class="col-md-6 action_btn_container ">
+
+                    <!-- <button class="button-wt" mat-raised-button color="primary" >
+
+                      <div class="d-flex center_all">
+                        <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">file_download</mat-icon></div>
+                        <div class="break-line"> Download Promotion</div>
+                      </div>
+                    </button> -->
+                  </div>
+                    <div class="col-md-2 action_btn_container ">
+
+
+                  </div>
+                  </div>
+                  <div class="col-md-4  action_btn_container">
+
+                   <div class="col-md-6 action_btn_container ">
+
+
+                  </div>
+                    <div class="col-md-6 action_btn_container">
+
+
+                      <button class="button-wt" mat-raised-button color="primary" (click)="go_back()">
+
+                        <div class="d-flex center_all">
+                          <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">arrow_back</mat-icon></div>
+                          <div class="break-line"> Back</div>
+                        </div>
+                      </button>
+                  </div>
+                </div>
+                  <div class="col-md-2 action_btn_container">
+                    <button class="button-wt" mat-raised-button color="primary" (click)="optimizeScenario()">
+
+                      <div class="d-flex center_all">
+                        <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Example home icon">play_arrow</mat-icon></div>
+                        <div class="break-line" > Optimize Scenario </div>
+                      </div>
+                    </button>
+
+                  </div>
+                </div>
+                </div>
+              </div>
+    <!-- Button Action Section -->
+   <!-- Table view section -->
+
+          <div class="row m-5px header-fixed custom_scroll">
+
+          </div>
+          <!-- Table view section -->
+          <!--Constraints Section   -->
+         <div class="constraint_section mat-elevation-z3 row p-10 m-5px">
+
+            <div class="row col-md-12 ">
+
+
+              <div class="col-md-9">
+                <div class="mat-elevation-z2 headline-1 row">
+
+                <div class="headline-1">
+                  Select Activations
+                </div>
+
+                <table  class=" planner_table table_constraint">
+                  <thead>
+                    <tr class="mat-header-row">
+                      <th width="20%">Activations /
+                        <br> Pack Sub Type</th>
+                      <th width="14.2%" *ngFor="let element of DynActivationColumns">{{element.name}}</th>
+                    </tr>
+
+                  </thead>
+                  <tbody>
+                     <tr *ngFor="let row of ELEMENT_DATA_CONSTRAINTS" class="mat-row">
+                       <ng-container *ngFor="let el of displayedColumnsConstraints;let i = index">
+                        <td *ngIf="i!=0" class="mat-cell header_bg">
+                          <mat-checkbox color="primary" (change)="actBudgetCalc(el,row.pack_sub_type,$event,row)" [(ngModel)]="row[el]">
+                          </mat-checkbox>
+                         </td>
+                         <td *ngIf="i==0" class="mat-cell header_bg">
+                           {{row.pack_sub_type}}
+                         </td>
+                       </ng-container>
+
+
+                    </tr>
+                  </tbody>
+                </table>
+
+
+              </div>
+
+              </div>
+              <div class="col-md-3 center_master">
+                <div class="mat-elevation-z3">
+                  <mat-label class="custom_label_1 dflex-jc">Actions</mat-label>
+
+                  <button mat-raised-button color="primary" (click)="selectAll()" class="m-10">
+                    <div class="d-flex center_all">
+                      <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Select All">select_all</mat-icon></div>
+                      <div  class="break-line p-10">Select All</div>
+                    </div>
+                    </button>
+                      <button mat-raised-button color="primary" (click)="ResetAll()" class="m-10">
+                      <div class="d-flex center_all">
+                        <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
+                        <div  class="break-line p-10">Reset All</div>
+                      </div>
+                      </button>
+                      <hr>
+                      <mat-label class="custom_label_1 dflex-jc" >Min-Budget: </mat-label><small>{{this.currencySymbol}} {{minBudget | number : '1.2-2' }}</small>
+                    <hr>
+                      <mat-label class="custom_label_1 dflex-jc">Total Budget</mat-label>
+                        <div class="budget_input">
+                          <div>
+                            <div  class="budget-nos">
+                             <span class="curr">
+                              {{this.currencySymbol}}
+                             </span>
+                              <input type="text"  [(ngModel)]="totalBudget" (keyup)="updateBudget()" placeholder="" />
+                            </div>
+
+                            <button mat-raised-button color="primary" class="m-10">
+                              <div class="d-flex center_all">
+                                <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
+                                <div  class="break-line p-10" (click)="clearBudget()">Clear</div>
+                              </div>
+                              </button>
+                          </div>
+
+                      </div>
+                </div>
+              </div>
+             </div>
+          </div>
+      <!--End ofConstraints Section   -->
+      <!-- Activation Constraint Matrix -->
+      <div class="constraint_section mat-elevation-z3 row p-10 m-5px">
+
+        <div class="row col-md-12 ">
+
+
+          <div class="col-md-9">
+            <div class="mat-elevation-z2 headline-1 row">
+
+            <div class="headline-1">
+              Activation Combinations Constraints
+            </div>
+            <table  class="mat-table planner_table table_constraint matrix">
+              <thead>
+                <th class="mat-header-cell" width="20%" >Activation</th>
+                <th width="14.2%" *ngFor="let element of DynActivationColumns">{{element.name}}</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let rows of MatrixConstraintsTable1;let i = index">
+                  <td  width="14.2%" class="header_bg mat-cell">{{DynActivationColumns[i].name}}</td>
+                  <td *ngFor="let item of rows;let j = index" width="14.2%">
+                    <mat-checkbox color="primary" [(ngModel)]="MatrixConstraintsTableres[item]">
+                  </mat-checkbox>
+                </td>
+                </tr>
+
+              </tbody>
+
+            </table>
+          </div>
+
+          </div>
+          <div class="col-md-3 center_master">
+            <div class="mat-elevation-z3">
+              <mat-label class="custom_label_1 dflex-jc">Actions</mat-label>
+
+              <button mat-raised-button color="primary" (click)="selectAllConstraint()" class="m-10">
+                <div class="d-flex center_all">
+                  <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Select All">select_all</mat-icon></div>
+                  <div  class="break-line p-10">Select All</div>
+                </div>
+                </button>
+                <button mat-raised-button color="primary" (click)="ResetAllConstraint()" class="m-10">
+                  <div class="d-flex center_all">
+                    <div class="d-flex"><mat-icon aria-hidden="false" aria-label="Reset All">restart_alt</mat-icon></div>
+                    <div  class="break-line p-10">Reset All</div>
+                  </div>
+                  </button>
+                  <div class="mat-elevation-z3 p-10">
+                    <mat-label class="custom_label_1 dflex-jc">Total Products Covered</mat-label>
+                    <div class="budget_input">
+
+                        <div>
+                          <input type="number" [(ngModel)]="this.totalProducts" disabled class="budget-nos" placeholder="" />
+
+                        </div>
+
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- <div class="col-md-3 center_master">
+
+          </div> -->
+         </div>
+      </div>
+      <!-- Activation Constraint Matrix -->
+
+        <div>
+       </div>
+
+  </div>
+</div>
